@@ -1,0 +1,19 @@
+services:
+  portal:
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+     - .:/app
+     - ./node_modules:/app/node_modules
+    environment:
+      NODE_ENV: development
+    stdin_open: true
+    tty: true
+    command: npm start
+    networks:
+      - hajki_shared_network
+
+networks:
+  hajki_shared_network:
+    external: true

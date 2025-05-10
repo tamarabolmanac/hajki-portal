@@ -1,0 +1,44 @@
+.new-route-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  margin-top: 120px;
+}
+
+.route-form .form-group {
+  margin-bottom: 20px;
+}
+
+.route-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.route-form .form-control {
+  width: 100%;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.submit-button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #3a7c5a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #336d4e;
+}
+
+.message {
+  margin-top: 15px;
+  font-weight: bold;
+}

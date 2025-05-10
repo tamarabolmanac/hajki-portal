@@ -1,0 +1,61 @@
+/* Header.css */
+header {
+  background-color: #2f8555; /* Green */
+  color: white;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  font-size: 1.75rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+header nav {
+  display: flex;
+  gap: 24px;
+}
+
+header a {
+  font-size: 1.1rem;
+  text-decoration: none;
+  color: white;
+  transition: color 0.3s ease;
+}
+
+header a:hover {
+  color: #fbbf24; /* Hover color (yellow) */
+}
+
+header button {
+  display: none;
+  background-color: #2f8555;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  header nav {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  header button {
+    display: block;
+  }
+
+  header nav.open {
+    display: flex;
+  }
+}
