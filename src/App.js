@@ -31,13 +31,15 @@ const App = () => {
           element={
             <>
               <Header data={landingPageData.Header} />
-              <HikeRoutes data={landingPageData.HikeRoutes} />
               <About data={landingPageData.About} />
+              {/*
+              <HikeRoutes data={landingPageData.HikeRoutes} />
               <Services data={landingPageData.Services} />
               <Gallery data={landingPageData.Gallery} />
               <Testimonials data={landingPageData.Testimonials} />
               <Team data={landingPageData.Team} />
               <Contact data={landingPageData.Contact} />
+              */}
             </>
           }
         />
