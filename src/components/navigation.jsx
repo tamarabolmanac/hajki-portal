@@ -1,7 +1,21 @@
 import React from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const Navigation = (props) => {
+
+  const navigate = useNavigate();
+
+  const handleAboutClick = (e) => {
+    e.preventDefault();
+    navigate("/"); // idi na root
+    setTimeout(() => {
+      const element = document.getElementById("about");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100); // malo zakašnjenje dok se DOM učita
+  };
+
   return (
     <nav id="menu" className="navbar navbar-default navbar-fixed-top">
       <div className="container">
@@ -37,6 +51,7 @@ export const Navigation = (props) => {
                 Pretraži rute
               </Link>
             </li>
+            {/*
             <li>
               <a href="#services" className="page-scroll">
                 Gde za vikend?
@@ -48,12 +63,13 @@ export const Navigation = (props) => {
               </a>
             </li>
             <li>
-              <a href="#contact" className="page-scroll">
+              <a href="#about" className="page-scroll">
                 Kontakt
               </a>
             </li>
+            */}
             <li>
-              <a href="#about" className="page-scroll">
+              <a href="#about" className="page-scroll" onClick={handleAboutClick}>
                 O nama
               </a>
             </li>

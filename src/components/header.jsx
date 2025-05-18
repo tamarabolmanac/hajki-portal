@@ -14,9 +14,9 @@ export const Header = (props) => {
                 </h1>
                 <p>{props.data ? props.data.paragraph : "Loading"}</p>
                 <a
-                  href="#features"
+                  href="/login" 
                   className="btn btn-custom btn-lg page-scroll"
-                >
+                > {/* #features */}
                   Otkrijte više
                 </a>{" "}
               </div>

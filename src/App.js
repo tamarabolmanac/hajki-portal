@@ -10,6 +10,8 @@ import { Testimonials } from "./components/testimonials";
 import { Team } from "./components/Team";
 import { NewRoute } from "./components/NewRoute";
 import { Contact } from "./components/contact";
+import PrivateRoute from "./components/PrivateRoute"; // dodaj ovo
+import LoginPage from "./components/LoginPage";
 import JsonData from "./data/data.json";
 import "./App.css";
 
@@ -39,8 +41,23 @@ const App = () => {
             </>
           }
         />
-        <Route path="/routes" element={<HikeRoutes />} />
-        <Route path="/new-route" element={<NewRoute />} />
+        <Route
+          path="/routes"
+          element={
+            <PrivateRoute>
+              <HikeRoutes />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/new-route"
+          element={
+            <PrivateRoute>
+              <NewRoute />
+            </PrivateRoute>
+          }
+        />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </Router>
   );
