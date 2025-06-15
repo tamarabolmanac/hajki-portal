@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/HikeRoutes.css'
 
-
 export const HikeRoutes = (props) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,7 +16,6 @@ export const HikeRoutes = (props) => {
         return response.json();
       })
       .then(data => {
-        console.log(data.data)
         setData(data.data);
         setLoading(false);
       })
@@ -27,6 +25,22 @@ export const HikeRoutes = (props) => {
       });
   }, []);
 
+  if (error) {
+    return (
+      <div className="error-container">
+        <h2>Greška</h2>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <h2>Učitavanje...</h2>
+      </div>
+    );
+  }
 
   return (
     <div id="features" className="text-center">
@@ -38,17 +52,26 @@ export const HikeRoutes = (props) => {
           </Link>
         </div>
 
-        <div className="row">
-          {data
-            ? data.map((d, i) => (
-                <div key={`${d.title}-${i}`} className="col-xs-6 col-md-3">
-                  <h3>{d.title}</h3>
-                  <p>{d.description}</p>
+        <div className="hike-cards-container">
+          {data.map((hike, index) => (
+            <div key={`${hike.title}-${index}`} className="hike-card">
+              <div className="hike-card-content">
+                <h3 className="hike-title">{hike.title}</h3>
+                <p className="hike-description">{hike.description}</p>
+                <div className="hike-details">
+                  <span className="hike-duration">Duration: {hike.duration}h</span>
+                  <span className="hike-difficulty">Difficulty: {hike.difficulty}</span>
                 </div>
-              ))
-            : "Loading..."}
+              </div>
+              <div className="hike-card-footer">
+                <Link to={`/route/${hike.id}`} className="view-route-btn">
+                  Pogledaj detalje
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
-};
+}

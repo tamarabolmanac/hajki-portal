@@ -1,0 +1,130 @@
+.route-details-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.route-header {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+}
+
+.route-title {
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+}
+
+.route-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.route-meta span {
+  padding: 0.4rem 0.8rem;
+  background: #f8f9fa;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #666;
+  margin-right: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.route-duration::after {
+  content: ' ⏱️';
+  color: #3498db;
+}
+
+.route-duration {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.route-content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.route-description {
+  margin-bottom: 2rem;
+}
+
+.route-description h2 {
+  color: #3498db;
+  margin-bottom: 0.8rem;
+  font-size: 1.5rem;
+}
+
+.route-description p {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.route-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.info-section h3 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
+
+.info-section p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.route-map {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.route-map h3 {
+  color: #3498db;
+  margin-bottom: 1rem;
+}
+
+.map-placeholder {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  color: #666;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-container {
+  text-align: center;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: #e74c3c;
+}
+
+.loading-container {
+  text-align: center;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: #3498db;
+}
