@@ -1,0 +1,41 @@
+.profile-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.username-badge {
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.username-badge:hover {
+  background-color: #e0e0e0;
+  transform: scale(1.05);
+}
+
+.profile-details {
+  margin-top: 2rem;
+}
+
+.profile-field {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.field-label {
+  font-weight: bold;
+  color: #333;
+  margin-right: 1rem;
+}
+
+.field-value {
+  color: #666;
+}

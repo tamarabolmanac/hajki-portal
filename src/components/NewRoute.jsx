@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import SelectableMap from './SelectableMap';
 import { config } from '../config';
 import './NewRoute.css';
-import './Map.css';
 
 const DEFAULT_LOCATION = {
   lat: 44.8048,

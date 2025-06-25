@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Navigation } from "./components/navigation";
-import { Header } from "./components/header";
 import { HikeRoutes } from "./components/HikeRoutes";
 import { RouteDetails } from "./components/RouteDetails";
 import { About } from "./components/about";
@@ -13,6 +12,8 @@ import { NewRoute } from "./components/NewRoute";
 import { Contact } from "./components/contact";
 import PrivateRoute from "./components/PrivateRoute"; 
 import LoginPage from "./components/LoginPage";
+import Register from "./components/Register";
+import { Profile } from "./components/Profile";
 import JsonData from "./data/data.json";
 import { LoadScript } from '@react-google-maps/api';
 import { REACT_APP_GOOGLE_MAPS_API_KEY } from './config';
@@ -41,7 +42,6 @@ const App = () => {
               path="/"
               element={
                 <>
-                  <Header data={landingPageData.Header} />
                   <div className="content-container">
                     <About data={landingPageData.About} />
                     {/*
@@ -54,6 +54,16 @@ const App = () => {
                     */}
                   </div>
                 </>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <Profile />
+                  </div>
+                </PrivateRoute>
               }
             />
             <Route
@@ -87,6 +97,7 @@ const App = () => {
               }
             />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </div>
       </Router>

@@ -1,30 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Profile } from './Profile';
 
 export const Navigation = (props) => {
-
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    const userData = localStorage.getItem('user');
+    setIsLoggedIn(!!token);
+    
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
+  }, [localStorage.getItem('authToken')]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setUser(null);
+    navigate('/');
+  };
 
   const handleAboutClick = (e) => {
     e.preventDefault();
-    navigate("/"); // idi na root
+    navigate("/");
     setTimeout(() => {
       const element = document.getElementById("about");
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
-    }, 100); // malo zakašnjenje dok se DOM učita
+    }, 100);
   };
 
   return (
     <nav id="menu" className="navbar navbar-default navbar-fixed-top">
       <div className="container">
-     
-      <a className="navbar-brand page-scroll" href="#page-top">
-            
-          </a>
         <div className="navbar-header">
-        <img  className="logo-navbar" src="../../img/logo_small.png" ></img>
+          <img  className="logo-navbar" src="../../img/logo_small.png" ></img>
           <button
             type="button"
             className="navbar-toggle collapsed"
@@ -37,8 +60,6 @@ export const Navigation = (props) => {
             <span className="icon-bar"></span>{" "}
             <span className="icon-bar"></span>{" "}
           </button>
-          
-          
         </div>
 
         <div
@@ -51,12 +72,13 @@ export const Navigation = (props) => {
                 Pretraži rute
               </Link>
             </li>
-            {/*
+            {/**
             <li>
               <a href="#services" className="page-scroll">
                 Gde za vikend?
               </a>
             </li>
+            */}
             <li>
               <a href="#portfolio" className="page-scroll">
                 Mapa
@@ -67,12 +89,38 @@ export const Navigation = (props) => {
                 Kontakt
               </a>
             </li>
-            */}
             <li>
               <a href="#about" className="page-scroll" onClick={handleAboutClick}>
                 O nama
               </a>
             </li>
+            {isLoggedIn ? (
+              <>
+                <li>
+                  <a href="#" className="page-scroll" onClick={handleLogout}>
+                    Odjavi se
+                  </a>
+                </li>
+                <li>
+                  <Link to="/profile" className="page-scroll">
+                    <span className="username-badge">{user?.username}</span>
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link to="/login" className="page-scroll">
+                    Prijava
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/register" className="page-scroll">
+                    Registracija
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
