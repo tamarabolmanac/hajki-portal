@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { config } from '../config';
 import '../styles/HikeRoutes.css'
 
 export const HikeRoutes = (props) => {
@@ -8,7 +9,7 @@ export const HikeRoutes = (props) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/routes')
+    fetch(`${config.apiUrl}/routes`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
