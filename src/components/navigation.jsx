@@ -97,7 +97,12 @@ export const Navigation = (props) => {
             {isLoggedIn ? (
               <>
                 <li>
-                  <a href="#" className="page-scroll" onClick={handleLogout}>
+                  <Link to="/profile" className="page-scroll">
+                    Moj profil
+                  </Link>
+                </li>
+                <li>
+                  <a href="#" className="page-scroll" onClick={handleLogout} style={{ color: '#ff4444' }}>
                     Odjavi se
                   </a>
                 </li>

@@ -16,6 +16,7 @@ const authenticatedFetch = async (url) => {
         'Content-Type': 'application/json'
       }
     });
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -39,32 +40,22 @@ export const Profile = () => {
           window.location.href = '/login';
           return;
         }
-
-        // Get user data from localStorage and parse it as JSON
-        const userData = localStorage.getItem('user');
-        if (!userData) {
-          throw new Error('No user data found');
-        }
-        const user = JSON.parse(userData);
-
-        // Fetch user details using show endpoint with token
-        debugger
-        const response = await fetch(`${config.apiUrl}/users/${user.user_id}`, {
+        
+        const response = await fetch(`${config.apiUrl}/user_data`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
-
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const userDetails = await response.json();
-        // Store user details directly in localStorage
-        localStorage.setItem('userDetails', JSON.stringify(userDetails));
         setUserDetails(userDetails);
+        localStorage.setItem('userDetails', JSON.stringify(userDetails));
       } catch (err) {
         setError(`Greška: ${err.message}`);
         console.error('Error fetching profile:', err);
@@ -85,18 +76,20 @@ export const Profile = () => {
   }
 
   if (error) {
+    // If error is related to authentication, log out the user
+    const isAuthError = error.includes('401') || error.includes('Unauthorized') || error.includes('token');
+    if (isAuthError) {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      localStorage.removeItem('userDetails');
+      window.location.href = '/login';
+      return null;
+    }
+    
     return (
       <div className="profile-container">
         <h2>Greška</h2>
         <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (!userDetails) {
-    return (
-      <div className="profile-container">
-        <h2>Nemate pristup profilu</h2>
       </div>
     );
   }
@@ -106,24 +99,24 @@ export const Profile = () => {
       <h2>Moji podaci</h2>
       <div className="profile-details">
         <div className="profile-field">
-          <span className="field-label">Ime:</span>
-          <span className="field-value">{userDetails.name}</span>
+          <label>Ime:</label>
+          <span>{userDetails?.name}</span>
         </div>
         <div className="profile-field">
-          <span className="field-label">Email:</span>
-          <span className="field-value">{userDetails.email}</span>
+          <label>Email:</label>
+          <span>{userDetails?.email}</span>
         </div>
         <div className="profile-field">
-          <span className="field-label">Uloga:</span>
-          <span className="field-value">{userDetails.role}</span>
+          <label>Uloga:</label>
+          <span>{userDetails?.role}</span>
         </div>
         <div className="profile-field">
-          <span className="field-label">Grad:</span>
-          <span className="field-value">{userDetails.city}</span>
+          <label>Grad:</label>
+          <span>{userDetails?.city}</span>
         </div>
         <div className="profile-field">
-          <span className="field-label">Država:</span>
-          <span className="field-value">{userDetails.country}</span>
+          <label>Zemlja:</label>
+          <span>{userDetails?.country}</span>
         </div>
       </div>
     </div>
