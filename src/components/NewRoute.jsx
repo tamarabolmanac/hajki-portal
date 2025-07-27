@@ -80,7 +80,7 @@ export const NewRoute = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:3000/new_route", {
+      const response = await fetch(`${config.apiUrl}/new_route`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

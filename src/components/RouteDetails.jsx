@@ -34,7 +34,7 @@ export const RouteDetails = () => {
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:3000/routes/${id}`)
+    fetch(`${config.apiUrl}/routes/${id}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
