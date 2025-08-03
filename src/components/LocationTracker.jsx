@@ -12,6 +12,7 @@ const containerStyle = {
 const LocationTracker = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [error, setError] = useState(null);
+  const [mapError, setMapError] = useState(null);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -29,11 +30,11 @@ const LocationTracker = () => {
     }
   }, []);
 
-  if (error || mapError) {
+  if (error || !isValidApiKey) {
     return (
       <div className="location-error">
         <h3>Greška:</h3>
-        <p>{error || mapError}</p>
+        <p>{error || 'Nije postavljen Google Maps API ključ'}</p>
       </div>
     );
   }
