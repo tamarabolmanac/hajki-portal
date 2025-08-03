@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
 import { config } from '../config';
+import LocationTracker from './LocationTracker';
 
 // Helper function to get auth token from localStorage
 const getAuthToken = () => localStorage.getItem('authToken');
@@ -98,6 +99,10 @@ export const Profile = () => {
     <div className="profile-container">
       <h2>Moji podaci</h2>
       <div className="profile-details">
+        <div className="location-section">
+          <h3>Moja lokacija</h3>
+          <LocationTracker />
+        </div>
         <div className="profile-field">
           <label>Ime:</label>
           <span>{userDetails?.name}</span>

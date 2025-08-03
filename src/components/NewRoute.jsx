@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SelectableMap from './SelectableMap';
 import { config } from '../config';
-import './NewRoute.css';
+import '../styles/NewRoute.css';
 
 const DEFAULT_LOCATION = {
   lat: 44.8048,
@@ -153,7 +153,7 @@ export const NewRoute = () => {
                   min="0"
                   placeholder="Hours"
                 />
-                <span>h</span>
+                <span>hours</span>
               </div>
               <div className="duration-input">
                 <input
@@ -166,7 +166,7 @@ export const NewRoute = () => {
                   max="59"
                   placeholder="Minutes"
                 />
-                <span>min</span>
+                <span>minutes</span>
               </div>
             </div>
           </div>

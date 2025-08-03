@@ -2,40 +2,189 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding: 20px 0;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
   border-bottom: 2px solid #eee;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .menu-item-title {
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   color: #333;
   margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  text-align: left;
+  width: 70%;
+  min-width: 200px;
 }
 
 .add-route-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 12px 24px;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  font-size: 1.1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex-shrink: 0;
+  width: auto;
+  min-width: 100px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
 }
 
-.add-route-button:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+/* Mobile styles */
+@media (max-width: 767px) {
+  .header-with-button {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .menu-item-title {
+    width: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+  }
+  
+  .add-route-button {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+    display: inline-block;
+  }
 }
 
+/* Tablet styles */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .header-with-button {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+  }
+  
+  .menu-item-title {
+    font-size: 2rem;
+    width: 65%;
+  }
+  
+  .add-route-button {
+    min-width: 120px;
+    padding: 0.875rem 1.75rem;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .header-with-button {
+    margin-bottom: 3rem;
+    padding: 2rem;
+  }
+  
+  .menu-item-title {
+    font-size: 2.5rem;
+    width: 60%;
+  }
+  
+  .add-route-button {
+    min-width: 140px;
+    padding: 1rem 2rem;
+  }
+}
+
+/* Cards container */
 .hike-cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem 0;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+/* Mobile cards */
+@media (max-width: 767px) {
+  .hike-cards-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.75rem;
+  }
+  
+  .hike-card {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .hike-title {
+    font-size: 1.25rem;
+  }
+  
+  .hike-description {
+    font-size: 0.95rem;
+  }
+  
+  .hike-details {
+    gap: 0.75rem;
+  }
+  
+  .hike-duration, .hike-difficulty {
+    font-size: 0.85rem;
+    padding: 0.375rem 0.75rem;
+  }
+  
+  .view-route-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Tablet cards */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hike-cards-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    padding: 1rem;
+  }
+  
+  .hike-card {
+    max-width: 400px;
+  }
+  
+  .hike-title {
+    font-size: 1.5rem;
+  }
+  
+  .hike-description {
+    font-size: 1rem;
+  }
+  
+  .view-route-btn {
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
+  }
+}
+
+/* Desktop cards */
+@media (min-width: 1024px) {
+  .hike-cards-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+  
+  .hike-card {
+    max-width: 450px;
+  }
+  
+  .hike-title {
+    font-size: 1.75rem;
+  }
+  
+  .hike-description {
+    font-size: 1.1rem;
+  }
+  
+  .view-route-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
 }
 
 .hike-card {

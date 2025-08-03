@@ -2,8 +2,8 @@
 
 .new-route-container {
   max-width: 800px;
-  margin: 2rem auto;
-  padding: 2rem;
+  margin: 8rem auto 2rem;
+  padding: 3rem 2rem;
   border: 1px solid #ddd;
   border-radius: 15px;
   background-color: #f9f9f9;
@@ -67,22 +67,23 @@
 }
 
 .route-form .form-group {
-  margin-bottom: 1.8rem;
+  margin-bottom: 1.2rem;
 }
 
 .route-form label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
   font-weight: 500;
   color: #333;
+  font-size: 0.95rem;
 }
 
 .form-control {
   width: 100%;
-  padding: 0.8rem;
+  padding: 0.6rem;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: border-color 0.3s ease;
 }
 
@@ -129,6 +130,32 @@
   border: 1px solid #f5c6cb;
 }
 
+.duration-inputs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.duration-input {
+  position: relative;
+  flex: 1;
+  min-width: 80px;
+}
+
+.duration-input span {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.duration-input input {
+  text-align: left;
+  padding-left: 8px;
+}
+
 .distance-input {
   position: relative;
 }
@@ -164,35 +191,4 @@
 .distance-preview span {
   font-weight: bold;
   color: #333;
-}
-
-.route-form label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.route-form .form-control {
-  width: 100%;
-  padding: 10px;
-  font-size: 1rem;
-}
-
-.submit-button {
-  padding: 10px 20px;
-  font-size: 1rem;
-  background-color: #3a7c5a;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.submit-button:hover {
-  background-color: #336d4e;
-}
-
-.message {
-  margin-top: 15px;
-  font-weight: bold;
 }
