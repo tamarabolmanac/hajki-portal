@@ -18,16 +18,16 @@ h2 {
   margin: 0 0 20px;
   font-weight: 800;
   font-size: 36px;
-  color: #333;
+  color: #556B2F;
 }
 h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: #8FA31E;
 }
 h4 {
   font-size: 18px;
-  color: #333;
+  color: #8FA31E;
   font-weight: 600;
 }
 h5 {
@@ -43,13 +43,13 @@ p.intro {
   line-height: 24px;
 }
 a {
-  color: #608dfd;
+  color: #8FA31E;
   font-weight: 400;
 }
 a:hover,
 a:focus {
   text-decoration: none;
-  color: #608dfd;
+  color: #556B2F;
 }
 ul,
 ol {
@@ -66,7 +66,7 @@ hr {
   width: 70px;
   text-align: center;
   position: relative;
-  background: #1e7a46;
+  background: #8FA31E;
   margin-bottom: 20px;
   border: 0;
 }
@@ -104,7 +104,7 @@ hr {
   bottom: -1px;
   width: 0;
   height: 2px;
-  background: linear-gradient(to right, #6372ff 0%, #5ca9fb 100%);
+  background: linear-gradient(to right, #8FA31E 0%, #C6D870 100%);
   content: "";
   transition: width 0.2s;
 }
@@ -125,7 +125,7 @@ hr {
   bottom: -1px !important;
   width: 100% !important;
   height: 2px !important;
-  background: linear-gradient(to right, #6372ff 0%, #5ca9fb 100%) !important;
+  background: linear-gradient(to right, #8FA31E 0%, #C6D870 100%) !important;
   content: "" !important;
   transition: width 0.2s !important;
 }
@@ -135,10 +135,10 @@ hr {
 .navbar-default .navbar-toggle:hover,
 .navbar-default .navbar-toggle:focus {
   background-color: #fff;
-  border-color: #608dfd;
+  border-color: #8FA31E;
 }
 .navbar-default .navbar-toggle:hover > .icon-bar {
-  background-color: #608dfd;
+  background-color: #8FA31E;
 }
 .section-title {
   margin-bottom: 70px;
@@ -152,7 +152,7 @@ hr {
 .section-title h2::after {
   position: absolute;
   content: "";
-  background: linear-gradient(to right, #5ca9fb 0%, #6372ff 100%);
+  background: linear-gradient(to right, #8FA31E 0%, #C6D870 100%);
   height: 4px;
   width: 60px;
   bottom: 0;
@@ -166,8 +166,8 @@ hr {
   font-family: "Raleway", sans-serif;
   text-transform: uppercase;
   color: #fff;
-  background-color: #5ca9fb;
-  background-image: linear-gradient(to right, #5ca9fb 0%, #6372ff 100%);
+  background-color: #8FA31E;
+  background-image: linear-gradient(to right, #8FA31E 0%, #C6D870 100%);
   padding: 14px 34px;
   letter-spacing: 1px;
   margin: 0;
@@ -184,7 +184,7 @@ hr {
 .btn-custom.active {
   color: #fff;
   background-image: none;
-  background-color: #6372ff;
+  background-color: #556B2F;
 }
 .btn:active,
 .btn.active {
@@ -229,7 +229,7 @@ a:focus,
 }
 .intro h1 span {
   font-weight: 800;
-  color: #5ca9fb;
+  color: #8FA31E;
 }
 .intro p {
   color: #fff;
@@ -257,7 +257,7 @@ header .intro-text {
   height: 100px;
   padding: 60px 0;
   border-radius: 50%;
-  background: linear-gradient(to right, #6372ff 0%, #5ca9fb 100%);
+  background: linear-gradient(to right, #8FA31E 0%, #C6D870 100%);
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
 } 
 /* About Section */
@@ -276,7 +276,7 @@ header .intro-text {
 #about h2::after {
   position: absolute;
   content: "";
-  background: linear-gradient(to right, #5ca9fb 0%, #6372ff 100%);
+  background: linear-gradient(to right, #8FA31E 0%, #C6D870 100%);
   height: 4px;
   width: 60px;
   bottom: 0;
@@ -291,7 +291,7 @@ header .intro-text {
 #about .about-text li:before {
   content: "\f00c";
   font-family: "FontAwesome";
-  color: #5ca9fb;
+  color: #8FA31E;
   font-size: 11px;
   font-weight: 300;
   padding-right: 8px;
@@ -310,7 +310,7 @@ header .intro-text {
 /* Services Section */
 #services {
   padding: 100px 0;
-  background: linear-gradient(to right, #6372ff 0%, #5ca9fb 100%);
+  background: linear-gradient(to right, #8FA31E 0%, #C6D870 100%);
   color: #fff;
 }
 #services .service-desc {
@@ -334,7 +334,7 @@ header .intro-text {
   width: 120px;
   height: 120px;
   padding: 40px 0;
-  background: linear-gradient(to right, #6372ff 0%, #5ca9fb 100%);
+  background: linear-gradient(to right, #8FA31E 0%, #C6D870 100%);
   border-radius: 50%;
   color: #fff;
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.05);
@@ -460,7 +460,7 @@ header .intro-text {
 /* Contact Section */
 #contact {
   padding: 100px 0 60px;
-  background: linear-gradient(to right, #6372ff 0%, #5ca9fb 100%);
+  background: linear-gradient(to right, #8FA31E 0%, #C6D870 100%);
   color: rgba(255, 255, 255, 0.75);
 }
 #contact .section-title {
@@ -580,7 +580,7 @@ label {
   transition: all 0.3s;
 }
 #contact .social i.fa:hover {
-  color: #608dfd;
+  color: #8FA31E;
   background: #fff;
 }
 /* Footer Section*/
@@ -593,10 +593,10 @@ label {
   font-size: 14px;
 }
 #footer a {
-  color: #608dfd;
+  color: #8FA31E;
 }
 #footer a:hover {
-  border-bottom: 2px solid #608dfd;
+  border-bottom: 2px solid #8FA31E;
 }
 
 @media (max-width: 768px) {
@@ -639,7 +639,7 @@ label {
   .navbar-default .navbar-nav > .active > a,
   .navbar-default .navbar-nav > .active > a:hover,
   .navbar-default .navbar-nav > .active > a:focus {
-    background-color: #608dfd;
+    background-color: #8FA31E;
     color: #fff !important;
   }
   .navbar-toggle .icon-bar {

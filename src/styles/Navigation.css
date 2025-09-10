@@ -1,10 +1,10 @@
 /* Navigation Styles */
 .navbar {
-  background-color: #fff;
+  background-color: #556B2F; /* Dark green background */
   border: none;
   border-radius: 0;
   margin-bottom: 0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(85, 107, 47, 0.3);
   position: fixed;
   top: 0;
   right: 0;
@@ -43,7 +43,7 @@
 .navbar-toggle {
   margin-left: 15px;
   background: transparent;
-  border: 1px solid #ddd;
+  border: 1px solid #C6D870;
   border-radius: 4px;
   padding: 0.5rem 0.75rem;
   cursor: pointer;
@@ -53,7 +53,7 @@
   display: block;
   width: 22px;
   height: 2px;
-  background-color: #333;
+  background-color: #EFF5D2;
   border-radius: 1px;
   margin: 4px 0;
   transition: all 0.3s ease;
@@ -75,9 +75,16 @@
 
 .nav-link {
   padding: 0.75rem 1rem;
-  color: #333;
+  color: #EFF5D2;
   text-decoration: none;
   font-weight: 500;
+  transition: all 0.3s ease;
+  border-radius: 4px;
+}
+
+.nav-link:hover {
+  color: #C6D870;
+  background-color: rgba(143, 163, 30, 0.2);
 }
 
 /* Responsive adjustments */
