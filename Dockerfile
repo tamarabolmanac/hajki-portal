@@ -29,4 +29,3 @@ ENV PORT 3001
  
 # Define the command to run your app
 CMD ["serve", "-s", "build", "--listen", "3001"]
-hajkirs@hajki:~/projects/hajki-portal$ 

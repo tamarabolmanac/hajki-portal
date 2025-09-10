@@ -1,0 +1,120 @@
+/* Navigation Styles */
+.navbar {
+  background-color: #fff;
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+  min-height: 70px; /* Increased height */
+  padding: 5px 0;
+  display: flex;
+  align-items: center;
+}
+
+.navbar .container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 15px;
+}
+
+.navbar-header {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand {
+  padding: 0;
+}
+
+.logo-navbar {
+  height: 50px; /* Fixed height for the logo */
+  width: auto;   /* Let the width adjust automatically */
+}
+
+/* Mobile menu button */
+.navbar-toggle {
+  margin-left: 15px;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.navbar-toggle .icon-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: #333;
+  border-radius: 1px;
+  margin: 4px 0;
+  transition: all 0.3s ease;
+}
+
+/* Navigation Menu */
+.navbar-collapse {
+  flex-basis: 100%;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.navbar-nav {
+  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+}
+
+.nav-link {
+  padding: 0.75rem 1rem;
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+  .navbar-header {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .navbar-collapse {
+    display: none; /* Hide by default on mobile */
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    border-top: 1px solid #eee;
+    margin-top: 10px;
+  }
+
+  .navbar-collapse.in {
+    display: block; /* Show when active */
+    max-height: 500px; /* Set a max-height for the animation */
+  }
+
+  .navbar-nav {
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .navbar-nav > li {
+    width: 100%;
+    text-align: center;
+  }
+
+  .nav-link {
+    padding: 10px 15px;
+    border-bottom: 1px solid #f1f1f1;
+  }
+}

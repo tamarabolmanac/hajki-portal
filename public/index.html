@@ -1,51 +1,75 @@
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
-  <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
-  <link
-    rel="apple-touch-icon"
-    sizes="72x72"
-    href="img/apple-touch-icon-72x72.png"
-  />
-  <link
-    rel="apple-touch-icon"
-    sizes="114x114"
-    href="img/apple-touch-icon-114x114.png"
-  />
-
-  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="fonts/font-awesome/css/font-awesome.css"
-  />
-  <link rel="stylesheet" type="text/css" href="css/style.css" />
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="css/nivo-lightbox/nivo-lightbox.css"
-  />
-  <link rel="stylesheet" type="text/css" href="css/nivo-lightbox/default.css" />
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700"
-    rel="stylesheet"
-  />
-  <link
-    href="https://fonts.googleapis.com/css?family=Lato:400,700"
-    rel="stylesheet"
-  />
-  <link
-    href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900"
-    rel="stylesheet"
-  />
-  <title>A React Landing Page Template</title>
-  <meta name="description" content="" />
-  <meta name="author" content="@Issaafalkattan" />
-</head>
-
-<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-  <div id="root"></div>
-  <script type="text/javascript" src="js/jquery.1.11.1.js"></script>
-  <script type="text/javascript" src="js/bootstrap.js"></script>
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Hajki - Planinarenje i avanture" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Hajki" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="fonts/font-awesome/css/font-awesome.css"
+    />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="css/nivo-lightbox/nivo-lightbox.css"
+    />
+    <link rel="stylesheet" type="text/css" href="css/nivo-lightbox/default.css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Lato:400,700"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700,800,900"
+      rel="stylesheet"
+    />
+    <title>Hajki - Planinarenje i avanture</title>
+    <style>
+      /* Prevent FOUC */
+      html {
+        font-size: 16px;
+      }
+      
+      body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        width: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* Prevent horizontal scroll */
+      * {
+        box-sizing: border-box;
+      }
+      
+      /* Responsive base font size */
+      @media (max-width: 768px) {
+        html {
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="text/javascript" src="js/jquery.1.11.1.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
+  </body>
+</html>

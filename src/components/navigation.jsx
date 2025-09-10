@@ -1,11 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Profile } from './Profile';
+import '../styles/Navigation.css';
 
 export const Navigation = (props) => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -24,16 +39,26 @@ export const Navigation = (props) => {
     }
   }, [localStorage.getItem('authToken')]);
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     setIsLoggedIn(false);
     setUser(null);
+    closeMenu();
     navigate('/');
   };
 
   const handleAboutClick = (e) => {
     e.preventDefault();
+    closeMenu();
     navigate("/");
     setTimeout(() => {
       const element = document.getElementById("about");
@@ -47,57 +72,53 @@ export const Navigation = (props) => {
     <nav id="menu" className="navbar navbar-default navbar-fixed-top">
       <div className="container">
         <div className="navbar-header">
-          <img  className="logo-navbar" src="../../img/logo_small.png" ></img>
+          <Link to="/" className="navbar-brand page-scroll" onClick={closeMenu}>
+            <img className="logo-navbar" src="/img/logo_small.png" alt="Hajki Logo" />
+          </Link>
           <button
             type="button"
-            className="navbar-toggle collapsed"
-            data-toggle="collapse"
-            data-target="#bs-example-navbar-collapse-1"
+            className={`navbar-toggle ${isMenuOpen ? 'active' : ''}`}
+            onClick={toggleMenu}
+            aria-expanded={isMenuOpen}
+            aria-controls="bs-example-navbar-collapse-1"
           >
-            {" "}
-            <span className="sr-only">Toggle navigation</span>{" "}
-            <span className="icon-bar"></span>{" "}
-            <span className="icon-bar"></span>{" "}
-            <span className="icon-bar"></span>{" "}
+            <span className="sr-only">Toggle navigation</span>
+            <span className="icon-bar"></span>
+            <span className="icon-bar"></span>
+            <span className="icon-bar"></span>
           </button>
         </div>
 
         <div
-          className="collapse navbar-collapse"
+          className={`collapse navbar-collapse ${isMenuOpen ? 'in' : ''}`}
           id="bs-example-navbar-collapse-1"
+          ref={menuRef}
         >
           <ul className="nav navbar-nav navbar-right">
             <li>
-              <Link to="/routes">
+              <Link to="/routes" className="page-scroll" onClick={closeMenu}>
                 Pretraži rute
               </Link>
             </li>
-            {/**
             <li>
-              <a href="#services" className="page-scroll">
-                Gde za vikend?
-              </a>
-            </li>
-            */}
-            <li>
-              <a href="#portfolio" className="page-scroll">
+              <a href="#portfolio" className="page-scroll" onClick={closeMenu}>
                 Mapa
               </a>
             </li>
             <li>
-              <a href="#about" className="page-scroll">
+              <a href="#about" className="page-scroll" onClick={closeMenu}>
                 Kontakt
               </a>
             </li>
             <li>
-              <a href="#about" className="page-scroll" onClick={handleAboutClick}>
+              <a href="#about" className="page-scroll" onClick={(e) => { handleAboutClick(e); closeMenu(); }}>
                 O nama
               </a>
             </li>
             {isLoggedIn ? (
               <>
                 <li>
-                  <Link to="/profile" className="page-scroll">
+                  <Link to="/profile" className="page-scroll" onClick={closeMenu}>
                     Moj profil
                   </Link>
                 </li>
@@ -107,7 +128,7 @@ export const Navigation = (props) => {
                   </a>
                 </li>
                 <li>
-                  <Link to="/profile" className="page-scroll">
+                  <Link to="/profile" className="page-scroll" onClick={closeMenu}>
                     <span className="username-badge">{user?.username}</span>
                   </Link>
                 </li>
@@ -115,12 +136,12 @@ export const Navigation = (props) => {
             ) : (
               <>
                 <li>
-                  <Link to="/login" className="page-scroll">
+                  <Link to="/login" className="page-scroll" onClick={closeMenu}>
                     Prijava
                   </Link>
                 </li>
                 <li>
-                  <Link to="/register" className="page-scroll">
+                  <Link to="/register" className="page-scroll" onClick={closeMenu}>
                     Registracija
                   </Link>
                 </li>
