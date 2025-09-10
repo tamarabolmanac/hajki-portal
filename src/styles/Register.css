@@ -3,25 +3,26 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0f2f5, #e0e5ec);
+  background: linear-gradient(135deg, #EFF5D2, #C6D870);
   padding: 2rem;
 }
 
 .register-form {
   background: white;
-  padding: 2rem;
+  padding: 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(85, 107, 47, 0.15);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  border-top: 4px solid #8FA31E;
 }
 
 .register-form h2 {
   text-align: center;
-  color: #1a73e8;
+  color: #556B2F !important;
   font-size: 2rem;
   margin-bottom: 1rem;
 }
@@ -34,52 +35,86 @@
 
 .form-group label {
   font-weight: 600;
-  color: #333;
+  color: #556B2F !important;
 }
 
-.form-control {
-  width: 100%;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
+/* Ultra specific selectors for form controls */
+.register-form .form-group .form-control,
+.register-form input.form-control,
+.register-container .register-form .form-control {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0.8rem !important;
+  border: 2px solid #C6D870 !important;
+  border-radius: 6px !important;
+  font-size: 1rem !important;
+  transition: border-color 0.3s ease !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  background-color: white !important;
 }
 
-.form-control:focus {
-  border-color: #1a73e8;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+.register-form .form-group .form-control:focus,
+.register-form input.form-control:focus,
+.register-container .register-form .form-control:focus {
+  border-color: #8FA31E !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(143, 163, 30, 0.2) !important;
 }
 
-.submit-button {
-  width: 100%;
-  padding: 1rem;
-  background: linear-gradient(135deg, #1a73e8, #1557b0);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.3s ease;
+/* Ultra specific selectors for submit button */
+.register-form button.submit-button,
+.register-form .submit-button,
+.register-container .register-form button.submit-button,
+.register-container .register-form .submit-button,
+button[type="submit"].submit-button {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 1rem !important;
+  background: linear-gradient(135deg, #8FA31E, #C6D870) !important;
+  background-color: #8FA31E !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease, background 0.3s ease !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
 }
 
-.submit-button:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #1557b0, #10408c);
+.register-form button.submit-button:hover,
+.register-form .submit-button:hover,
+.register-container .register-form button.submit-button:hover,
+.register-container .register-form .submit-button:hover,
+button[type="submit"].submit-button:hover {
+  transform: translateY(-2px) !important;
+  background: linear-gradient(135deg, #556B2F, #8FA31E) !important;
+  background-color: #556B2F !important;
 }
 
 .link {
   text-align: center;
-  color: #1a73e8;
+  color: #8FA31E;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .link:hover {
-  color: #1557b0;
+  color: #556B2F;
+}
+
+.link a {
+  color: #8FA31E;
+  text-decoration: none;
+}
+
+.link a:hover {
+  color: #556B2F;
 }
 
 .error-message {
@@ -92,10 +127,10 @@
 }
 
 .success-message {
-  color: #157347;
+  color: #556B2F;
   text-align: center;
   padding: 0.5rem;
   border-radius: 4px;
-  background-color: #d1e7dd;
+  background-color: #EFF5D2;
   margin-top: 1rem;
 }

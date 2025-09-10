@@ -86,20 +86,42 @@ export const Register = () => {
         })
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
+      // Check if response is successful
+      if (response.ok) {
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          // Store token and user data if provided
+          if (data.token) {
+            localStorage.setItem('authToken', data.token);
+          }
+          if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+          }
+        }
+        
+        // Show success message and redirect
+        setMessage('Registracija je uspešna! Preusmeravamo vas na login stranicu...');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        // Try to parse error response
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          throw new Error(data.message || 'Registracija neuspešna');
+        } else {
+          throw new Error('Registracija neuspešna');
+        }
       }
-
-      // Store token and user data in localStorage
-      localStorage.setItem('authToken', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
-      // Redirect to login page
-      navigate('/login');
     } catch (error) {
-      setMessage(error.message);
+      if (error.message.includes('JSON')) {
+        setMessage('Registracija je možda uspešna, ali došlo je do greške u komunikaciji. Pokušajte da se prijavite.');
+      } else {
+        setMessage(error.message);
+      }
     }
   };
 

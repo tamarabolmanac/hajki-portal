@@ -123,6 +123,34 @@
   transform: translateY(-2px);
 }
 
+/* HikeRoutes page styling */
+.hike-routes-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #EFF5D2, #C6D870);
+  padding: 2rem 0;
+}
+
+.hike-routes-content {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 0 auto;
+  max-width: 1200px;
+  box-shadow: 0 8px 25px rgba(85, 107, 47, 0.15);
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(85, 107, 47, 0.1);
+}
+
 /* Loading and Error states */
 .error-container,
 .loading-container {
