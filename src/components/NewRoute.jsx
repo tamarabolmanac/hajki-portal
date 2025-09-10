@@ -116,7 +116,7 @@ export const NewRoute = () => {
   return (
     <div className="new-route-container">
       <div className="route-form">
-        <h2>Add a New Hiking Route</h2>
+        <h2>Dodaj novu rutu</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Title:</label>

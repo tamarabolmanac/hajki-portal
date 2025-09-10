@@ -1,69 +1,83 @@
-/* Stilizovanje za login stranicu */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f7f7f7;
-  font-family: 'Arial', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #EFF5D2, #C6D870);
+  padding: 2rem;
 }
 
 .login-form {
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(85, 107, 47, 0.15);
   width: 100%;
-  max-width: 400px;
-  text-align: center;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-top: 4px solid #8FA31E;
 }
 
-.login-title {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #333;
+.login-form .login-title {
+  text-align: center;
+  color: #556B2F !important;
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
 .input-group {
-  margin-bottom: 15px;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .input-group label {
-  display: block;
-  font-size: 14px;
-  color: #777;
+  font-weight: 600;
+  color: #556B2F !important;
 }
 
-.input-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 5px;
-  font-size: 16px;
+.login-form .input-group input {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0.8rem !important;
+  border: 2px solid #C6D870 !important;
+  border-radius: 6px !important;
+  font-size: 1rem !important;
+  transition: border-color 0.3s ease !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  background-color: white !important;
 }
 
-.input-group input:focus {
-  outline: none;
-  border-color: #007bff;
+.login-form .input-group input:focus {
+  border-color: #8FA31E !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(143, 163, 30, 0.2) !important;
 }
 
 .login-button {
-  width: 100%;
-  padding: 12px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
+  width: 100% !important;
+  max-width: none !important;
+  padding: 1rem !important;
+  background: linear-gradient(135deg, #8FA31E, #C6D870) !important;
+  background-color: #8FA31E !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease, background 0.3s ease !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
 }
 
 .login-button:hover {
-  background-color: #0056b3;
-}
-
-.login-button:active {
-  background-color: #004080;
+  transform: translateY(-2px) !important;
+  background: linear-gradient(135deg, #556B2F, #8FA31E) !important;
+  background-color: #556B2F !important;
 }
