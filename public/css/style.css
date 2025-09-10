@@ -73,6 +73,14 @@ h2 {
   line-height: 1.2;
 }
 
+.page-title {
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-weight: 700;
+  color: #556B2F;
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin: 0;
+}
+
 h3 {
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 600;

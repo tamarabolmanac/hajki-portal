@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
 
 .new-route-container {
   max-width: 800px;
@@ -48,23 +47,6 @@
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.route-form h2 {
-  font-family: 'Playfair Display', serif;
-  color: #2f8555;
-  margin-bottom: 2rem;
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  background: linear-gradient(135deg, #2f8555, #1e40af);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 1rem 0;
-  border-bottom: 2px solid #2f8555;
-  margin-bottom: 2.5rem;
-}
 
 .route-form .form-group {
   margin-bottom: 1.2rem;

@@ -20,12 +20,6 @@
   gap: 1rem;
 }
 
-.menu-item-title {
-  font-size: 2rem;
-  color: #333;
-  margin: 0;
-  font-weight: 600;
-}
 
 .add-route-button {
   background-color: #8FA31E; /* Medium green */

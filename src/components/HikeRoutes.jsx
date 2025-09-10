@@ -47,7 +47,7 @@ export const HikeRoutes = (props) => {
     <div className="text-center">
       <div className="container">
         <div className="header-with-button">
-          <h2 className="menu-item-title">Pretraži rute</h2>
+          <h2 className="page-title">Pretraži rute</h2>
           <Link to="/new-route" className="add-route-button">
             + Dodaj rutu
           </Link>
