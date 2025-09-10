@@ -11,6 +11,30 @@ html {
   background-attachment: fixed;
   position: relative;
   line-height: 1.6;
+  margin: 0 !important; /* Reset margin */
+  padding: 0 !important; /* Reset padding */
+}
+
+/* Mobile body padding override to fix spacing issues */
+@media (max-width: 991px) {
+  body {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
 }
 
 body::before {
@@ -487,7 +511,7 @@ header .intro-text {
 
 /* About Section */
 #about {
-  padding: 100px 0;
+  padding: 10px 0;
 }
 
 #about h3 {

@@ -1,18 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Profile } from './Profile';
 import '../styles/Navigation.css';
 
 export const Navigation = (props) => {
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState(location.pathname); // State for active link
   const menuRef = useRef(null);
+  const buttonRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
         setIsMenuOpen(false);
       }
     };
@@ -21,6 +29,11 @@ export const Navigation = (props) => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    // Update active link on route change
+    setActiveLink(location.pathname);
+  }, [location.pathname]);
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -37,14 +50,21 @@ export const Navigation = (props) => {
     } else {
       setUser(null);
     }
-  }, [localStorage.getItem('authToken')]);
+  }, []); // Removed dependency to avoid re-renders on every storage change
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen(prevIsMenuOpen => !prevIsMenuOpen); // Toggle based on previous state
   };
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const handleLinkClick = (path) => {
+    if (path !== '/#about') {
+      setActiveLink(path);
+    }
+    closeMenu();
   };
 
   const handleLogout = () => {
@@ -52,12 +72,13 @@ export const Navigation = (props) => {
     localStorage.removeItem('user');
     setIsLoggedIn(false);
     setUser(null);
-    closeMenu();
+    handleLinkClick('/');
     navigate('/');
   };
 
   const handleAboutClick = (e) => {
     e.preventDefault();
+    setActiveLink('/#about'); // Set a unique identifier for 'O nama'
     closeMenu();
     navigate("/");
     setTimeout(() => {
@@ -72,13 +93,14 @@ export const Navigation = (props) => {
     <nav id="menu" className="navbar navbar-default navbar-fixed-top">
       <div className="container">
         <div className="navbar-header">
-          <Link to="/" className="navbar-brand page-scroll" onClick={closeMenu}>
+          <Link to="/" className="navbar-brand page-scroll" onClick={() => handleLinkClick('/')}>
             <img className="logo-navbar" src="/img/logo_small.png" alt="Hajki Logo" />
           </Link>
           <button
             type="button"
             className={`navbar-toggle ${isMenuOpen ? 'active' : ''}`}
             onClick={toggleMenu}
+            ref={buttonRef}
             aria-expanded={isMenuOpen}
             aria-controls="bs-example-navbar-collapse-1"
           >
@@ -96,7 +118,7 @@ export const Navigation = (props) => {
         >
           <ul className="nav navbar-nav navbar-right">
             <li>
-              <Link to="/routes" className="page-scroll" onClick={closeMenu}>
+              <Link to="/routes" className={`page-scroll ${activeLink === '/routes' ? 'active' : ''}`} onClick={() => handleLinkClick('/routes')}>
                 Pretraži rute
               </Link>
             </li>
@@ -111,14 +133,14 @@ export const Navigation = (props) => {
               </a>
             </li>
             <li>
-              <a href="#about" className="page-scroll" onClick={(e) => { handleAboutClick(e); closeMenu(); }}>
+              <a href="#about" className={`page-scroll ${activeLink === '/#about' ? 'active' : ''}`} onClick={handleAboutClick}>
                 O nama
               </a>
             </li>
             {isLoggedIn ? (
               <>
                 <li>
-                  <Link to="/profile" className="page-scroll" onClick={closeMenu}>
+                  <Link to="/profile" className={`page-scroll ${activeLink === '/profile' ? 'active' : ''}`} onClick={() => handleLinkClick('/profile')}>
                     Moj profil
                   </Link>
                 </li>
@@ -128,7 +150,7 @@ export const Navigation = (props) => {
                   </a>
                 </li>
                 <li>
-                  <Link to="/profile" className="page-scroll" onClick={closeMenu}>
+                  <Link to="/profile" className="page-scroll" onClick={() => handleLinkClick('/profile')}>
                     <span className="username-badge">{user?.username}</span>
                   </Link>
                 </li>
@@ -136,12 +158,12 @@ export const Navigation = (props) => {
             ) : (
               <>
                 <li>
-                  <Link to="/login" className="page-scroll" onClick={closeMenu}>
+                  <Link to="/login" className={`page-scroll ${activeLink === '/login' ? 'active' : ''}`} onClick={() => handleLinkClick('/login')}>
                     Prijava
                   </Link>
                 </li>
                 <li>
-                  <Link to="/register" className="page-scroll" onClick={closeMenu}>
+                  <Link to="/register" className={`page-scroll ${activeLink === '/register' ? 'active' : ''}`} onClick={() => handleLinkClick('/register')}>
                     Registracija
                   </Link>
                 </li>

@@ -44,7 +44,7 @@ export const HikeRoutes = (props) => {
   }
 
   return (
-    <div id="features" className="text-center">
+    <div className="text-center">
       <div className="container">
         <div className="header-with-button">
           <h2 className="menu-item-title">Pretraži rute</h2>

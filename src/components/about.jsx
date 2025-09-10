@@ -10,9 +10,9 @@ export const About = (props) => {
           </div>
           <div className="col-xs-12 col-md-6">
             <div className="about-text">
-              <h2>O nama</h2>
+              <h2>Hajki - mesto za ljubitelje prirode</h2>
               <p>
-                Hajki.rs je nastao sa idejom da svi obožavaoci prirode, na jednom mestu, pronađu odgovarajuće avanture za sebe, a pored toga i podele svoja iskustva sa drugima.
+                <b>Hajki</b> je nastao sa idejom da svi obožavaoci prirode, na jednom mestu, pronađu odgovarajuće avanture za sebe, a pored toga i podele svoja iskustva sa drugima.
                 Prvi sajt u Srbiji koji zaviruje u najsitnije kutke nacionalnih parkova i prirodnih rezervata, omogućavajući ljudima da se povežu i saznaju više o našoj zemlji i okolini.
               </p>
               <h3>Šta hajki.rs omogućava?</h3>
