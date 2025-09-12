@@ -42,6 +42,7 @@ export const RouteDetails = () => {
         return response.json();
       })
       .then(data => {
+        console.log('API Response for route:', data.data); // Debugging line
         setRoute(data.data);
         setLoading(false);
       })
@@ -102,6 +103,17 @@ export const RouteDetails = () => {
           <h2>Description</h2>
           <p>{route.description}</p>
         </div>
+
+        {route.image_urls && route.image_urls.length > 0 && (
+          <div className="route-images">
+            <h2>Slike</h2>
+            <div className="image-gallery">
+              {route.image_urls.map((imageUrl, index) => (
+                <img key={index} src={imageUrl} alt={`Route image ${index + 1}`} />
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="route-map">
           <h3>Map</h3>

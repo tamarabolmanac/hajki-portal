@@ -20,6 +20,7 @@ export const NewRoute = () => {
   const [minutes, setMinutes] = useState(0);
   const [difficulty, setDifficulty] = useState("");
   const [distance, setDistance] = useState("");
+  const [files, setFiles] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(DEFAULT_LOCATION);
   const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState("");
@@ -63,43 +64,38 @@ export const NewRoute = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-
+  
     try {
-      // Validate distance before sending
+      // Validate distance
       const distanceValue = parseFloat(distance);
-      if (isNaN(distanceValue)) {
-        setMessage("Please enter a valid distance");
+      if (isNaN(distanceValue) || distanceValue <= 0) {
+        setMessage("Please enter a valid distance greater than 0");
         return;
       }
-      if (distanceValue <= 0) {
-        setMessage("Distance must be greater than 0");
-        return;
-      }
-      if (distanceValue.toString().length > 10) {
-        setMessage("Distance is too large (max 10 digits including decimal point)");
-        return;
-      }
-
+  
+      // Filter duplicate files
+      const uniqueFiles = Array.from(files).filter((file, index, self) =>
+        index === self.findIndex(f => f.name === file.name && f.size === file.size)
+      );
+  
+      const formData = new FormData();
+      formData.append("hike_route[title]", title);
+      formData.append("hike_route[description]", description);
+      formData.append("hike_route[duration]", (hours * 60) + parseInt(minutes));
+      formData.append("hike_route[difficulty]", difficulty);
+      formData.append("hike_route[distance]", parseFloat(normalizeDecimal(distance)).toFixed(2));
+      formData.append("hike_route[location_latitude]", selectedLocation.lat);
+      formData.append("hike_route[location_longitude]", selectedLocation.lng);
+  
+      uniqueFiles.forEach(file => formData.append("hike_route[images][]", file));
+  
       const response = await fetch(`${config.apiUrl}/new_route`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          title,
-          description,
-          duration: (hours * 60) + parseInt(minutes), // Convert to total minutes
-          difficulty,
-          distance: parseFloat(normalizeDecimal(distance)).toFixed(2), // Format to 2 decimal places
-          location_latitude: selectedLocation.lat,
-          location_longitude: selectedLocation.lng
-        }),
+        body: formData
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to create route");
-      }
-
+  
+      if (!response.ok) throw new Error("Server error");
+  
       setMessage("Route created successfully!");
       setTitle("");
       setDescription("");
@@ -108,14 +104,15 @@ export const NewRoute = () => {
       setDifficulty("");
       setDistance("");
       setSelectedLocation(DEFAULT_LOCATION);
+      setFiles([]);
     } catch (err) {
       setMessage("Error: " + err.message);
     }
   };
-
+  
   return (
     <div className="new-route-container">
-      <div className="route-form section-title">
+      <div className="route-form">
         <h2>Dodaj novu rutu</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -219,6 +216,10 @@ export const NewRoute = () => {
                 <span>{parseFloat(distance).toFixed(2)}</span> km
               </div>
             )}
+          </div>
+
+          <div className="form-group">
+            <input type="file" multiple onChange={e => setFiles(e.target.files)} /> 
           </div>
 
           <div className="form-group">
