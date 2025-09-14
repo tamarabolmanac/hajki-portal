@@ -89,7 +89,7 @@ export const NewRoute = () => {
   
       uniqueFiles.forEach(file => formData.append("hike_route[images][]", file));
   
-      const response = await fetch(`${config.apiUrl}/new_route`, {
+      const response = await fetch(`https://upload.hajki.com/new_route`, { // ${config.apiUrl}/new_route 
         method: "POST",
         body: formData
       });
