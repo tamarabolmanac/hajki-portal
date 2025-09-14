@@ -31,6 +31,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .form-group label {
@@ -79,7 +80,7 @@ button[type="submit"].submit-button {
   cursor: pointer !important;
   transition: transform 0.2s ease, background 0.3s ease !important;
   box-sizing: border-box !important;
-  margin: 0 !important;
+  margin-top: 1rem !important;
   text-transform: none !important;
   letter-spacing: normal !important;
 }

@@ -70,7 +70,7 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button type="submit" className="login-button">Prijavite se</button>
+          <button type="submit" className="submit-button">Prijavite se</button>
         </form>
       </div>
     </div>

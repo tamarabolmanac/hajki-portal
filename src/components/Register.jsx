@@ -34,27 +34,27 @@ export const Register = () => {
     if (!formData.email.trim()) {
       errors.push('Email is required');
     } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) {
-      errors.push('Invalid email format');
+      errors.push('Neispravan email format');
     }
     
     if (!formData.password.trim()) {
-      errors.push('Password is required');
-    } else if (formData.password.length < 6) {
-      errors.push('Password must be at least 6 characters long');
+      errors.push('Lozinka je obavezna');
+    } else if (formData.password.length < 8) {
+      errors.push('Lozinka mora da sadrži najmanje 8 karaktera');
     }
     
     if (!formData.confirmPassword.trim()) {
-      errors.push('Confirm password is required');
+      errors.push('Potvrda lozinke je obavezna');
     } else if (formData.password !== formData.confirmPassword) {
-      errors.push('Passwords do not match');
+      errors.push('Lozinke se ne poklapaju');
     }
     
     if (!formData.city.trim()) {
-      errors.push('City is required');
+      errors.push('Grad je obavezan');
     }
     
     if (!formData.country.trim()) {
-      errors.push('Country is required');
+      errors.push('Država je obavezna');
     }
     
     return errors;
@@ -128,7 +128,7 @@ export const Register = () => {
   return (
     <div className="register-container">
       <div className="register-form">
-        <h2>Register</h2>
+        <h2>Registracija</h2>
         {message && (
           <div className={message.includes('failed') ? 'error-message' : 'success-message'}>
             {message}
@@ -136,7 +136,7 @@ export const Register = () => {
         )}
         <form onSubmit={handleRegister}>
           <div className="form-group">
-            <label>Name</label>
+            <label>Ime</label>
             <input
               type="text"
               name="name"
@@ -144,7 +144,7 @@ export const Register = () => {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Enter your name"
+              placeholder="Unesi svoje ime"
             />
           </div>
           <div className="form-group">
@@ -156,11 +156,11 @@ export const Register = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="Enter your email"
+              placeholder="Unesi svoj email"
             />
           </div>
           <div className="form-group">
-            <label>Password</label>
+            <label>Lozinka</label>
             <input
               type="password"
               name="password"
@@ -168,12 +168,12 @@ export const Register = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              placeholder="Enter your password"
+              placeholder="Unesi lozinku"
               minLength="6"
             />
           </div>
           <div className="form-group">
-            <label>Confirm Password</label>
+            <label>Potvrda lozinke</label>
             <input
               type="password"
               name="confirmPassword"
@@ -181,11 +181,11 @@ export const Register = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              placeholder="Confirm your password"
+              placeholder="Potvrdi lozinku"
             />
           </div>
           <div className="form-group">
-            <label>City</label>
+            <label>Grad</label>
             <input
               type="text"
               name="city"
@@ -193,11 +193,11 @@ export const Register = () => {
               value={formData.city}
               onChange={handleChange}
               required
-              placeholder="Enter your city"
+              placeholder="Unesi grad"
             />
           </div>
           <div className="form-group">
-            <label>Country</label>
+            <label>Država</label>
             <input
               type="text"
               name="country"
@@ -205,15 +205,15 @@ export const Register = () => {
               value={formData.country}
               onChange={handleChange}
               required
-              placeholder="Enter your country"
+              placeholder="Unesi državu"
             />
           </div>
           <button type="submit" className="submit-button">
-            Register
+            Registruj se
           </button>
         </form>
         <div className="link">
-          Already have an account? <a href="/login">Login</a>
+          Već imaš nalog? <a href="/login">Uloguj se</a>
         </div>
       </div>
     </div>

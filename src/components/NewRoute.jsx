@@ -69,7 +69,7 @@ export const NewRoute = () => {
       // Validate distance
       const distanceValue = parseFloat(distance);
       if (isNaN(distanceValue) || distanceValue <= 0) {
-        setMessage("Please enter a valid distance greater than 0");
+        setMessage("Molimo unesite validnu distancu, veću od 0");
         return;
       }
   
@@ -94,9 +94,9 @@ export const NewRoute = () => {
         body: formData
       });
   
-      if (!response.ok) throw new Error("Server error");
+      if (!response.ok) throw new Error("Greška na serveru");
   
-      setMessage("Route created successfully!");
+      setMessage("Ruta uspešno kreirana!");
       setTitle("");
       setDescription("");
       setHours(0);
@@ -116,7 +116,7 @@ export const NewRoute = () => {
         <h2>Dodaj novu rutu</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Title:</label>
+            <label>Naziv:</label>
             <input
               type="text"
               value={title}
@@ -127,7 +127,7 @@ export const NewRoute = () => {
           </div>
 
           <div className="form-group">
-            <label>Description:</label>
+            <label>Opis:</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -138,7 +138,7 @@ export const NewRoute = () => {
           </div>
 
           <div className="form-group duration-group">
-            <label>Duration:</label>
+            <label>Trajanje:</label>
             <div className="duration-inputs">
               <div className="duration-input">
                 <input
@@ -148,9 +148,9 @@ export const NewRoute = () => {
                   required
                   className="form-control"
                   min="0"
-                  placeholder="Hours"
+                  placeholder="Časova"
                 />
-                <span>hours</span>
+                <span>časova</span>
               </div>
               <div className="duration-input">
                 <input
@@ -161,31 +161,31 @@ export const NewRoute = () => {
                   className="form-control"
                   min="0"
                   max="59"
-                  placeholder="Minutes"
+                  placeholder="Minuta"
                 />
-                <span>minutes</span>
+                <span>minuta</span>
               </div>
             </div>
           </div>
 
           <div className="form-group">
-            <label>Difficulty:</label>
+            <label>Težina:</label>
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
               required
               className="form-control"
             >
-              <option value="">Select difficulty</option>
-              <option value="Easy">Easy</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Difficult">Difficult</option>
-              <option value="Expert">Expert</option>
+              <option value="">Izaberi težinu</option>
+              <option value="Easy">Laka</option>
+              <option value="Moderate">Srednja</option>
+              <option value="Difficult">Teška</option>
+              <option value="Expert">Napredna</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label>Distance (km):</label>
+            <label>Dužina (km):</label>
             <div className="distance-input">
               <input
                 type="number"
@@ -208,7 +208,7 @@ export const NewRoute = () => {
                 className="form-control"
                 min="0.01"
                 step="0.01"
-                placeholder="Enter distance in kilometers"
+                placeholder="Unesi dužinu u kilometrima"
               />
             </div>
             {distance && (
@@ -230,10 +230,10 @@ export const NewRoute = () => {
           </div>
 
           <p>
-            Selected: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
+            Izabrano: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
           </p>
 
-          <button type="submit" className="submit-button">Add Route</button>
+          <button type="submit" className="submit-button">Sačuvaj rutu</button>
           {message && (
             <p className={`message ${message.includes('Error') ? 'error' : 'success'}`}>
               {message}
@@ -242,7 +242,7 @@ export const NewRoute = () => {
         </form>
       </div>
     </div>
-  );
+  );  
 };
 
 export default NewRoute;

@@ -522,6 +522,12 @@ header .intro-text {
   padding: 10px 0;
 }
 
+#about .container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+
 #about h3 {
   font-size: 22px;
   margin: 0 0 20px;
