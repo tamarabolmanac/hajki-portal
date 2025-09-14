@@ -13,8 +13,9 @@ export const About = (props) => {
             <div className="about-text">
               <h2>Hajki - mesto za ljubitelje prirode</h2>
               <p>
-                <b>Hajki</b> je nastao sa idejom da svi obožavaoci prirode, na jednom mestu, pronađu odgovarajuće avanture za sebe, a pored toga i podele svoja iskustva sa drugima.
-                Prvi sajt u Srbiji koji zaviruje u najsitnije kutke nacionalnih parkova i prirodnih rezervata, omogućavajući ljudima da se povežu i saznaju više o našoj zemlji i okolini.
+                Mnogi od nas vole da provode slobodno vreme na svežem vazduhu, a često i da zabeleže to na fotografiji 🌱! 
+                Ponekad nije loše imati i mali dnevnik mesta koje smo posećivali, a još bolje, podeliti ta iskustva sa ostalima!
+                Zato smo napravili <b>Hajki</b>, da zajedno beležimo spontane trenutke na različitim lokacijama. 
               </p>
               <h3>Šta hajki.rs omogućava?</h3>
               <ul className="list-style">
