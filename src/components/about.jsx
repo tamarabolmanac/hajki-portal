@@ -3,9 +3,10 @@ import React from "react";
 export const About = (props) => {
   return (
     <div id="about">
+      
       <div className="container">
         <div className="row">
-          <div className="col-xs-12 col-md-6">
+          <div className="col-xs-11 col-md-6">
             <img src="img/about.jpg" className="img-responsive" alt="A person hiking in the mountains." />
           </div>
           <div className="col-xs-12 col-md-6">
