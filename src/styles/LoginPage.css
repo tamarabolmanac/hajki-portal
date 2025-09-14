@@ -71,13 +71,17 @@
   cursor: pointer !important;
   transition: transform 0.2s ease, background 0.3s ease !important;
   box-sizing: border-box !important;
-  margin: 0 !important;
   text-transform: none !important;
   letter-spacing: normal !important;
+  margin-top: 1rem;
 }
 
 .login-button:hover {
   transform: translateY(-2px) !important;
   background: linear-gradient(135deg, #556B2F, #8FA31E) !important;
   background-color: #556B2F !important;
+}
+
+.button-login {
+  margin-top: 1rem;
 }

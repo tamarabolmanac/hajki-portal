@@ -50,7 +50,6 @@
   font-size: 1rem !important;
   transition: border-color 0.3s ease !important;
   box-sizing: border-box !important;
-  margin: 0 !important;
   background-color: white !important;
 }
 
@@ -131,5 +130,9 @@ button[type="submit"].submit-button:hover {
   padding: 0.5rem;
   border-radius: 4px;
   background-color: #EFF5D2;
+  margin-top: 1rem;
+}
+
+.button-login {
   margin-top: 1rem;
 }

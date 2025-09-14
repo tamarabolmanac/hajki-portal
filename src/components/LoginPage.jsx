@@ -60,6 +60,7 @@ const LoginPage = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+          <br></br>
           <div className="input-group">
             <label htmlFor="password">Lozinka</label>
             <input
@@ -70,7 +71,8 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button type="submit" className="submit-button">Prijavite se</button>
+          <br></br>
+          <button type="submit" className="submit-button button-login">Prijavite se</button>
         </form>
       </div>
     </div>
