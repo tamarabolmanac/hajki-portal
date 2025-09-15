@@ -9,6 +9,7 @@ import { Gallery } from "./components/gallery";
 import { Testimonials } from "./components/testimonials";
 import { Team } from "./components/Team";
 import { NewRoute } from "./components/NewRoute";
+import { MyRoutes } from "./components/MyRoutes";
 import { Contact } from "./components/contact";
 import PrivateRoute from "./components/PrivateRoute"; 
 import LoginPage from "./components/LoginPage";
@@ -92,6 +93,16 @@ const App = () => {
                 <PrivateRoute>
                   <div className="content-container">
                     <NewRoute />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/my_routes"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <MyRoutes />
                   </div>
                 </PrivateRoute>
               }

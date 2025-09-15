@@ -122,15 +122,17 @@ export const Navigation = (props) => {
                 Pretraži rute
               </Link>
             </li>
+            {isLoggedIn && (
+              <li>
+                <Link to="/my_routes" className={`page-scroll ${activeLink === '/my_routes' ? 'active' : ''}`} onClick={() => handleLinkClick('/my_routes')}>
+                  Moje rute
+                </Link>
+              </li>
+            )}
             <li>
-              <a href="#portfolio" className="page-scroll" onClick={closeMenu}>
-                Mapa
-              </a>
-            </li>
-            <li>
-              <a href="#about" className="page-scroll" onClick={closeMenu}>
+              <Link to="/contact" className={`page-scroll ${activeLink === '/contact' ? 'active' : ''}`} onClick={() => handleLinkClick('/contact')}>
                 Kontakt
-              </a>
+              </Link>
             </li>
             <li>
               <a href="#about" className={`page-scroll ${activeLink === '/#about' ? 'active' : ''}`} onClick={handleAboutClick}>

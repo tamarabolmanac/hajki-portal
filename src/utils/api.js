@@ -4,6 +4,9 @@ const getAuthToken = () => localStorage.getItem('authToken');
 
 export const authenticatedFetch = async (url, options = {}) => {
   const token = getAuthToken();
+  
+  console.log('authenticatedFetch called with URL:', url); // Debug log
+  console.log('Token exists:', !!token); // Debug log
 
   const headers = {
     ...options.headers,
@@ -11,6 +14,7 @@ export const authenticatedFetch = async (url, options = {}) => {
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
+    console.log('Added Authorization header'); // Debug log
   }
 
   // The browser will automatically set the Content-Type for FormData.
@@ -25,12 +29,18 @@ export const authenticatedFetch = async (url, options = {}) => {
   } else {
     fullUrl = `${config.apiUrl}${url}`;
   }
+  
+  console.log('Making request to:', fullUrl); // Debug log
+  console.log('Headers:', headers); // Debug log
 
   try {
     const response = await fetch(fullUrl, {
       ...options,
       headers,
     });
+    
+    console.log('Response status:', response.status); // Debug log
+    console.log('Response headers:', response.headers); // Debug log
 
     // Check if response is JSON
     const contentType = response.headers.get('content-type');

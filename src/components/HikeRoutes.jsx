@@ -1,17 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { authenticatedFetch } from '../utils/api';
+import { config } from '../config';
+import { isAuthenticated } from '../utils/auth';
 import '../styles/HikeRoutes.css'
 
 export const HikeRoutes = (props) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const userIsAuthenticated = isAuthenticated();
 
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        const data = await authenticatedFetch('/routes');
+        // Fetch all routes - no authentication required for viewing
+        const response = await fetch(`${config.apiUrl}/routes`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to fetch routes');
+        }
+        
         setData(data.data);
       } catch (error) {
         setError(error.message);
@@ -45,13 +54,15 @@ export const HikeRoutes = (props) => {
       <div className="container">
         <div className="header-with-button">
           <h2 className="page-title">Pretraži rute</h2>
-          <Link to="/new-route" className="add-route-button">
-            + Dodaj rutu
-          </Link>
+          {userIsAuthenticated && (
+            <Link to="/new-route" className="add-route-button">
+              + Dodaj rutu
+            </Link>
+          )}
         </div>
 
         <div className="hike-cards-container">
-          {data.map((hike, index) => (
+          {data && data.map((hike, index) => (
             <div key={`${hike.title}-${index}`} className="hike-card">
               <div className="hike-card-content">
                 <h3 className="hike-title">{hike.title}</h3>
