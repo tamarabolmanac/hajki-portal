@@ -1,32 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
-import { config } from '../config';
+import { authenticatedFetch } from '../utils/api';
 import LocationTracker from './LocationTracker';
 
-// Helper function to get auth token from localStorage
-const getAuthToken = () => localStorage.getItem('authToken');
-
-// Helper function to make authenticated fetch requests
-const authenticatedFetch = async (url) => {
-  try {
-    const token = getAuthToken();
-    const response = await fetch(`${config.apiUrl}${url}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  } catch (error) {
-    console.error('Error in authenticatedFetch:', error);
-    throw error;
-  }
-};
 
 export const Profile = () => {
   const [userDetails, setUserDetails] = useState(null);
@@ -36,25 +12,13 @@ export const Profile = () => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const token = getAuthToken();
+        const token = localStorage.getItem('authToken');
         if (!token) {
           window.location.href = '/login';
           return;
         }
         
-        const response = await fetch(`${config.apiUrl}/user_data`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const userDetails = await response.json();
+        const userDetails = await authenticatedFetch('/user_data');
         setUserDetails(userDetails);
         localStorage.setItem('userDetails', JSON.stringify(userDetails));
       } catch (err) {

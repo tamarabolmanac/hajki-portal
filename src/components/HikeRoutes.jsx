@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { config } from '../config';
+import { authenticatedFetch } from '../utils/api';
 import '../styles/HikeRoutes.css'
 
 export const HikeRoutes = (props) => {
@@ -9,21 +9,18 @@ export const HikeRoutes = (props) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${config.apiUrl}/routes`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
+    const fetchRoutes = async () => {
+      try {
+        const data = await authenticatedFetch('/routes');
         setData(data.data);
-        setLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         setError(error.message);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchRoutes();
   }, []);
 
   if (error) {

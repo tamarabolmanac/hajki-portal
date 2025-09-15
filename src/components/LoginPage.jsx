@@ -5,11 +5,14 @@ import '../styles/LoginPage.css'
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setErrorMessage(""); // Clear previous errors
+
     if (!email || !password) {
-      alert("Molimo vas da unesete podatke.");
+      setErrorMessage("Molimo vas da unesete podatke.");
       return;
     }
 
@@ -17,20 +20,17 @@ const LoginPage = () => {
       const response = await fetch(`${config.apiUrl}/auth/login`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
-        body: new URLSearchParams({
-          'auth[email]': email,
-          'auth[password]': password
+        body: JSON.stringify({
+          auth: { email, password }
         })
       });
 
       const data = await response.json();
       console.log('Login response:', data); // Debug log
       
-      if (data.status !== 200) {
-        console.log('Login error:', data);
-        debugger
+      if (!response.ok) {
         throw new Error(data.message || 'Invalid credentials');
       }
       
@@ -41,7 +41,7 @@ const LoginPage = () => {
       // Redirect to home page
       window.location.href = '/';
     } catch (error) {
-      alert(error.message);
+      setErrorMessage(error.message);
     }
   };
 
@@ -49,6 +49,7 @@ const LoginPage = () => {
     <div className="login-container">
       <div className="login-form">
         <h2 className="login-title">Prijavite se</h2>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
         <form onSubmit={handleLogin}>
           <div className="input-group">
             <label htmlFor="email">Email</label>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SelectableMap from './SelectableMap';
-import { config } from '../config';
+import { authenticatedFetch } from '../utils/api';
 import '../styles/NewRoute.css';
 
 const DEFAULT_LOCATION = {
@@ -89,12 +89,14 @@ export const NewRoute = () => {
   
       uniqueFiles.forEach(file => formData.append("hike_route[images][]", file));
   
-      const response = await fetch(`https://upload.hajki.com/new_route`, { // ${config.apiUrl}/new_route 
-        method: "POST",
-        body: formData
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      const url = isDevelopment ? '/new_route' : 'https://upload.hajki.com/new_route';
+      
+      await authenticatedFetch(url, {
+        method: 'POST',
+        body: formData,
+        useProductionUrl: !isDevelopment,
       });
-  
-      if (!response.ok) throw new Error("Greška na serveru");
   
       setMessage("Ruta uspešno kreirana!");
       setTitle("");

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import '../styles/RouteDetails.css';
+import { authenticatedFetch } from '../utils/api';
 import { config } from '../config';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 
@@ -34,22 +35,19 @@ export const RouteDetails = () => {
     setLoading(true);
     setError(null);
 
-    fetch(`${config.apiUrl}/routes/${id}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
+    const fetchRouteDetails = async () => {
+      try {
+        const data = await authenticatedFetch(`/routes/${id}`);
         console.log('API Response for route:', data.data); // Debugging line
         setRoute(data.data);
-        setLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         setError(error.message);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchRouteDetails();
   }, [id]);
 
   const isValidCoordinates = route &&
