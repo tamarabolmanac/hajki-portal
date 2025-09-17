@@ -1,0 +1,112 @@
+/* Contact Section with Background Image */
+#contact {
+  position: relative;
+  min-height: 100vh;
+  background-image: url('../../public/img/routes.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Ensure content is above the background */
+#contact .container {
+  position: relative;
+  z-index: 2;
+  padding: 80px 0;
+}
+
+/* Style the content area */
+.contact-content {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contact-content h3 {
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-weight: 700;
+  color: #1F3F1F;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+}
+
+.contact-content h3:first-child {
+  margin-top: 0;
+}
+
+.contact-content p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.contact-list {
+  list-style: none;
+  padding: 0;
+}
+
+.contact-list li {
+  position: relative;
+  padding: 12px 0;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #444;
+  border-bottom: 1px solid rgba(85, 107, 47, 0.1);
+}
+
+.contact-list li:last-child {
+  border-bottom: none;
+}
+
+.contact-list strong {
+  color: #556B2F;
+  font-weight: 600;
+}
+
+.contact-title {
+  color: #1F3F1F;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #contact {
+    background-attachment: scroll;
+  }
+  
+  .contact-content {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  #contact .container {
+    padding: 40px 0;
+  }
+  
+  .contact-content h3 {
+    font-size: 1.5rem;
+  }
+  
+  .contact-content p {
+    font-size: 1rem;
+  }
+  
+  .contact-list li {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contact-content {
+    padding: 25px 15px;
+    margin: 10px;
+  }
+}

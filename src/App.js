@@ -107,6 +107,11 @@ const App = () => {
                 </PrivateRoute>
               }
             />
+            <Route path="/contact" element={
+              <div className="content-container">
+                <Contact />
+              </div>
+            } />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<Register />} />
           </Routes>

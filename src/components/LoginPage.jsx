@@ -27,11 +27,44 @@ const LoginPage = () => {
         })
       });
 
-      const data = await response.json();
-      console.log('Login response:', data); // Debug log
-      
+      // Check if response is successful first
       if (!response.ok) {
-        throw new Error(data.message || 'Invalid credentials');
+        let data;
+        try {
+          data = await response.json();
+        } catch (e) {
+          // If we can't parse JSON, use generic error
+          throw new Error('Greška pri prijavljivanju. Pokušajte ponovo.');
+        }
+        
+        console.log('Login error response:', data); // Debug log
+        
+        // Handle different error cases based on server response
+        let errorMessage = 'Greška pri prijavljivanju. Pokušajte ponovo.';
+        
+        if (response.status === 401) {
+          // For 401, assume it's either user not found or wrong password
+          // Default to user not found for non-existent emails
+          errorMessage = 'Korisnik sa ovim email-om ne postoji. Molimo registrujte se prvo.';
+        } else if (response.status === 404) {
+          errorMessage = 'Korisnik sa ovim email-om ne postoji. Molimo registrujte se prvo.';
+        } else if (response.status === 422) {
+          errorMessage = 'Neispravni podaci. Proverite format email-a.';
+        } else if (data.message) {
+          // Use server message if available
+          errorMessage = data.message;
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      // Only parse JSON if response was successful
+      const data = await response.json();
+      console.log('Login success response:', data); // Debug log
+      
+      // Check if token exists in response
+      if (!data.token) {
+        throw new Error('Došlo je do neočekivane greške. Molimo pokušajte ponovo za nekoliko trenutaka.');
       }
       
       // Store only token in localStorage
@@ -41,6 +74,7 @@ const LoginPage = () => {
       // Redirect to home page
       window.location.href = '/';
     } catch (error) {
+      console.error('Login error:', error);
       setErrorMessage(error.message);
     }
   };

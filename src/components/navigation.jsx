@@ -151,11 +151,6 @@ export const Navigation = (props) => {
                     Odjavi se
                   </a>
                 </li>
-                <li>
-                  <Link to="/profile" className="page-scroll" onClick={() => handleLinkClick('/profile')}>
-                    <span className="username-badge">{user?.username}</span>
-                  </Link>
-                </li>
               </>
             ) : (
               <>
