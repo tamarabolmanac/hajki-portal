@@ -1,0 +1,119 @@
+/* About Section with Background Image */
+#about {
+  position: relative;
+  min-height: 100vh;
+  background-image: url('../../public/img/hike.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Dark overlay for better text readability */
+#about::before {
+  content: '';
+  position: absolute;   
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(85, 107, 47, 0.3); /* Light green overlay */
+  z-index: 1;
+}
+
+/* Ensure content is above the overlay */
+#about .container {
+  position: relative;
+  z-index: 2;
+  padding: 80px 0;
+}
+
+/* Style the content area */
+#about .row {
+  display: flex;
+  align-items: center;
+  min-height: 80vh;
+}
+
+/* Hide the original image since we're using it as background */
+#about img {
+  display: none;
+}
+
+/* Style the text content */
+.about-text {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.about-text h3 {
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-weight: 700;
+  color: #556B2F;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 1rem;
+  margin-top: 1.5rem;
+}
+
+.about-text p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.about-text b {
+  color: #556B2F;
+  font-weight: 700;
+}
+
+.list-style {
+  list-style: none;
+  padding: 0;
+}
+
+.list-style li {
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #444;
+}
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #about {
+    background-attachment: scroll;
+  }
+  
+  .about-text {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  #about .container {
+    padding: 40px 0;
+  }
+  
+  .about-text h3 {
+    font-size: 1.5rem;
+  }
+  
+  .about-text p {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-text {
+    padding: 25px 15px;
+    margin: 10px;
+  }
+}
