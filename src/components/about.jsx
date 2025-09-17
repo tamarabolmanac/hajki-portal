@@ -7,11 +7,10 @@ export const About = (props) => {
       <div className="container">
         <div className="row">
           <div className="col-xs-11 col-md-6">
-            <img src="img/about.jpg" className="img-responsive" alt="A person hiking in the mountains." />
+            <img src="img/hello.png" className="img-responsive" alt="A person hiking in the mountains." />
           </div>
           <div className="col-xs-12 col-md-6">
             <div className="about-text">
-              <h2>Hajki - mesto za ljubitelje prirode</h2>
               <p>
                 Mnogi od nas vole da provode slobodno vreme na svežem vazduhu, a često i da zabeleže to na fotografiji 🌱! 
                 Ponekad nije loše imati i mali dnevnik mesta koje smo posećivali, a još bolje, podeliti ta iskustva sa ostalima!
