@@ -25,6 +25,7 @@ export const NewRoute = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLocationChange = (lat, lng) => {
     setSelectedLocation({ lat, lng });
@@ -64,12 +65,14 @@ export const NewRoute = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+    setIsLoading(true);
   
     try {
       // Validate distance
       const distanceValue = parseFloat(distance);
       if (isNaN(distanceValue) || distanceValue <= 0) {
         setMessage("Molimo unesite validnu distancu, veću od 0");
+        setIsLoading(false);
         return;
       }
   
@@ -109,6 +112,8 @@ export const NewRoute = () => {
       setFiles([]);
     } catch (err) {
       setMessage("Error: " + err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -235,7 +240,16 @@ export const NewRoute = () => {
             Izabrano: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
           </p>
 
-          <button type="submit" className="submit-button">Sačuvaj rutu</button>
+          <button type="submit" className="submit-button" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <span className="loading-spinner"></span>
+                Čuvanje...
+              </>
+            ) : (
+              'Sačuvaj rutu'
+            )}
+          </button>
           {message && (
             <p className={`message ${message.includes('Error') ? 'error' : 'success'}`}>
               {message}
