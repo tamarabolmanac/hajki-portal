@@ -134,3 +134,14 @@ button[type="submit"].submit-button:hover {
   background-color: #EFF5D2;
   margin-top: 1rem;
 }
+
+/* Soft red outlined message (e.g., duplicate email - 409) */
+.conflict-message {
+  color: #b02a37; /* slightly softer than pure danger red */
+  text-align: center;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  background-color: #fff9f9; /* very light red background */
+  border: 1px solid #f1b0b7; /* soft red outline */
+  margin-top: 1rem;
+}

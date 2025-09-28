@@ -43,13 +43,18 @@ const LoginPage = () => {
         let errorMessage = 'Greška pri prijavljivanju. Pokušajte ponovo.';
         
         if (response.status === 401) {
-          // For 401, assume it's either user not found or wrong password
-          // Default to user not found for non-existent emails
-          errorMessage = 'Korisnik sa ovim email-om ne postoji. Molimo registrujte se prvo.';
+          // Check if error is about unconfirmed email
+          if (data.message && data.message.toLowerCase().includes('confirm')) {
+            errorMessage = 'Vaš nalog nije potvrđen. Proverite email i kliknite na link za potvrdu.';
+          } else {
+            errorMessage = 'Korisnik sa ovim email-om ne postoji. Molimo registrujte se prvo.';
+          }
         } else if (response.status === 404) {
           errorMessage = 'Korisnik sa ovim email-om ne postoji. Molimo registrujte se prvo.';
         } else if (response.status === 422) {
           errorMessage = 'Neispravni podaci. Proverite format email-a.';
+        } else if (response.status === 403) {
+          errorMessage = 'Vaš nalog nije potvrđen. Proverite email i kliknite na link za potvrdu.';
         } else if (data.message) {
           // Use server message if available
           errorMessage = data.message;

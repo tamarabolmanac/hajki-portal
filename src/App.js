@@ -15,6 +15,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import LoginPage from "./components/LoginPage";
 import Register from "./components/Register";
 import { Profile } from "./components/Profile";
+import EmailConfirmation from "./components/EmailConfirmation";
 import JsonData from "./data/data.json";
 import { LoadScript } from '@react-google-maps/api';
 import { REACT_APP_GOOGLE_MAPS_API_KEY } from './config';
@@ -112,6 +113,7 @@ const App = () => {
                 <Contact />
               </div>
             } />
+            <Route path="/confirm/:token" element={<EmailConfirmation />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<Register />} />
           </Routes>

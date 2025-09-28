@@ -1,0 +1,125 @@
+/* Email Confirmation Page Styles */
+.email-confirmation-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #EFF5D2, #C6D870);
+  padding: 2rem;
+}
+
+.confirmation-content {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.confirmation-content h2 {
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-weight: 700;
+  color: #556B2F;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 2rem;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #C6D870;
+  border-radius: 50%;
+  border-top-color: #556B2F;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.message {
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+
+.message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.message p {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.redirect-info {
+  font-size: 0.9rem !important;
+  color: #666 !important;
+  font-style: italic;
+}
+
+.action-links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.action-links a {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #8FA31E 0%, #C6D870 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.action-links a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(143, 163, 30, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .confirmation-content {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .action-links {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-links a {
+    width: 200px;
+  }
+}

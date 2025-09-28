@@ -14,6 +14,7 @@ export const Register = () => {
     country: ''
   });
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' | 'error' | 'conflict'
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -66,6 +67,7 @@ export const Register = () => {
     const validationErrors = validateForm();
     if (validationErrors.length > 0) {
       setMessage(validationErrors.join('\n'));
+      setMessageType('error');
       return;
     }
 
@@ -92,35 +94,49 @@ export const Register = () => {
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
           const data = await response.json();
-          // Store token and user data if provided
-          if (data.token) {
-            localStorage.setItem('authToken', data.token);
-          }
-          if (data.user) {
-            localStorage.setItem('user', JSON.stringify(data.user));
-          }
+          // Don't store token immediately - user needs to confirm email first
         }
         
-        // Show success message and redirect
-        setMessage('Registracija je uspešna! Preusmeravamo vas na login stranicu...');
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
+        // Show email confirmation message
+        setMessage('Registracija je uspešna! Proverite svoj email i kliknite na link za potvrdu da biste aktivirali nalog.');
+        setMessageType('success');
+        // Don't redirect automatically - user needs to confirm email first
       } else {
         // Try to parse error response
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
           const data = await response.json();
-          throw new Error(data.message || 'Registracija neuspešna');
+          if (response.status === 409) {
+            // Duplicate email case -> show softly red outlined notification
+            const msg = data.message || (Array.isArray(data.errors) ? data.errors.join('\n') : 'Email je već zauzet');
+            setMessage(msg);
+            setMessageType('conflict');
+            return;
+          }
+          if (response.status === 422) {
+            const msg = Array.isArray(data.errors) ? data.errors.join('\n') : (data.message || 'Registracija neuspešna');
+            setMessage(msg);
+            setMessageType('error');
+            return;
+          }
+          // Fallback for other statuses
+          const fallback = data.message || data.error || 'Registracija neuspešna';
+          setMessage(fallback);
+          setMessageType('error');
+          return;
         } else {
-          throw new Error('Registracija neuspešna');
+          setMessage('Registracija neuspešna');
+          setMessageType('error');
+          return;
         }
       }
     } catch (error) {
       if (error.message.includes('JSON')) {
         setMessage('Registracija je možda uspešna, ali došlo je do greške u komunikaciji. Pokušajte da se prijavite.');
+        setMessageType('error');
       } else {
         setMessage(error.message);
+        setMessageType('error');
       }
     }
   };
@@ -130,7 +146,11 @@ export const Register = () => {
       <div className="register-form">
         <h2>Registracija</h2>
         {message && (
-          <div className={message.includes('failed') ? 'error-message' : 'success-message'}>
+          <div className={
+            messageType === 'success' ? 'success-message'
+            : messageType === 'conflict' ? 'conflict-message'
+            : 'error-message'
+          }>
             {message}
           </div>
         )}
