@@ -114,6 +114,7 @@ const App = () => {
               </div>
             } />
             <Route path="/confirm/:token" element={<EmailConfirmation />} />
+            <Route path="/confirm" element={<EmailConfirmation />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<Register />} />
           </Routes>

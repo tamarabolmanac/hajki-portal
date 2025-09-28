@@ -1,33 +1,81 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { config } from '../config';
+import '../styles/EmailConfirmation.css';
 
-export default function EmailConfirmation() {
+export const EmailConfirmation = () => {
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const { token } = useParams();
   const navigate = useNavigate();
-  const [message, setMessage] = useState("Confirming your account...");
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
+    const confirmEmail = async () => {
+      // Get token from URL params (/confirm/:token) or query string (/confirm?token=...)
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryToken = urlParams.get('token');
+      const finalToken = token || queryToken;
+      
+      if (!finalToken) {
+        setMessage('Neispravan link za potvrdu.');
+        setIsLoading(false);
+        return;
+      }
 
-    if (!token) {
-      setMessage("Invalid token.");
-      return;
-    }
-    fetch(`https://api.hajki.com/users/confirm?token=${token}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Invalid token");
-        return res.json(); // prosleđuje data u sledeći .then
-      })
-      .then(data => {
-        setMessage(data.message);
-        setTimeout(() => navigate("/login"), 2000); // redirect
-      })
-      .catch(err => setMessage(err.message || "Something went wrong."));
-    
-  }, [navigate]);
+      try {
+        const response = await fetch(`${config.apiUrl}/auth/confirm_email/${finalToken}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
 
-  return <div>{message}</div>;
-}
+        const data = await response.json();
+
+        if (response.ok) {
+          setMessage('Email je uspešno potvrđen! Sada možete da se prijavite.');
+          setTimeout(() => {
+            navigate('/login');
+          }, 3000);
+        } else {
+          setMessage(data.message || 'Greška pri potvrdi email-a. Link je možda istekao.');
+        }
+      } catch (error) {
+        setMessage('Došlo je do greške. Pokušajte ponovo.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    confirmEmail();
+  }, [token, navigate]);
+
+  return (
+    <div className="email-confirmation-container">
+      <div className="confirmation-content">
+        <h2>Potvrda email adrese</h2>
+        {isLoading ? (
+          <div className="loading">
+            <div className="loading-spinner"></div>
+            <p>Potvrđujemo vaš email...</p>
+          </div>
+        ) : (
+          <div className={`message ${message.includes('uspešno') ? 'success' : 'error'}`}>
+            <p>{message}</p>
+            {message.includes('uspešno') && (
+              <p className="redirect-info">Preusmeravamo vas na stranicu za prijavu...</p>
+            )}
+            {!message.includes('uspešno') && (
+              <div className="action-links">
+                <a href="/register">Registruj se ponovo</a>
+                <a href="/login">Idi na prijavu</a>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default EmailConfirmation;
