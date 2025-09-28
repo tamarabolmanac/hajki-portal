@@ -23,7 +23,7 @@ export const EmailConfirmation = () => {
       }
 
       try {
-        const response = await fetch(`${config.apiUrl}/users/confirm?token=${finalToken}`, {
+        const response = await fetch(`${config.apiUrl}/users/confirm/${finalToken}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
