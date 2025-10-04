@@ -9,6 +9,8 @@ export const MyRoutes = () => {
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [deleting, setDeleting] = useState(null);
   const userIsAuthenticated = isAuthenticated();
 
   useEffect(() => {
@@ -39,6 +41,36 @@ export const MyRoutes = () => {
 
     fetchMyRoutes();
   }, [userIsAuthenticated]);
+
+  const handleDeleteRoute = async (routeId) => {
+    setDeleting(routeId);
+    try {
+      const response = await authenticatedFetch(`/routes/${routeId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.status === 200) {
+        // Remove the deleted route from the state
+        setRoutes(prevRoutes => prevRoutes.filter(route => route.id !== routeId));
+        setDeleteConfirm(null);
+      } else {
+        setError(response.message || 'Greška pri brisanju rute');
+      }
+    } catch (error) {
+      console.error('Error deleting route:', error);
+      setError('Greška pri brisanju rute');
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const confirmDelete = (route) => {
+    setDeleteConfirm(route);
+  };
+
+  const cancelDelete = () => {
+    setDeleteConfirm(null);
+  };
 
   if (!userIsAuthenticated) {
     return (
@@ -126,9 +158,42 @@ export const MyRoutes = () => {
                   <button className="edit-route-btn">
                     Uredi
                   </button>
+                  <button 
+                    className="delete-route-btn"
+                    onClick={() => confirmDelete(route)}
+                    disabled={deleting === route.id}
+                  >
+                    {deleting === route.id ? 'Brisanje...' : 'Obriši'}
+                  </button>
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        
+        {/* Delete Confirmation Modal */}
+        {deleteConfirm && (
+          <div className="delete-modal-overlay">
+            <div className="delete-modal">
+              <h3>Potvrda brisanja</h3>
+              <p>Da li ste sigurni da želite da obrišete rutu <strong>"{deleteConfirm.title}"</strong>?</p>
+              <p className="delete-warning">Ova akcija se ne može poništiti.</p>
+              <div className="delete-modal-buttons">
+                <button 
+                  className="cancel-delete-btn"
+                  onClick={cancelDelete}
+                >
+                  Otkaži
+                </button>
+                <button 
+                  className="confirm-delete-btn"
+                  onClick={() => handleDeleteRoute(deleteConfirm.id)}
+                  disabled={deleting === deleteConfirm.id}
+                >
+                  {deleting === deleteConfirm.id ? 'Brisanje...' : 'Obriši rutu'}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
