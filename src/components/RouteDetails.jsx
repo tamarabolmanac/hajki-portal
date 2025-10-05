@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/RouteDetails.css';
 import { authenticatedFetch } from '../utils/api';
 import { config } from '../config';
 import { GoogleMap, Marker } from '@react-google-maps/api';
+import RouteTracker from './RouteTracker';
 
 // Placeholder dok se mapa učitava
 const MapPlaceholder = () => {
@@ -24,7 +25,9 @@ export const RouteDetails = () => {
   const [route, setRoute] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showTracker, setShowTracker] = useState(false);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!id) {
@@ -85,6 +88,25 @@ export const RouteDetails = () => {
     lng: Number(route.location_longitude)
   };
 
+  const handleStartTracking = () => {
+    setShowTracker(true);
+  };
+
+  const handleStopTracking = () => {
+    setShowTracker(false);
+  };
+
+  // If tracker is shown, render only the tracker
+  if (showTracker) {
+    return (
+      <RouteTracker 
+        routeId={id}
+        onTrackingStart={() => console.log('Tracking started for route:', id)}
+        onTrackingStop={handleStopTracking}
+      />
+    );
+  }
+
   return (
     <div className="route-details-container">
       <div className="route-header">
@@ -93,6 +115,25 @@ export const RouteDetails = () => {
           <span className="route-duration">Duration: {formatDuration(route.duration)}</span>
           <span className="route-difficulty">Difficulty: {route.difficulty}</span>
           <span className="route-distance">Distance: {route.distance}km</span>
+        </div>
+        
+        {/* Tracking Button */}
+        <div className="route-actions" style={{ marginTop: '15px' }}>
+          <button 
+            onClick={handleStartTracking}
+            style={{
+              background: '#007bff',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '16px',
+              fontWeight: 'bold'
+            }}
+          >
+            🗺️ Start Route Tracking
+          </button>
         </div>
       </div>
 
