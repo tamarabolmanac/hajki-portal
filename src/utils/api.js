@@ -1,4 +1,5 @@
 import { config } from '../config';
+import { handleSessionExpired } from './authHandler';
 
 const getAuthToken = () => localStorage.getItem('authToken');
 
@@ -41,6 +42,13 @@ export const authenticatedFetch = async (url, options = {}) => {
     
     console.log('Response status:', response.status); // Debug log
     console.log('Response headers:', response.headers); // Debug log
+
+    // Handle 401 Unauthorized - session expired
+    if (response.status === 401) {
+      console.log('Session expired (401), handling logout...');
+      handleSessionExpired();
+      throw new Error('Session expired. Please log in again.');
+    }
 
     // Check if response is JSON
     const contentType = response.headers.get('content-type');

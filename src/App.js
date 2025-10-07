@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { Navigation } from "./components/navigation";
 import { HikeRoutes } from "./components/HikeRoutes";
 import { RouteDetails } from "./components/RouteDetails";
@@ -16,6 +16,8 @@ import LoginPage from "./components/LoginPage";
 import Register from "./components/Register";
 import { Profile } from "./components/Profile";
 import EmailConfirmation from "./components/EmailConfirmation";
+import InstallPWA from "./components/InstallPWA";
+import { setNavigate } from "./utils/authHandler";
 import JsonData from "./data/data.json";
 import { LoadScript } from '@react-google-maps/api';
 import { REACT_APP_GOOGLE_MAPS_API_KEY } from './config';
@@ -23,12 +25,16 @@ import "./App.css";
 import "./styles/main.css";
 import { config } from './config';
 
-const App = () => {
+// Wrapper component to access useNavigate
+const AppContent = () => {
+  const navigate = useNavigate();
   const [landingPageData, setLandingPageData] = useState({});
 
   useEffect(() => {
     setLandingPageData(JsonData);
-  }, []);
+    // Set navigate function for auth handler
+    setNavigate(navigate);
+  }, [navigate]);
 
   return (
     <LoadScript
@@ -36,7 +42,7 @@ const App = () => {
       libraries={['places']}
       id="google-map-script"
     >
-      <Router>
+      <div>
         <Navigation />
         <div className="main-content">
           <Routes>
@@ -119,8 +125,17 @@ const App = () => {
             <Route path="/register" element={<Register />} />
           </Routes>
         </div>
-      </Router>
+      </div>
     </LoadScript>
+  );
+};
+
+// Main App component with Router wrapper
+const App = () => {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 };
 

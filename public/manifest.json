@@ -58,5 +58,22 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "categories": ["travel", "sports", "outdoor", "navigation"],
-  "lang": "sr"
+  "lang": "sr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "New Route",
+      "short_name": "New Route",
+      "description": "Create a new hiking route",
+      "url": "/new-route",
+      "icons": [{ "src": "favicon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "My Routes",
+      "short_name": "My Routes",
+      "description": "View your hiking routes",
+      "url": "/my-routes",
+      "icons": [{ "src": "favicon-96x96.png", "sizes": "96x96" }]
+    }
+  ]
 }
