@@ -74,6 +74,7 @@ const LoginPage = () => {
       
       // Store only token in localStorage
       localStorage.setItem('authToken', data.token);
+      localStorage.setItem('userID', data.user_id);
       // We don't have user data in the login response, so we'll fetch it later in Profile component
 
       // Redirect to home page

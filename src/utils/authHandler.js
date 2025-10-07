@@ -29,6 +29,19 @@ export const isAuthenticated = () => {
   return !!token;
 };
 
+export const getCurrentUserID = () => {
+  const userID = localStorage.getItem('userID');
+  if (userID) {
+    try {
+      return userID;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      return null;
+    }
+  }
+  return null;
+};
+
 // Get current user data
 export const getCurrentUser = () => {
   const userData = localStorage.getItem('userDetails');

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/RouteDetails.css';
 import { authenticatedFetch } from '../utils/api';
-import { getCurrentUser } from '../utils/authHandler';
+import { getCurrentUser, getCurrentUserID } from '../utils/authHandler';
 import { config } from '../config';
 import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
 import RouteTracker from './RouteTracker';
@@ -28,21 +28,20 @@ export const RouteDetails = () => {
   const [error, setError] = useState(null);
   const [showTracker, setShowTracker] = useState(false);
   const [routePoints, setRoutePoints] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [currentUserID, setCurrentUserID] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
   // Check if current user is the owner of the route
   const isRouteOwner = () => {
-    if (!currentUser || !route) return false;
-
-    return currentUser.id === route.user_id;
+    if (!currentUserID || !route) return false;
+    return String(currentUserID) === String(route.user_id);
   };
 
   // Load current user on component mount
   useEffect(() => {
-    const user = getCurrentUser();
-    setCurrentUser(user);
+    const userID = getCurrentUserID();
+    setCurrentUserID(userID);
   }, []);
 
   useEffect(() => {
@@ -142,7 +141,7 @@ export const RouteDetails = () => {
         </div>
         
         {/* Tracking Button - Only show for route owner */}
-        {currentUser && (
+        {currentUserID && (
           <div className="route-actions" style={{ marginTop: '15px' }}>
             {isRouteOwner() ? (
               <button 
