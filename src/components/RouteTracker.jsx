@@ -136,11 +136,12 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
         }}
       >
         <h3>Route Tracking</h3>
-        {routeId && (
+        {/*{routeId && (
           <p>
             <strong>Route ID:</strong> {routeId}
           </p>
         )}
+          
 
         {error && (
           <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
@@ -155,6 +156,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
         <div style={{ marginBottom: "10px" }}>
           <strong>Points Saved to DB:</strong> {pointsSaved}
         </div>
+        */}
 
         {!isTracking ? (
           <button

@@ -1,6 +1,7 @@
 {
   "short_name": "Hajki",
   "name": "Hajki - Planinarenje i avanture",
+  "description": "Aplikacija za planinarenje, hiking rute i outdoor avanture",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,19 +11,52 @@
     {
       "src": "favicon-96x96.png",
       "type": "image/png",
-      "sizes": "96x96"
+      "sizes": "96x96",
+      "purpose": "any"
     },
     {
-      "src": "logo192.png",
+      "src": "favicon-96x96.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "144x144",
+      "purpose": "any"
     },
     {
-      "src": "logo512.png",
+      "src": "favicon-96x96.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon-96x96.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "web-app-manifest-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "web-app-manifest-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
-  "display": "standalone"
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#2E7D32",
+  "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["travel", "sports", "outdoor", "navigation"],
+  "lang": "sr"
 }

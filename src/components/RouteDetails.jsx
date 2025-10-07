@@ -42,10 +42,8 @@ export const RouteDetails = () => {
     const fetchRouteDetails = async () => {
       try {
         const data = await authenticatedFetch(`/routes/${id}`);
-        console.log('API Response for route:', data.data); // Debugging line
         setRoute(data.data);
         
-        // Učitaj points ako postoje
         if (data.data.points && data.data.points.length > 0) {
           const points = data.data.points.map(point => ({
             lat: point.lat,
