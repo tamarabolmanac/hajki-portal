@@ -177,9 +177,15 @@ export const RouteDetails = () => {
           <div className="route-images">
             <h2>Slike</h2>
             <div className="image-gallery">
-              {route.image_urls.map((imageUrl, index) => (
-                <img key={index} src={imageUrl} alt={`Route image ${index + 1}`} />
-              ))}
+              {
+                route.image_urls.map((imageUrl, index) => {
+                  const filename = imageUrl.split('/').pop().split('?')[0];
+                  const cdnUrl = `https://cdn.hajki.com/${filename}`;
+
+                  return <img key={index} src={cdnUrl} alt={`Route image ${index + 1}`} />;
+            
+                })
+              }
             </div>
           </div>
         )}
