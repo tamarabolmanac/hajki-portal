@@ -140,25 +140,42 @@ export const RouteDetails = () => {
           <span className="route-distance">Distance: {route.distance}km</span>
         </div>
         
-        {/* Tracking Button - Only show for route owner */}
+        {/* Action Buttons - Only show for route owner */}
         {currentUserID && (
-          <div className="route-actions" style={{ marginTop: '15px' }}>
+          <div className="route-actions" style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             {isRouteOwner() ? (
-              <button 
-                onClick={handleStartTracking}
-                style={{
-                  background: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  padding: '12px 24px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '16px',
-                  fontWeight: 'bold'
-                }}
-              >
-                🗺️ Start Route Tracking
-              </button>
+              <>
+                <button 
+                  onClick={handleStartTracking}
+                  style={{
+                    background: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  🗺️ Start Route Tracking
+                </button>
+                <button 
+                  onClick={() => navigate(`/routes/${id}/edit`)}
+                  style={{
+                    background: 'linear-gradient(135deg, #2E7D32, #4CAF50)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  ✏️ Edit Route
+                </button>
+              </>
             ) : (
               <div>
               </div>

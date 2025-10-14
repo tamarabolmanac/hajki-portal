@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import { Navigation } from "./components/navigation";
 import { HikeRoutes } from "./components/HikeRoutes";
 import { RouteDetails } from "./components/RouteDetails";
+import { EditRoute } from "./components/EditRoute";
 import { ChoseRouteCreationType } from "./components/ChoseRouteCreationType";
 import { About } from "./components/about";
 import { Services } from "./components/services";
@@ -144,15 +145,36 @@ const AppContent = () => {
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/routes/:id/edit"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <EditRoute />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route path="/routes/:id" element={<RouteDetails />} />
             <Route path="/contact" element={
               <div className="content-container">
                 <Contact />
               </div>
             } />
-            <Route path="/confirm/:token" element={<EmailConfirmation />} />
-            <Route path="/confirm" element={<EmailConfirmation />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<Register />} />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <Profile />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route path="/confirm/:token" element={<EmailConfirmation />} />
+            <Route path="/confirm" element={<EmailConfirmation />} />
           </Routes>
         </div>
       </div>

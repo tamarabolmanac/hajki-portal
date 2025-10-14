@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
 import { config } from '../config';
 import '../styles/MyRoutes.css';
 
 export const MyRoutes = () => {
+  const navigate = useNavigate();
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -41,6 +42,10 @@ export const MyRoutes = () => {
 
     fetchMyRoutes();
   }, [userIsAuthenticated]);
+
+  const handleEditRoute = (routeId) => {
+    navigate(`/routes/${routeId}/edit`);
+  };
 
   const handleDeleteRoute = async (routeId) => {
     setDeleting(routeId);
@@ -155,7 +160,10 @@ export const MyRoutes = () => {
                   <Link to={`/route/${route.id}`} className="view-route-btn">
                     Pogledaj detalje
                   </Link>
-                  <button className="edit-route-btn">
+                  <button 
+                    className="edit-route-btn"
+                    onClick={() => handleEditRoute(route.id)}
+                  >
                     Uredi
                   </button>
                   <button 
