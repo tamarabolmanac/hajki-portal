@@ -15,6 +15,12 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
   const watchIdRef = useRef(null);
   const lastSavedTimeRef = useRef(null);
   const isTrackingRef = useRef(false);
+  const currentRouteIdRef = useRef(currentRouteId);
+
+  // Update ref when state changes
+  useEffect(() => {
+    currentRouteIdRef.current = currentRouteId;
+  }, [currentRouteId]);
 
   const startTracking = () => {
     if (!("geolocation" in navigator)) {
@@ -35,6 +41,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
     // Reset route ID for new tracking sessions (only if we started with null)
     if (routeId === null) {
       setCurrentRouteId(null);
+      currentRouteIdRef.current = null;
     }
     onTrackingStart && onTrackingStart();
 
@@ -59,7 +66,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
             const response = await authenticatedFetch("/routes/track_point", {
               method: "POST",
               body: JSON.stringify({
-                route_id: currentRouteId,
+                route_id: currentRouteIdRef.current,
                 latitude,
                 longitude,
                 accuracy,
@@ -72,9 +79,9 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
               setPointsSaved((prev) => prev + 1);
               
               // If this was the first point and we got a route_id back, save it
-              if (!currentRouteId && response.route_id) {
+              if (!currentRouteIdRef.current && response.route_id) {
+                currentRouteIdRef.current = response.route_id;
                 setCurrentRouteId(response.route_id);
-                console.log("New route created with ID:", response.route_id);
               }
             } else {
               console.error("Failed to save point:", response);
@@ -99,15 +106,14 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
 
     watchIdRef.current = id;
   };
-
   const stopTracking = () => {
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
     }
-    isTrackingRef.current = false;
+    
     setIsTracking(false);
-    lastSavedTimeRef.current = null;
+    isTrackingRef.current = false;
     onTrackingStop && onTrackingStop();
   };
 
