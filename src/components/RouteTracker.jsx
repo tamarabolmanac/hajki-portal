@@ -17,11 +17,6 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
   const isTrackingRef = useRef(false);
 
   const startTracking = () => {
-    if (!routeId) {
-      setError("Route ID is required to start tracking");
-      return;
-    }
-
     if (!("geolocation" in navigator)) {
       setError("Geolocation is not supported by this browser");
       return;

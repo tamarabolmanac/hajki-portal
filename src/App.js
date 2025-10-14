@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import { Navigation } from "./components/navigation";
 import { HikeRoutes } from "./components/HikeRoutes";
 import { RouteDetails } from "./components/RouteDetails";
+import { ChoseRouteCreationType } from "./components/ChoseRouteCreationType";
 import { About } from "./components/about";
 import { Services } from "./components/services";
 import { Gallery } from "./components/gallery";
@@ -11,6 +12,7 @@ import { Team } from "./components/Team";
 import { NewRoute } from "./components/NewRoute";
 import { MyRoutes } from "./components/MyRoutes";
 import { Contact } from "./components/contact";
+import RouteTracker from "./components/RouteTracker";
 import PrivateRoute from "./components/PrivateRoute"; 
 import LoginPage from "./components/LoginPage";
 import Register from "./components/Register";
@@ -99,7 +101,35 @@ const AppContent = () => {
               element={
                 <PrivateRoute>
                   <div className="content-container">
+                    <ChoseRouteCreationType />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/create-route-manual"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
                     <NewRoute />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/track-new-route"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <RouteTracker 
+                      routeId={null}
+                      onTrackingStart={() => console.log('Started tracking new route')}
+                      onTrackingStop={() => {
+                        console.log('Stopped tracking new route');
+                        // Navigate to my routes after tracking is complete
+                        window.location.href = '/my_routes';
+                      }}
+                    />
                   </div>
                 </PrivateRoute>
               }
