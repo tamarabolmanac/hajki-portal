@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GoogleMap, Polyline, Marker } from "@react-google-maps/api";
 import { authenticatedFetch } from "../utils/api";
 
 export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop }) {
-  // State koji prikazuje rutu na mapi
-  const [routeToRender, setRouteToRender] = useState([]);
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
+  const [routeToRender, setRouteToRender] = useState([]);
   const [pointsSaved, setPointsSaved] = useState(0);
   const [gpsUpdateCount, setGpsUpdateCount] = useState(0);
+  const [currentRouteId, setCurrentRouteId] = useState(routeId);
 
   // Ref za prikupljene tačke (ne renderuju se odmah)
   const routeRef = useRef([]);
@@ -31,6 +31,11 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
     setError(null);
     setIsTracking(true);
     isTrackingRef.current = true;
+    
+    // Reset route ID for new tracking sessions (only if we started with null)
+    if (routeId === null) {
+      setCurrentRouteId(null);
+    }
     onTrackingStart && onTrackingStart();
 
     const id = navigator.geolocation.watchPosition(
@@ -54,7 +59,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
             const response = await authenticatedFetch("/routes/track_point", {
               method: "POST",
               body: JSON.stringify({
-                route_id: routeId,
+                route_id: currentRouteId,
                 latitude,
                 longitude,
                 accuracy,
@@ -65,6 +70,12 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
             if (response && response.status === 200) {
               lastSavedTimeRef.current = currentTime;
               setPointsSaved((prev) => prev + 1);
+              
+              // If this was the first point and we got a route_id back, save it
+              if (!currentRouteId && response.route_id) {
+                setCurrentRouteId(response.route_id);
+                console.log("New route created with ID:", response.route_id);
+              }
             } else {
               console.error("Failed to save point:", response);
             }
