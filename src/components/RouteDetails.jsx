@@ -135,9 +135,24 @@ export const RouteDetails = () => {
       <div className="route-header">
         <h1 className="route-title">{route.title}</h1>
         <div className="route-meta">
-          <span className="route-duration">Duration: {formatDuration(route.duration)}</span>
+          <span className="route-duration">
+            Duration: {formatDuration(route.duration)}
+            {route.calculated_from_points && (
+              <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 GPS</small>
+            )}
+          </span>
           <span className="route-difficulty">Difficulty: {route.difficulty}</span>
-          <span className="route-distance">Distance: {route.distance}km</span>
+          <span className="route-distance">
+            Distance: {route.distance}km
+            {route.calculated_from_points && (
+              <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 GPS</small>
+            )}
+          </span>
+          {route.points_count > 0 && (
+            <span className="route-points">
+              Points: {route.points_count} GPS points
+            </span>
+          )}
         </div>
         
         {/* Action Buttons - Only show for route owner */}

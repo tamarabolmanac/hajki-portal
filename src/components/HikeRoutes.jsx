@@ -68,8 +68,26 @@ export const HikeRoutes = (props) => {
                 <h3 className="hike-title">{hike.title}</h3>
                 <p className="hike-description">{hike.description}</p>
                 <div className="hike-details">
-                  <span className="hike-duration">Duration: {hike.duration}h</span>
+                  <span className="hike-duration">
+                    Duration: {hike.duration}min
+                    {hike.calculated_from_points && (
+                      <small style={{ color: '#28a745', marginLeft: '5px' }}>📍</small>
+                    )}
+                  </span>
                   <span className="hike-difficulty">Difficulty: {hike.difficulty}</span>
+                  {hike.distance && (
+                    <span className="hike-distance">
+                      Distance: {hike.distance}km
+                      {hike.calculated_from_points && (
+                        <small style={{ color: '#28a745', marginLeft: '5px' }}>📍</small>
+                      )}
+                    </span>
+                  )}
+                  {hike.points_count > 0 && (
+                    <span className="hike-points">
+                      {hike.points_count} GPS points
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="hike-card-footer">

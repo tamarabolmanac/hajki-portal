@@ -149,11 +149,23 @@ export const MyRoutes = () => {
                     <span className="route-duration">
                       <i className="icon-time"></i>
                       {Math.floor(route.duration / 60)}h {route.duration % 60}m
+                      {route.calculated_from_points && (
+                        <small style={{ color: '#28a745', marginLeft: '5px' }}>📍</small>
+                      )}
                     </span>
                     <span className="route-distance">
                       <i className="icon-distance"></i>
                       {route.distance}km
+                      {route.calculated_from_points && (
+                        <small style={{ color: '#28a745', marginLeft: '5px' }}>📍</small>
+                      )}
                     </span>
+                    {route.points_count > 0 && (
+                      <span className="route-points">
+                        <i className="icon-location"></i>
+                        {route.points_count} GPS points
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="route-card-footer">
