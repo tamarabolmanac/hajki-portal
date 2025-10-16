@@ -20,6 +20,9 @@ export const EditRoute = () => {
     distance: '',
     best_time_to_visit: ''
   });
+  
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
 
   // Load route data
   useEffect(() => {
@@ -38,6 +41,11 @@ export const EditRoute = () => {
             distance: data.data.distance || '',
             best_time_to_visit: data.data.best_time_to_visit || ''
           });
+          
+          // Set existing images
+          if (data.data.image_urls && data.data.image_urls.length > 0) {
+            setExistingImages(data.data.image_urls);
+          }
         }
       } catch (err) {
         setError('Failed to load route data');
@@ -60,6 +68,19 @@ export const EditRoute = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedImages(prev => [...prev, ...files]);
+  };
+
+  const removeSelectedImage = (index) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -67,11 +88,33 @@ export const EditRoute = () => {
       setSaving(true);
       setError(null);
 
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      
+      // Add route data
+      Object.keys(formData).forEach(key => {
+        if (formData[key] !== '') {
+          formDataToSend.append(`hike_route[${key}]`, formData[key]);
+        }
+      });
+
+      // Add new images
+      selectedImages.forEach((image, index) => {
+        formDataToSend.append(`hike_route[images][]`, image);
+      });
+
+      // Add existing images to keep (as URLs)
+      existingImages.forEach((imageUrl, index) => {
+        formDataToSend.append(`hike_route[existing_images][]`, imageUrl);
+      });
+
       const response = await authenticatedFetch(`/routes/${id}`, {
         method: 'PUT',
-        body: JSON.stringify({
-          hike_route: formData
-        })
+        body: formDataToSend,
+        // Don't set Content-Type header, let browser set it for FormData
+        headers: {
+          // Remove Content-Type to let browser set boundary for FormData
+        }
       });
 
       if (response && response.status === 200) {
@@ -197,6 +240,69 @@ export const EditRoute = () => {
               onChange={handleInputChange}
               placeholder="Spring, Summer"
             />
+          </div>
+        </div>
+
+        {/* Images Section */}
+        <div className="form-section">
+          <h3>Slike rute</h3>
+          
+          {/* Existing Images */}
+          {existingImages.length > 0 && (
+            <div className="existing-images">
+              <h4>Postojeće slike:</h4>
+              <div className="images-grid">
+                {existingImages.map((imageUrl, index) => (
+                  <div key={index} className="image-preview">
+                    <img src={imageUrl} alt={`Route image ${index + 1}`} />
+                    <button
+                      type="button"
+                      className="remove-image-btn"
+                      onClick={() => removeExistingImage(index)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* New Images Upload */}
+          <div className="new-images">
+            <label htmlFor="images">Dodaj nove slike:</label>
+            <input
+              type="file"
+              id="images"
+              name="images"
+              multiple
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            
+            {selectedImages.length > 0 && (
+              <div className="selected-images">
+                <h4>Nove slike za upload:</h4>
+                <div className="images-grid">
+                  {selectedImages.map((file, index) => (
+                    <div key={index} className="image-preview">
+                      <img 
+                        src={URL.createObjectURL(file)} 
+                        alt={`New image ${index + 1}`} 
+                      />
+                      <button
+                        type="button"
+                        className="remove-image-btn"
+                        onClick={() => removeSelectedImage(index)}
+                      >
+                        ✕
+                      </button>
+                      <span className="image-name">{file.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
