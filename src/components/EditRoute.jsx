@@ -161,6 +161,12 @@ export const EditRoute = () => {
       <form onSubmit={handleSubmit} className="edit-route-form">
         {error && <div className="error-message">{error}</div>}
         
+        {route?.calculated_from_points && (
+          <div className="info-message">
+            <strong>📍 GPS Tracking Detected:</strong> Distance and duration are automatically calculated from your {route.points_count} GPS tracking points and cannot be manually edited.
+          </div>
+        )}
+        
         <div className="form-group">
           <label htmlFor="title">Route Title *</label>
           <input
@@ -202,7 +208,12 @@ export const EditRoute = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="duration">Duration (minutes)</label>
+            <label htmlFor="duration">
+              Duration (minutes)
+              {route?.calculated_from_points && (
+                <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 Calculated from GPS</small>
+              )}
+            </label>
             <input
               type="number"
               id="duration"
@@ -211,13 +222,28 @@ export const EditRoute = () => {
               onChange={handleInputChange}
               min="0"
               placeholder="120"
+              disabled={route?.calculated_from_points}
+              style={{
+                backgroundColor: route?.calculated_from_points ? '#f8f9fa' : 'white',
+                cursor: route?.calculated_from_points ? 'not-allowed' : 'text'
+              }}
             />
+            {route?.calculated_from_points && (
+              <small style={{ color: '#6c757d', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>
+                This value is automatically calculated from your GPS tracking points
+              </small>
+            )}
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="distance">Distance (km)</label>
+            <label htmlFor="distance">
+              Distance (km)
+              {route?.calculated_from_points && (
+                <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 Calculated from GPS</small>
+              )}
+            </label>
             <input
               type="number"
               id="distance"
@@ -227,7 +253,17 @@ export const EditRoute = () => {
               min="0"
               step="0.1"
               placeholder="5.2"
+              disabled={route?.calculated_from_points}
+              style={{
+                backgroundColor: route?.calculated_from_points ? '#f8f9fa' : 'white',
+                cursor: route?.calculated_from_points ? 'not-allowed' : 'text'
+              }}
             />
+            {route?.calculated_from_points && (
+              <small style={{ color: '#6c757d', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>
+                This value is automatically calculated from your GPS tracking points
+              </small>
+            )}
           </div>
 
           <div className="form-group">

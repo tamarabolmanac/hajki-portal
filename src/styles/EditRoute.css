@@ -149,6 +149,20 @@
   border: 1px solid #f5c6cb;
 }
 
+.info-message {
+  background: #e3f2fd;
+  color: #1565c0;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #bbdefb;
+  border-left: 4px solid #2196f3;
+}
+
+.info-message strong {
+  color: #0d47a1;
+}
+
 /* Images Section */
 .form-section {
   margin-bottom: 2rem;
@@ -254,6 +268,26 @@
 
 .selected-images {
   margin-top: 1rem;
+}
+
+/* Distance input styling */
+.distance-input {
+  position: relative;
+}
+
+.distance-preview {
+  margin-top: 0.5rem;
+  padding: 8px 12px;
+  background: #e8f5e8;
+  border: 1px solid #4CAF50;
+  border-radius: 6px;
+  color: #2E7D32;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.distance-preview span {
+  color: #1B5E20;
 }
 
 /* Mobile responsiveness */
