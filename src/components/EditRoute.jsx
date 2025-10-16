@@ -23,6 +23,7 @@ export const EditRoute = () => {
   
   const [selectedImages, setSelectedImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
+  const [existingImageIds, setExistingImageIds] = useState([]);
 
   // Load route data
   useEffect(() => {
@@ -45,6 +46,11 @@ export const EditRoute = () => {
           // Set existing images
           if (data.data.image_urls && data.data.image_urls.length > 0) {
             setExistingImages(data.data.image_urls);
+          }
+          
+          // Set existing image IDs
+          if (data.data.image_ids && data.data.image_ids.length > 0) {
+            setExistingImageIds(data.data.image_ids);
           }
         }
       } catch (err) {
@@ -79,6 +85,7 @@ export const EditRoute = () => {
 
   const removeExistingImage = (index) => {
     setExistingImages(prev => prev.filter((_, i) => i !== index));
+    setExistingImageIds(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -103,10 +110,19 @@ export const EditRoute = () => {
         formDataToSend.append(`hike_route[images][]`, image);
       });
 
-      // Add existing images to keep (as URLs)
-      existingImages.forEach((imageUrl, index) => {
-        formDataToSend.append(`hike_route[existing_images][]`, imageUrl);
-      });
+      // Add existing image IDs to keep
+      console.log('Existing image IDs to keep:', existingImageIds);
+      console.log('Existing image IDs length:', existingImageIds.length);
+      
+      // Always send the existing_image_ids parameter, even if empty
+      if (existingImageIds.length === 0) {
+        // Send empty parameter to indicate all images should be deleted
+        formDataToSend.append(`hike_route[delete_all_images]`, 'true');
+      } else {
+        existingImageIds.forEach((imageId, index) => {
+          formDataToSend.append(`hike_route[existing_image_ids][]`, imageId);
+        });
+      }
 
       const response = await authenticatedFetch(`/routes/${id}`, {
         method: 'PUT',
