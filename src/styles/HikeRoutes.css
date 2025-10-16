@@ -48,6 +48,34 @@
   text-decoration: none;
 }
 
+/* Login prompt button */
+.auth-prompt {
+  display: flex;
+  align-items: center;
+}
+
+.login-prompt-button {
+  background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  border: none;
+  cursor: pointer;
+}
+
+.login-prompt-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+  color: white;
+  text-decoration: none;
+  background: linear-gradient(135deg, #5a6268 0%, #6c757d 100%);
+}
+
 /* Cards container */
 .hike-cards-container {
   display: grid;

@@ -8,7 +8,34 @@ export const HikeRoutes = (props) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const userIsAuthenticated = isAuthenticated();
+  const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = () => {
+      setUserIsAuthenticated(isAuthenticated());
+    };
+
+    // Initial check
+    checkAuth();
+
+    // Listen for storage changes (login/logout events)
+    const handleStorageChange = (e) => {
+      if (e.key === 'authToken') {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically in case token expires
+    const authCheckInterval = setInterval(checkAuth, 30000); // Check every 30 seconds
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(authCheckInterval);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchRoutes = async () => {
@@ -54,10 +81,16 @@ export const HikeRoutes = (props) => {
       <div className="container">
         <div className="header-with-button">
           <h2 className="page-title">Pretraži rute</h2>
-          {userIsAuthenticated && (
+          {userIsAuthenticated ? (
             <Link to="/new-route" className="add-route-button">
               + Dodaj rutu
             </Link>
+          ) : (
+            <div className="auth-prompt">
+              <Link to="/login" className="login-prompt-button">
+                Uloguj se da dodaš rutu
+              </Link>
+            </div>
           )}
         </div>
 
