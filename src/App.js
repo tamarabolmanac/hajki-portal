@@ -4,6 +4,7 @@ import { Navigation } from "./components/navigation";
 import { HikeRoutes } from "./components/HikeRoutes";
 import { RouteDetails } from "./components/RouteDetails";
 import { EditRoute } from "./components/EditRoute";
+import { NearbyRoutes } from "./components/NearbyRoutes";
 import { ChoseRouteCreationType } from "./components/ChoseRouteCreationType";
 import { About } from "./components/about";
 import { Services } from "./components/services";
@@ -141,6 +142,16 @@ const AppContent = () => {
                 <PrivateRoute>
                   <div className="content-container">
                     <MyRoutes />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/nearby"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <NearbyRoutes />
                   </div>
                 </PrivateRoute>
               }
