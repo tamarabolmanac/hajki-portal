@@ -52,29 +52,12 @@ export const NearbyRoutes = () => {
     try {
       setLoading(true);
       setError(null);
-
-      console.log('Fetching nearby routes:', {
-        lat: userLocation.lat,
-        lng: userLocation.lng,
-        radius: radius
-      });
-
-      // Use backend endpoint for nearby routes
       const response = await authenticatedFetch(
         `/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radius=${radius}`
       );
       
-      console.log('Nearby routes response:', response);
-      
       if (response && response.data) {
-        // Backend already filters and sorts by distance
-        const nearbyRoutes = response.data.map(route => ({
-          ...route,
-          distance: route.distance_from_user // Use distance from backend
-        }));
-
-        console.log('Processed nearby routes:', nearbyRoutes);
-        setRoutes(nearbyRoutes);
+        setRoutes(response.data);
       }
     } catch (err) {
       setError('Greška pri učitavanju ruta u blizini.');
@@ -190,9 +173,6 @@ export const NearbyRoutes = () => {
                 <div key={route.id} className="route-card">
                   <div className="route-card-header">
                     <h3 className="route-title">{route.title}</h3>
-                    <div className="route-distance-badge">
-                      {route.distance_from_user} km od vas
-                    </div>
                   </div>
                   
                   <div className="route-card-content">

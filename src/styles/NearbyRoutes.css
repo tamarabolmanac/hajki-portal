@@ -234,10 +234,6 @@
 .route-card-header {
   padding: 1.5rem 1.5rem 1rem 1.5rem;
   border-bottom: 1px solid #f1f3f4;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
 }
 
 .route-title {
@@ -245,18 +241,6 @@
   font-size: 1.3rem;
   font-weight: 600;
   margin: 0;
-  flex: 1;
-}
-
-.route-distance-badge {
-  background: linear-gradient(135deg, #556B2F 0%, #8FA31E 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(85, 107, 47, 0.3);
 }
 
 .route-card-content {
@@ -336,13 +320,7 @@
   }
   
   .route-card-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-  
-  .route-distance-badge {
-    align-self: flex-start;
+    padding: 1rem 1rem 0.75rem 1rem;
   }
   
   .radius-buttons {
