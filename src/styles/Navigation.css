@@ -6,14 +6,15 @@
   margin-bottom: 0;
   box-shadow: 0 2px 10px rgba(85, 107, 47, 0.3);
   position: fixed;
-  top: 0;
-  right: 0;
-  left: 0;
+  top: 15px; /* Add space from top of screen */
+  right: 15px;
+  left: 15px;
   z-index: 1030;
   min-height: 70px; /* Increased height */
   padding: 5px 0;
   display: flex;
   align-items: center;
+  border-radius: 12px; /* Rounded corners for floating effect */
 }
 
 .navbar .container {
@@ -28,29 +29,36 @@
   display: flex;
   align-items: center;
   flex-shrink: 0; /* Prevent the logo container from shrinking */
+  height: 100%; /* Take full navbar height */
 }
 
 .navbar-brand {
   padding: 0;
+  display: flex;
+  align-items: center; /* Center logo vertically */
+  height: 100%;
 }
 
 .logo-navbar {
   height: 50px; /* Fixed height for the logo */
-  width: auto;   /* Let the width adjust automatically */
+  width: auto; /* Let the width adjust automatically to maintain aspect ratio */
 }
 
 /* Mobile menu button - hidden on desktop */
 .navbar-toggle {
   display: none;
-  margin-left: 15px;
+  position: absolute; /* Position absolutely to place it exactly where we want */
+  right: 15px; /* Align with navbar right edge */
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Perfect vertical centering */
   background: transparent;
   border: 2px solid #C6D870;
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 8px 10px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1031; /* Above navbar */
 }
-
-.navbar-toggle:hover,
 .navbar-toggle:focus {
   background-color: rgba(198, 216, 112, 0.1);
   border-color: #8FA31E;
@@ -137,26 +145,38 @@
 
 /* Spacer for fixed navbar */
 .nav-spacer {
-  height: 70px; /* Match navbar height */
+  height: 100px; /* Match navbar height + top spacing */
 }
 
 /* Mobile-only responsive adjustments */
 @media (max-width: 991px) {
-  .nav-spacer {
-    height: 60px; /* Match mobile navbar height */
+  .navbar {
+    top: 10px; /* Less spacing on mobile */
+    right: 10px;
+    left: 10px;
   }
 
-  .navbar {
-    min-height: 60px !important;
+  .nav-spacer {
+    height: 80px; /* Match mobile navbar height + spacing */
   }
 
   .navbar-header {
-    width: 100%;
-    justify-content: space-between;
+    height: 100% !important;
+  }
+
+  .navbar-brand {
+    height: 100% !important;
   }
 
   .navbar-toggle {
     display: block !important;
+    right: 10px !important; /* Adjust for mobile navbar margins */
+    transition: all 0.3s ease !important;
+  }
+
+  .navbar-toggle:hover {
+    background-color: rgba(143, 163, 30, 0.2) !important;
+    transform: translateY(-50%) scale(1.05) !important; /* Maintain centering while scaling */
   }
 
   .navbar-collapse {
@@ -164,32 +184,47 @@
     top: 100% !important;
     left: 0 !important;
     right: 0 !important;
-    background-color: rgba(85, 107, 47, 0.98) !important; /* Semi-transparent overlay */
+    background: linear-gradient(135deg, #556B2F 0%, #4a5f29 100%) !important;
+    box-shadow: 0 8px 25px rgba(85, 107, 47, 0.5) !important;
+    border-top: 2px solid rgba(143, 163, 30, 0.4) !important;
+    z-index: 1000 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
     backdrop-filter: blur(10px) !important;
-    border-top: 2px solid #C6D870 !important;
-    box-shadow: 0 4px 20px rgba(85, 107, 47, 0.6) !important;
-    display: none !important;
-    z-index: 1029 !important;
-    max-height: calc(100vh - 60px) !important; /* Prevent overflow */
-    overflow-y: auto !important;
   }
 
   .navbar-collapse.in {
-    display: block !important;
+    max-height: 500px !important;
   }
 
   .navbar-nav {
-    flex-direction: column !important;
-    width: 100% !important;
     margin: 0 !important;
     padding: 10px 0 !important;
+    float: none !important;
+    display: block !important;
   }
 
   .navbar-nav > li {
+    float: none !important;
+    display: block !important;
     width: 100% !important;
-    margin: 0 !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-bottom: 1px solid rgba(143, 163, 30, 0.15) !important;
+    opacity: 0 !important;
+    transform: translateX(-20px) !important;
+    transition: all 0.3s ease !important;
   }
+
+  .navbar-collapse.in .navbar-nav > li {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+  }
+
+  .navbar-nav > li:nth-child(1) { transition-delay: 0.1s !important; }
+  .navbar-nav > li:nth-child(2) { transition-delay: 0.15s !important; }
+  .navbar-nav > li:nth-child(3) { transition-delay: 0.2s !important; }
+  .navbar-nav > li:nth-child(4) { transition-delay: 0.25s !important; }
+  .navbar-nav > li:nth-child(5) { transition-delay: 0.3s !important; }
 
   .navbar-nav > li:last-child {
     border-bottom: none !important;
@@ -197,41 +232,88 @@
 
   .navbar-nav > li > a,
   .navbar-nav > li > .page-scroll {
-    padding: 15px 20px !important;
+    display: block !important;
+    padding: 18px 25px !important;
     text-align: left !important;
     font-size: 16px !important;
+    font-weight: 500 !important;
     border-radius: 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    color: white !important; /* White text on mobile */
+    color: white !important;
+    position: relative !important;
+    transition: all 0.3s ease !important;
+  }
+
+  .navbar-nav > li > a::before,
+  .navbar-nav > li > .page-scroll::before {
+    content: '' !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    height: 100% !important;
+    width: 0 !important;
+    background: linear-gradient(90deg, #C6D870, #8FA31E) !important;
+    transition: width 0.3s ease !important;
+  }
+
+  .navbar-nav > li > a:hover::before,
+  .navbar-nav > li > .page-scroll:hover::before {
+    width: 4px !important;
   }
 
   .navbar-nav > li > a:hover,
   .navbar-nav > li > .page-scroll:hover {
-    background-color: rgba(143, 163, 30, 0.4) !important;
-    color: #C6D870 !important; /* Highlight color */
+    background-color: rgba(143, 163, 30, 0.3) !important;
+    color: #C6D870 !important;
+    padding-left: 30px !important;
+    transform: translateX(5px) !important;
   }
 
   .navbar-nav > li > a.active,
   .navbar-nav > li > .page-scroll.active {
-    background-color: rgba(143, 163, 30, 0.5) !important;
+    background-color: rgba(143, 163, 30, 0.4) !important;
     color: #C6D870 !important;
+    padding-left: 30px !important;
+  }
+
+  .navbar-nav > li > a.active::before,
+  .navbar-nav > li > .page-scroll.active::before {
+    width: 4px !important;
   }
 
   .username-badge {
     display: inline-block !important;
     margin-left: 0 !important;
+    background: linear-gradient(135deg, #C6D870, #8FA31E) !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #556B2F !important;
+    box-shadow: 0 2px 8px rgba(198, 216, 112, 0.3) !important;
   }
 }
 
 @media (max-width: 768px) {
-  .nav-spacer {
-    height: 55px; /* Match smaller mobile navbar height */
-  }
-
   .navbar {
+    top: 8px; /* Even less spacing on smaller screens */
+    right: 8px;
+    left: 8px;
     min-height: 55px !important;
     padding: 3px 0 !important;
+  }
+
+  .nav-spacer {
+    height: 70px; /* Match smaller mobile navbar height + spacing */
+  }
+
+  .navbar-header {
+    height: 100% !important;
+  }
+
+  .navbar-brand {
+    height: 100% !important;
   }
 
   .logo-navbar {
@@ -240,6 +322,7 @@
   }
 
   .navbar-toggle {
+    right: 8px !important; /* Adjust for tablet navbar margins */
     padding: 6px 8px !important;
   }
 
@@ -260,16 +343,28 @@
 }
 
 @media (max-width: 480px) {
-  .nav-spacer {
-    height: 50px; /* Match smallest mobile navbar height */
+  .navbar {
+    top: 5px; /* Minimal spacing on smallest screens */
+    right: 5px;
+    left: 5px;
+    min-height: 50px !important;
+    padding: 2px 0 !important;
   }
 
-  .navbar {
-    min-height: 50px !important;
+  .nav-spacer {
+    height: 60px; /* Match smallest mobile navbar height + spacing */
   }
 
   .navbar .container {
     padding: 0 10px !important;
+  }
+
+  .navbar-header {
+    height: 100% !important;
+  }
+
+  .navbar-brand {
+    height: 100% !important;
   }
 
   .logo-navbar {
@@ -277,13 +372,88 @@
     max-width: 90px !important;
   }
 
+  .navbar-toggle {
+    right: 5px !important; /* Adjust for phone navbar margins */
+    padding: 4px 6px !important;
+  }
+
+  .navbar-toggle .icon-bar {
+    width: 18px !important;
+    height: 2px !important;
+  }
+
   .navbar-nav > li > a,
   .navbar-nav > li > .page-scroll {
-    padding: 10px 12px !important;
-    font-size: 14px !important;
+    padding: 15px 20px !important;
+    font-size: 15px !important;
+  }
+
+  .navbar-nav > li > a:hover,
+  .navbar-nav > li > .page-scroll:hover {
+    padding-left: 25px !important;
+  }
+
+  .navbar-nav > li > a.active,
+  .navbar-nav > li > .page-scroll.active {
+    padding-left: 25px !important;
   }
 
   .navbar-collapse {
     max-height: calc(100vh - 50px) !important;
+  }
+
+  .navbar-collapse.in {
+    max-height: 450px !important;
+  }
+
+  .username-badge {
+    padding: 4px 10px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .navbar {
+    top: 3px; /* Very minimal spacing on extra small screens */
+    right: 3px;
+    left: 3px;
+  }
+
+  .nav-spacer {
+    height: 55px; /* Match extra small navbar height + spacing */
+  }
+
+  .navbar .container {
+    padding: 0 8px !important;
+  }
+
+  .navbar-header {
+    height: 100% !important;
+  }
+
+  .navbar-brand {
+    height: 100% !important;
+  }
+
+  .logo-navbar {
+    height: 32px !important;
+    max-width: 80px !important;
+  }
+
+  .navbar-toggle {
+    right: 3px !important; /* Adjust for extra small navbar margins */
+    padding: 3px 5px !important;
+  }
+
+  .navbar-nav > li > a,
+  .navbar-nav > li > .page-scroll {
+    padding: 14px 18px !important;
+    font-size: 14px !important;
+  }
+
+  .username-badge {
+    padding: 3px 8px !important;
+    font-size: 12px !important;
   }
 }

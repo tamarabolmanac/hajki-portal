@@ -3,6 +3,21 @@ import { Link } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import '../styles/NearbyRoutes.css';
 
+// Dynamic imports for Capacitor (only available in mobile build)
+let Geolocation = null;
+let Capacitor = null;
+
+try {
+  // Try to import Capacitor modules (will fail in web build)
+  const capacitorCore = require('@capacitor/core');
+  const capacitorGeolocation = require('@capacitor/geolocation');
+  Capacitor = capacitorCore.Capacitor;
+  Geolocation = capacitorGeolocation.Geolocation;
+} catch (error) {
+  // Capacitor not available (web build)
+  console.log('Running in web mode - Capacitor not available');
+}
+
 export const NearbyRoutes = () => {
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,34 +26,74 @@ export const NearbyRoutes = () => {
   const [locationError, setLocationError] = useState(null);
   const [radius, setRadius] = useState(10); // km radius
 
-  // Get user's current location
+  // Get user's current location - Universal (web + mobile)
   useEffect(() => {
-    if (navigator.geolocation) {
+    const getCurrentLocation = async () => {
       setLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          setUserLocation(location);
-          setLocationError(null);
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          setLocationError('Nije moguće dobiti vašu lokaciju. Molimo dozvolite pristup lokaciji.');
-          setLoading(false);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000 // 5 minutes
+      
+      try {
+        // Check if Capacitor is available and we're on native platform
+        if (Capacitor && Geolocation && Capacitor.isNativePlatform()) {
+          console.log('Using Capacitor geolocation (native app)');
+          
+          // Request permissions first on native
+          const permissions = await Geolocation.requestPermissions();
+          
+          if (permissions.location === 'granted') {
+            const position = await Geolocation.getCurrentPosition({
+              enableHighAccuracy: true,
+              timeout: 15000,
+              maximumAge: 300000 // 5 minutes
+            });
+            
+            const location = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            setUserLocation(location);
+            setLocationError(null);
+          } else {
+            setLocationError('Potrebna je dozvola za pristup lokaciji. Molimo omogućite u podešavanjima aplikacije.');
+            setLoading(false);
+          }
+        } else {
+          // Web fallback or Capacitor not available
+          console.log('Using web geolocation API');
+          
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const location = {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude
+                };
+                setUserLocation(location);
+                setLocationError(null);
+              },
+              (error) => {
+                console.error('Error getting location:', error);
+                setLocationError('Nije moguće dobiti vašu lokaciju. Molimo dozvolite pristup lokaciji.');
+                setLoading(false);
+              },
+              {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000 // 5 minutes
+              }
+            );
+          } else {
+            setLocationError('Vaš browser ne podržava geolokaciju.');
+            setLoading(false);
+          }
         }
-      );
-    } else {
-      setLocationError('Vaš browser ne podržava geolokaciju.');
-      setLoading(false);
-    }
+      } catch (error) {
+        console.error('Geolocation error:', error);
+        setLocationError('Greška pri dobijanju lokacije. Molimo pokušajte ponovo.');
+        setLoading(false);
+      }
+    };
+
+    getCurrentLocation();
   }, []);
 
   // Fetch nearby routes when user location is available
@@ -72,6 +127,36 @@ export const NearbyRoutes = () => {
     setRadius(newRadius);
   };
 
+  const retryLocation = async () => {
+    setLocationError(null);
+    setLoading(true);
+    
+    try {
+      if (Capacitor && Geolocation && Capacitor.isNativePlatform()) {
+        // On Android, try to get location again
+        const position = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 60000 // 1 minute for retry
+        });
+        
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        setUserLocation(location);
+        setLocationError(null);
+      } else {
+        // Web retry - reload page
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Retry location error:', error);
+      setLocationError('I dalje nije moguće dobiti lokaciju. Proverite da li je GPS uključen.');
+      setLoading(false);
+    }
+  };
+
   if (locationError) {
     return (
       <div className="nearby-routes-container">
@@ -86,10 +171,19 @@ export const NearbyRoutes = () => {
           <p>{locationError}</p>
           <button 
             className="retry-location-btn"
-            onClick={() => window.location.reload()}
+            onClick={retryLocation}
           >
-            Pokušaj ponovo
+            {(Capacitor && Capacitor.isNativePlatform()) ? 'Pokušaj ponovo' : 'Osvežite stranicu'}
           </button>
+          
+          {(Capacitor && Capacitor.isNativePlatform()) && (
+            <div className="android-help">
+              <p><strong>Android korisnici:</strong></p>
+              <p>• Proverite da li je GPS uključen</p>
+              <p>• Idite u Podešavanja → Aplikacije → Hajki → Dozvole</p>
+              <p>• Omogućite "Lokacija" dozvolu</p>
+            </div>
+          )}
         </div>
       </div>
     );
