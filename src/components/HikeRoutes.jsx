@@ -61,33 +61,41 @@ export const HikeRoutes = (props) => {
 
   if (error) {
     return (
-      <div className="error-container">
-        <h2>Greška</h2>
-        <p>{error}</p>
+      <div className="page-container">
+        <div className="alert-error-modern">
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem' }}>⚠️ Greška</h3>
+          <p style={{ margin: 0, fontSize: '1.1rem' }}>{error}</p>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <h2>Učitavanje...</h2>
+      <div className="page-container">
+        <div className="glass-card" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <div className="loading-spinner-modern" style={{ marginBottom: '1.5rem' }}></div>
+          <p className="text-white-modern" style={{ fontSize: '1.1rem', fontWeight: '500' }}>Učitavanje ruta...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="text-center">
-      <div className="container">
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Pretraži rute</h1>
+      </div>
+      
+      <div className="glass-card">
         <div className="header-with-button">
-          <h2 className="page-title">Pretraži rute</h2>
           {userIsAuthenticated ? (
-            <Link to="/new-route" className="add-route-button">
+            <Link to="/new-route" className="btn-primary-modern">
               + Dodaj rutu
             </Link>
           ) : (
             <div className="auth-prompt">
-              <Link to="/login" className="login-prompt-button">
+              <Link to="/login" className="btn-secondary-modern">
                 Uloguj se da dodaš rutu
               </Link>
             </div>
@@ -124,7 +132,7 @@ export const HikeRoutes = (props) => {
                 </div>
               </div>
               <div className="hike-card-footer">
-                <Link to={`/route/${hike.id}`} className="view-route-btn">
+                <Link to={`/route/${hike.id}`} className="btn-primary-modern">
                   Pogledaj detalje
                 </Link>
               </div>

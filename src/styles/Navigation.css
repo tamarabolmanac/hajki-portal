@@ -1,10 +1,11 @@
 /* Navigation Styles */
 .navbar {
-  background-color: #556B2F; /* Dark green background */
+  background: linear-gradient(135deg, rgba(17, 153, 142, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
   border: none;
-  border-radius: 0;
   margin-bottom: 0;
-  box-shadow: 0 2px 10px rgba(85, 107, 47, 0.3);
+  box-shadow: 0 4px 20px rgba(17, 153, 142, 0.3);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 239, 125, 0.3);
   position: fixed;
   top: 15px; /* Add space from top of screen */
   right: 15px;
@@ -106,41 +107,43 @@
 
 .navbar-nav > li {
   margin: 0 5px;
-  list-style: none;
 }
 
 .navbar-nav > li > a,
 .navbar-nav > li > .page-scroll {
   padding: 0.75rem 1rem;
-  color: white; /* Changed to white */
+  color: rgba(17, 153, 142, 0.9); /* Teal color for text */
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
+  border-radius: 6px;
   transition: all 0.3s ease;
-  border-radius: 4px;
   display: block;
 }
 
 .navbar-nav > li > a:hover,
 .navbar-nav > li > .page-scroll:hover {
-  color: #C6D870; /* Highlight color on hover */
-  background-color: rgba(143, 163, 30, 0.2);
+  color: #11998e; /* Darker teal on hover */
+  background-color: rgba(56, 239, 125, 0.15);
   text-decoration: none;
+  transform: translateY(-1px);
 }
 
 /* Active/selected menu item */
 .navbar-nav > li > a.active,
 .navbar-nav > li > .page-scroll.active {
-  color: #C6D870;
-  background-color: rgba(143, 163, 30, 0.3);
+  color: #11998e;
+  background-color: rgba(56, 239, 125, 0.2);
+  font-weight: 700;
 }
 
 .username-badge {
-  background-color: #8FA31E;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   color: white;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 12px;
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(17, 153, 142, 0.3);
 }
 
 /* Spacer for fixed navbar */
@@ -175,7 +178,6 @@
   }
 
   .navbar-toggle:hover {
-    background-color: rgba(143, 163, 30, 0.2) !important;
     transform: translateY(-50%) scale(1.05) !important; /* Maintain centering while scaling */
   }
 
@@ -184,14 +186,16 @@
     top: 100% !important;
     left: 0 !important;
     right: 0 !important;
-    background: linear-gradient(135deg, #556B2F 0%, #4a5f29 100%) !important;
-    box-shadow: 0 8px 25px rgba(85, 107, 47, 0.5) !important;
-    border-top: 2px solid rgba(143, 163, 30, 0.4) !important;
     z-index: 1000 !important;
     max-height: 0 !important;
     overflow: hidden !important;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    backdrop-filter: blur(10px) !important;
+    background: rgba(17, 153, 142, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    border-radius: 0 0 12px 12px !important;
+    border: 1px solid rgba(56, 239, 125, 0.3) !important;
+    border-top: none !important;
+    box-shadow: 0 8px 32px rgba(17, 153, 142, 0.3) !important;
   }
 
   .navbar-collapse.in {
@@ -236,13 +240,14 @@
     padding: 18px 25px !important;
     text-align: left !important;
     font-size: 16px !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     border-radius: 0 !important;
     width: 100% !important;
     box-sizing: border-box !important;
-    color: white !important;
+    color: rgba(255, 255, 255, 0.95) !important;
     position: relative !important;
     transition: all 0.3s ease !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
   }
 
   .navbar-nav > li > a::before,
@@ -253,8 +258,9 @@
     top: 0 !important;
     height: 100% !important;
     width: 0 !important;
-    background: linear-gradient(90deg, #C6D870, #8FA31E) !important;
+    background: rgba(56, 239, 125, 0.8) !important;
     transition: width 0.3s ease !important;
+    content: '' !important;
   }
 
   .navbar-nav > li > a:hover::before,
@@ -264,16 +270,16 @@
 
   .navbar-nav > li > a:hover,
   .navbar-nav > li > .page-scroll:hover {
-    background-color: rgba(143, 163, 30, 0.3) !important;
-    color: #C6D870 !important;
+    background-color: rgba(56, 239, 125, 0.2) !important;
+    color: rgba(255, 255, 255, 1) !important;
     padding-left: 30px !important;
     transform: translateX(5px) !important;
   }
 
   .navbar-nav > li > a.active,
   .navbar-nav > li > .page-scroll.active {
-    background-color: rgba(143, 163, 30, 0.4) !important;
-    color: #C6D870 !important;
+    background-color: rgba(56, 239, 125, 0.3) !important;
+    color: rgba(255, 255, 255, 1) !important;
     padding-left: 30px !important;
   }
 

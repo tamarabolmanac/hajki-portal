@@ -79,13 +79,14 @@ export const MyRoutes = () => {
 
   if (!userIsAuthenticated) {
     return (
-      <div className="my-routes-container">
-        <div className="container">
-          <h2 className="page-title">Moje rute</h2>
-          <div className="auth-message">
-            <p>Morate biti ulogovani da biste videli svoje rute.</p>
-            <Link to="/login" className="login-link">Prijavite se</Link>
-          </div>
+      <div className="page-container">
+        <div className="page-header">
+          <h1>Moje rute</h1>
+        </div>
+        <div className="alert-info-modern">
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem' }}>🔐 Potrebna prijava</h3>
+          <p style={{ margin: '0 0 1.5rem 0', fontSize: '1.1rem' }}>Morate biti ulogovani da biste videli svoje rute.</p>
+          <Link to="/login" className="btn-primary-modern">Uloguj se</Link>
         </div>
       </div>
     );
@@ -93,12 +94,10 @@ export const MyRoutes = () => {
 
   if (loading) {
     return (
-      <div className="my-routes-container">
-        <div className="container">
-          <h2 className="page-title">Moje rute</h2>
-          <div className="loading-container">
-            <p>Učitavanje...</p>
-          </div>
+      <div className="page-container">
+        <div className="glass-card" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+          <div className="loading-spinner-modern" style={{ marginBottom: '1.5rem' }}></div>
+          <p className="text-white-modern" style={{ fontSize: '1.1rem', fontWeight: '500' }}>Učitavanje ruta...</p>
         </div>
       </div>
     );
@@ -106,32 +105,37 @@ export const MyRoutes = () => {
 
   if (error) {
     return (
-      <div className="my-routes-container">
-        <div className="container">
-          <h2 className="page-title">Moje rute</h2>
-          <div className="error-container">
-            <h3>Greška</h3>
-            <p>{error}</p>
-          </div>
+      <div className="page-container">
+        <div className="page-header">
+          <h1>Moje rute</h1>
+        </div>
+        <div className="alert-error-modern">
+          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem' }}>⚠️ Greška</h3>
+          <p style={{ margin: 0, fontSize: '1.1rem' }}>{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="my-routes-container">
-      <div className="container">
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Moje rute</h1>
+      </div>
+      
+      <div className="glass-card">
         <div className="header-with-button">
-          <h2 className="page-title">Moje rute</h2>
-          <Link to="/new-route" className="add-route-button">
+          <Link to="/new-route" className="btn-primary-modern">
             + Dodaj novu rutu
           </Link>
         </div>
 
         {routes.length === 0 ? (
-          <div className="no-routes">
-            <p>Još uvek niste kreirali nijednu rutu.</p>
-            <Link to="/new-route" className="create-first-route-btn">
+          <div style={{ textAlign: 'center', padding: '3rem 2rem' }}>
+            <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>🗺️</div>
+            <h3 className="text-white-modern" style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>Nema ruta</h3>
+            <p className="text-white-secondary" style={{ marginBottom: '2rem', fontSize: '1.1rem' }}>Još uvek niste kreirali nijednu rutu.</p>
+            <Link to="/new-route" className="btn-primary-modern">
               Kreiraj prvu rutu
             </Link>
           </div>
@@ -168,20 +172,28 @@ export const MyRoutes = () => {
                     )}
                   </div>
                 </div>
-                <div className="route-card-footer">
-                  <Link to={`/route/${route.id}`} className="view-route-btn">
+                <div className="route-card-footer" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <Link to={`/route/${route.id}`} className="btn-primary-modern" style={{ flex: 1, minWidth: '120px' }}>
                     Pogledaj detalje
                   </Link>
                   <button 
-                    className="edit-route-btn"
+                    className="btn-secondary-modern"
                     onClick={() => handleEditRoute(route.id)}
+                    style={{ flex: 1, minWidth: '80px' }}
                   >
                     Uredi
                   </button>
                   <button 
-                    className="delete-route-btn"
+                    className="btn-secondary-modern"
                     onClick={() => confirmDelete(route)}
                     disabled={deleting === route.id}
+                    style={{ 
+                      flex: 1, 
+                      minWidth: '80px',
+                      background: deleting === route.id ? 'rgba(255, 107, 107, 0.2)' : 'rgba(255, 107, 107, 0.1)',
+                      borderColor: 'rgba(255, 107, 107, 0.3)',
+                      color: 'rgba(255, 255, 255, 0.9)'
+                    }}
                   >
                     {deleting === route.id ? 'Brisanje...' : 'Obriši'}
                   </button>
@@ -198,19 +210,23 @@ export const MyRoutes = () => {
               <h3>Potvrda brisanja</h3>
               <p>Da li ste sigurni da želite da obrišete rutu <strong>"{deleteConfirm.title}"</strong>?</p>
               <p className="delete-warning">Ova akcija se ne može poništiti.</p>
-              <div className="delete-modal-buttons">
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem' }}>
                 <button 
-                  className="cancel-delete-btn"
+                  className="btn-secondary-modern"
                   onClick={cancelDelete}
                 >
                   Otkaži
                 </button>
                 <button 
-                  className="confirm-delete-btn"
+                  className="btn-primary-modern"
                   onClick={() => handleDeleteRoute(deleteConfirm.id)}
                   disabled={deleting === deleteConfirm.id}
+                  style={{ 
+                    background: 'linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%)',
+                    boxShadow: '0 8px 32px rgba(255, 107, 107, 0.3)'
+                  }}
                 >
-                  {deleting === deleteConfirm.id ? 'Brisanje...' : 'Obriši rutu'}
+                  {deleting === deleteConfirm.id ? 'Brisanje...' : 'Obriši'}
                 </button>
               </div>
             </div>

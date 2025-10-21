@@ -6,13 +6,16 @@ import '../styles/NearbyRoutes.css';
 // Dynamic imports for Capacitor (only available in mobile build)
 let Geolocation = null;
 let Capacitor = null;
+let App = null;
 
 try {
   // Try to import Capacitor modules (will fail in web build)
   const capacitorCore = require('@capacitor/core');
   const capacitorGeolocation = require('@capacitor/geolocation');
+  const capacitorApp = require('@capacitor/app');
   Capacitor = capacitorCore.Capacitor;
   Geolocation = capacitorGeolocation.Geolocation;
+  App = capacitorApp.App;
 } catch (error) {
   // Capacitor not available (web build)
   console.log('Running in web mode - Capacitor not available');
@@ -25,6 +28,8 @@ export const NearbyRoutes = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [radius, setRadius] = useState(10); // km radius
+  const [backgroundTracking, setBackgroundTracking] = useState(false);
+  const [watchId, setWatchId] = useState(null);
 
   // Get user's current location - Universal (web + mobile)
   useEffect(() => {
@@ -95,6 +100,108 @@ export const NearbyRoutes = () => {
 
     getCurrentLocation();
   }, []);
+
+  // Background location tracking
+  const startBackgroundTracking = async () => {
+    if (!Capacitor || !Geolocation || !Capacitor.isNativePlatform()) {
+      console.log('Background tracking not available on web');
+      return;
+    }
+
+    try {
+      // Request background location permission
+      const permissions = await Geolocation.requestPermissions();
+      
+      if (permissions.location !== 'granted') {
+        setLocationError('Potrebna je dozvola za pristup lokaciji u pozadini.');
+        return;
+      }
+
+      // Start watching position with background options
+      const id = await Geolocation.watchPosition({
+        enableHighAccuracy: true,
+        timeout: 30000,
+        maximumAge: 60000 // 1 minute
+      }, (position) => {
+        console.log('Background location update:', position);
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        setUserLocation(location);
+        
+        // Save location to local storage for persistence
+        localStorage.setItem('lastKnownLocation', JSON.stringify({
+          ...location,
+          timestamp: Date.now()
+        }));
+      }, (error) => {
+        console.error('Background location error:', error);
+      });
+
+      setWatchId(id);
+      setBackgroundTracking(true);
+      console.log('Background location tracking started');
+      
+    } catch (error) {
+      console.error('Failed to start background tracking:', error);
+      setLocationError('Greška pri pokretanju praćenja lokacije u pozadini.');
+    }
+  };
+
+  const stopBackgroundTracking = async () => {
+    if (watchId && Geolocation) {
+      await Geolocation.clearWatch({ id: watchId });
+      setWatchId(null);
+      setBackgroundTracking(false);
+      console.log('Background location tracking stopped');
+    }
+  };
+
+  // App lifecycle management
+  useEffect(() => {
+    if (!App || !Capacitor?.isNativePlatform()) return;
+
+    const handleAppStateChange = (state) => {
+      console.log('App state changed:', state);
+      
+      if (state.isActive) {
+        // App came to foreground
+        console.log('App is now active');
+        
+        // Load last known location from storage
+        const lastLocation = localStorage.getItem('lastKnownLocation');
+        if (lastLocation) {
+          const parsedLocation = JSON.parse(lastLocation);
+          // Only use if less than 10 minutes old
+          if (Date.now() - parsedLocation.timestamp < 600000) {
+            setUserLocation({
+              lat: parsedLocation.lat,
+              lng: parsedLocation.lng
+            });
+          }
+        }
+      } else {
+        // App went to background
+        console.log('App is now in background');
+      }
+    };
+
+    App.addListener('appStateChange', handleAppStateChange);
+
+    return () => {
+      App.removeAllListeners();
+    };
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (watchId && Geolocation) {
+        Geolocation.clearWatch({ id: watchId });
+      }
+    };
+  }, [watchId]);
 
   // Fetch nearby routes when user location is available
   useEffect(() => {
@@ -234,6 +341,45 @@ export const NearbyRoutes = () => {
             ))}
           </div>
         </div>
+
+        {/* Background tracking controls - only show on mobile */}
+        {(Capacitor && Capacitor.isNativePlatform()) && (
+          <div className="background-tracking-section">
+            <div className="tracking-control">
+              <label>Praćenje lokacije u pozadini:</label>
+              <div className="tracking-buttons">
+                {!backgroundTracking ? (
+                  <button
+                    className="tracking-btn start-tracking"
+                    onClick={startBackgroundTracking}
+                  >
+                    🔄 Pokreni praćenje
+                  </button>
+                ) : (
+                  <button
+                    className="tracking-btn stop-tracking"
+                    onClick={stopBackgroundTracking}
+                  >
+                    ⏹️ Zaustavi praćenje
+                  </button>
+                )}
+              </div>
+              {backgroundTracking && (
+                <div className="tracking-status">
+                  <span className="status-indicator">🟢</span>
+                  <span>Lokacija se prati u pozadini</span>
+                </div>
+              )}
+            </div>
+            
+            <div className="tracking-info">
+              <p><strong>Napomena:</strong></p>
+              <p>• Praćenje u pozadini omogućava ažuriranje lokacije kada app nije aktivan</p>
+              <p>• Potrebno je dozvoliti "Uvek" za lokaciju u podešavanjima</p>
+              <p>• Može uticati na bateriju</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {error && (

@@ -18,6 +18,7 @@ import RouteTracker from "./components/RouteTracker";
 import PrivateRoute from "./components/PrivateRoute"; 
 import LoginPage from "./components/LoginPage";
 import Register from "./components/Register";
+import "./styles/GlobalStyles.css";
 import { Profile } from "./components/Profile";
 import EmailConfirmation from "./components/EmailConfirmation";
 import InstallPWA from "./components/InstallPWA";
