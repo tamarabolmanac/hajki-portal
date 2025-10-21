@@ -2,6 +2,25 @@ import React, { useState, useRef, useEffect } from "react";
 import { GoogleMap, Polyline, Marker } from "@react-google-maps/api";
 import { authenticatedFetch } from "../utils/api";
 
+// Dynamic imports for Capacitor (only available in mobile build)
+let Geolocation = null;
+let Capacitor = null;
+let BackgroundMode = null;
+
+try {
+  // Try to import Capacitor modules (will fail in web build)
+  const capacitorCore = require('@capacitor/core');
+  const capacitorGeolocation = require('@capacitor/geolocation');
+  const capacitorBackgroundMode = require('@capacitor/background-mode');
+  
+  Capacitor = capacitorCore.Capacitor;
+  Geolocation = capacitorGeolocation.Geolocation;
+  BackgroundMode = capacitorBackgroundMode.BackgroundMode;
+} catch (error) {
+  // Capacitor not available (web build)
+  console.log('Running in web mode - Capacitor not available');
+}
+
 export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop }) {
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
@@ -9,6 +28,8 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
   const [pointsSaved, setPointsSaved] = useState(0);
   const [gpsUpdateCount, setGpsUpdateCount] = useState(0);
   const [currentRouteId, setCurrentRouteId] = useState(routeId);
+  const [backgroundTracking, setBackgroundTracking] = useState(false);
+  const [locationError, setLocationError] = useState(null);
 
   // Ref za prikupljene tačke (ne renderuju se odmah)
   const routeRef = useRef([]);
@@ -112,9 +133,65 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
       watchIdRef.current = null;
     }
     
+    // Stop background tracking when stopping route tracking
+    if (backgroundTracking) {
+      stopBackgroundTracking();
+    }
+    
     setIsTracking(false);
     isTrackingRef.current = false;
     onTrackingStop && onTrackingStop();
+  };
+
+  // Background tracking functions
+  const startBackgroundTracking = async () => {
+    if (!Capacitor || !BackgroundMode || !Capacitor.isNativePlatform()) {
+      setLocationError('Background tracking je dostupan samo u mobilnoj aplikaciji.');
+      return;
+    }
+
+    try {
+      // Request background mode permission
+      await BackgroundMode.enable();
+      
+      // Configure background mode
+      await BackgroundMode.setConfig({
+        title: 'Hajki Portal - Snimanje rute',
+        text: 'Aplikacija snima vašu rutu u pozadini.',
+        icon: 'icon',
+        color: '#11998e',
+        resume: true,
+        hidden: false,
+        bigText: false
+      });
+
+      // Request location permissions
+      const permissions = await Geolocation.requestPermissions();
+      if (permissions.location !== 'granted') {
+        throw new Error('Location permission not granted');
+      }
+
+      setBackgroundTracking(true);
+      setLocationError(null);
+      console.log('Background location tracking started for route recording');
+      
+    } catch (error) {
+      console.error('Failed to start background tracking:', error);
+      setLocationError('Greška pri pokretanju praćenja lokacije u pozadini.');
+    }
+  };
+
+  const stopBackgroundTracking = async () => {
+    try {
+      if (Capacitor && BackgroundMode && Capacitor.isNativePlatform()) {
+        await BackgroundMode.disable();
+      }
+      setBackgroundTracking(false);
+      setLocationError(null);
+      console.log('Background location tracking stopped');
+    } catch (error) {
+      console.error('Failed to stop background tracking:', error);
+    }
   };
 
   // Funkcija za renderovanje rute na mapi kada želimo
@@ -212,10 +289,72 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
             padding: "10px 20px",
             borderRadius: "5px",
             cursor: "pointer",
+            marginRight: "10px",
           }}
         >
           Show Route on Map
         </button>
+
+        {/* Background tracking controls - only show on mobile */}
+        {(Capacitor && Capacitor.isNativePlatform()) && (
+          <div style={{ marginTop: "15px", padding: "10px", background: "#f8f9fa", borderRadius: "5px" }}>
+            <h4 style={{ margin: "0 0 10px 0", fontSize: "14px" }}>Background Tracking</h4>
+            <div style={{ marginBottom: "10px" }}>
+              {!backgroundTracking ? (
+                <button
+                  onClick={startBackgroundTracking}
+                  style={{
+                    background: "#28a745",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 16px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                  }}
+                >
+                  Enable Background Tracking
+                </button>
+              ) : (
+                <button
+                  onClick={stopBackgroundTracking}
+                  style={{
+                    background: "#dc3545",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 16px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                  }}
+                >
+                  Disable Background Tracking
+                </button>
+              )}
+            </div>
+            
+            {backgroundTracking && (
+              <div style={{ fontSize: "12px", color: "#28a745", fontWeight: "bold" }}>
+                ✓ Background tracking active
+              </div>
+            )}
+            
+            {locationError && (
+              <div style={{ fontSize: "12px", color: "#dc3545", marginTop: "5px" }}>
+                {locationError}
+              </div>
+            )}
+            
+            <div style={{ fontSize: "11px", color: "#6c757d", marginTop: "8px", lineHeight: "1.3" }}>
+              <p style={{ margin: "0 0 4px 0" }}>
+                <strong>Napomena:</strong> Background tracking omogućava aplikaciji da nastavi snimanje rute čak i kada je u pozadini.
+              </p>
+              <p style={{ margin: "0" }}>
+                Ovo je korisno za duže rute gde ne želite da držite aplikaciju otvorenu celo vreme.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Map */}

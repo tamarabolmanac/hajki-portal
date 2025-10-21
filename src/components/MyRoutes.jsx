@@ -125,7 +125,7 @@ export const MyRoutes = () => {
       
       <div className="glass-card">
         <div className="header-with-button">
-          <Link to="/new-route" className="btn-primary-modern">
+          <Link to="/new-route" className="btn-primary-modern" style={{ borderRadius: '8px' }}>
             + Dodaj novu rutu
           </Link>
         </div>
@@ -135,7 +135,7 @@ export const MyRoutes = () => {
             <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>🗺️</div>
             <h3 className="text-white-modern" style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>Nema ruta</h3>
             <p className="text-white-secondary" style={{ marginBottom: '2rem', fontSize: '1.1rem' }}>Još uvek niste kreirali nijednu rutu.</p>
-            <Link to="/new-route" className="btn-primary-modern">
+            <Link to="/new-route" className="btn-primary-modern" style={{ borderRadius: '8px' }}>
               Kreiraj prvu rutu
             </Link>
           </div>
@@ -173,13 +173,24 @@ export const MyRoutes = () => {
                   </div>
                 </div>
                 <div className="route-card-footer" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <Link to={`/route/${route.id}`} className="btn-primary-modern" style={{ flex: 1, minWidth: '120px' }}>
+                  <Link to={`/route/${route.id}`} className="btn-primary-modern" style={{ 
+                    flex: 1, 
+                    minWidth: '120px',
+                    borderRadius: '8px'
+                  }}>
                     Pogledaj detalje
                   </Link>
                   <button 
                     className="btn-secondary-modern"
                     onClick={() => handleEditRoute(route.id)}
-                    style={{ flex: 1, minWidth: '80px' }}
+                    style={{ 
+                      flex: 1, 
+                      minWidth: '80px',
+                      borderRadius: '8px',
+                      background: 'rgba(17, 153, 142, 0.8)',
+                      borderColor: 'rgba(17, 153, 142, 0.9)',
+                      color: 'rgba(255, 255, 255, 0.95)'
+                    }}
                   >
                     Uredi
                   </button>
@@ -190,9 +201,12 @@ export const MyRoutes = () => {
                     style={{ 
                       flex: 1, 
                       minWidth: '80px',
-                      background: deleting === route.id ? 'rgba(255, 107, 107, 0.2)' : 'rgba(255, 107, 107, 0.1)',
-                      borderColor: 'rgba(255, 107, 107, 0.3)',
-                      color: 'rgba(255, 255, 255, 0.9)'
+                      borderRadius: '8px',
+                      background: deleting === route.id ? 'rgba(255, 107, 107, 0.4)' : 'rgba(255, 107, 107, 0.3)',
+                      borderColor: 'rgba(255, 107, 107, 0.5)',
+                      color: 'rgba(255, 255, 255, 1)',
+                      fontWeight: '600',
+                      textShadow: '0 1px 2px rgba(0, 0, 0, 0.3)'
                     }}
                   >
                     {deleting === route.id ? 'Brisanje...' : 'Obriši'}
@@ -214,6 +228,7 @@ export const MyRoutes = () => {
                 <button 
                   className="btn-secondary-modern"
                   onClick={cancelDelete}
+                  style={{ borderRadius: '8px' }}
                 >
                   Otkaži
                 </button>
@@ -222,6 +237,7 @@ export const MyRoutes = () => {
                   onClick={() => handleDeleteRoute(deleteConfirm.id)}
                   disabled={deleting === deleteConfirm.id}
                   style={{ 
+                    borderRadius: '8px',
                     background: 'linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%)',
                     boxShadow: '0 8px 32px rgba(255, 107, 107, 0.3)'
                   }}

@@ -28,7 +28,6 @@ export const NearbyRoutes = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [radius, setRadius] = useState(10); // km radius
-  const [backgroundTracking, setBackgroundTracking] = useState(false);
   const [watchId, setWatchId] = useState(null);
 
   // Get user's current location - Universal (web + mobile)
@@ -101,64 +100,7 @@ export const NearbyRoutes = () => {
     getCurrentLocation();
   }, []);
 
-  // Background location tracking
-  const startBackgroundTracking = async () => {
-    if (!Capacitor || !Geolocation || !Capacitor.isNativePlatform()) {
-      console.log('Background tracking not available on web');
-      return;
-    }
-
-    try {
-      // Request background location permission
-      const permissions = await Geolocation.requestPermissions();
-      
-      if (permissions.location !== 'granted') {
-        setLocationError('Potrebna je dozvola za pristup lokaciji u pozadini.');
-        return;
-      }
-
-      // Start watching position with background options
-      const id = await Geolocation.watchPosition({
-        enableHighAccuracy: true,
-        timeout: 30000,
-        maximumAge: 60000 // 1 minute
-      }, (position) => {
-        console.log('Background location update:', position);
-        const location = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-        setUserLocation(location);
-        
-        // Save location to local storage for persistence
-        localStorage.setItem('lastKnownLocation', JSON.stringify({
-          ...location,
-          timestamp: Date.now()
-        }));
-      }, (error) => {
-        console.error('Background location error:', error);
-      });
-
-      setWatchId(id);
-      setBackgroundTracking(true);
-      console.log('Background location tracking started');
-      
-    } catch (error) {
-      console.error('Failed to start background tracking:', error);
-      setLocationError('Greška pri pokretanju praćenja lokacije u pozadini.');
-    }
-  };
-
-  const stopBackgroundTracking = async () => {
-    if (watchId && Geolocation) {
-      await Geolocation.clearWatch({ id: watchId });
-      setWatchId(null);
-      setBackgroundTracking(false);
-      console.log('Background location tracking stopped');
-    }
-  };
-
-  // App lifecycle management
+  // App state change handler for mobile
   useEffect(() => {
     if (!App || !Capacitor?.isNativePlatform()) return;
 
@@ -342,44 +284,6 @@ export const NearbyRoutes = () => {
           </div>
         </div>
 
-        {/* Background tracking controls - only show on mobile */}
-        {(Capacitor && Capacitor.isNativePlatform()) && (
-          <div className="background-tracking-section">
-            <div className="tracking-control">
-              <label>Praćenje lokacije u pozadini:</label>
-              <div className="tracking-buttons">
-                {!backgroundTracking ? (
-                  <button
-                    className="tracking-btn start-tracking"
-                    onClick={startBackgroundTracking}
-                  >
-                    🔄 Pokreni praćenje
-                  </button>
-                ) : (
-                  <button
-                    className="tracking-btn stop-tracking"
-                    onClick={stopBackgroundTracking}
-                  >
-                    ⏹️ Zaustavi praćenje
-                  </button>
-                )}
-              </div>
-              {backgroundTracking && (
-                <div className="tracking-status">
-                  <span className="status-indicator">🟢</span>
-                  <span>Lokacija se prati u pozadini</span>
-                </div>
-              )}
-            </div>
-            
-            <div className="tracking-info">
-              <p><strong>Napomena:</strong></p>
-              <p>• Praćenje u pozadini omogućava ažuriranje lokacije kada app nije aktivan</p>
-              <p>• Potrebno je dozvoliti "Uvek" za lokaciju u podešavanjima</p>
-              <p>• Može uticati na bateriju</p>
-            </div>
-          </div>
-        )}
       </div>
 
       {error && (
@@ -450,7 +354,7 @@ export const NearbyRoutes = () => {
                   </div>
                   
                   <div className="route-card-footer">
-                    <Link to={`/route/${route.id}`} className="view-route-btn">
+                    <Link to={`/route/${route.id}`} className="btn-primary-modern" style={{ borderRadius: '8px' }}>
                       Pogledaj detalje
                     </Link>
                   </div>

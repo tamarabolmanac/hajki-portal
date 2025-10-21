@@ -90,12 +90,12 @@ export const HikeRoutes = (props) => {
       <div className="glass-card">
         <div className="header-with-button">
           {userIsAuthenticated ? (
-            <Link to="/new-route" className="btn-primary-modern">
+            <Link to="/new-route" className="btn-primary-modern" style={{ borderRadius: '8px' }}>
               + Dodaj rutu
             </Link>
           ) : (
             <div className="auth-prompt">
-              <Link to="/login" className="btn-secondary-modern">
+              <Link to="/login" className="btn-secondary-modern" style={{ borderRadius: '8px' }}>
                 Uloguj se da dodaš rutu
               </Link>
             </div>
@@ -132,7 +132,7 @@ export const HikeRoutes = (props) => {
                 </div>
               </div>
               <div className="hike-card-footer">
-                <Link to={`/route/${hike.id}`} className="btn-primary-modern">
+                <Link to={`/route/${hike.id}`} className="btn-primary-modern" style={{ borderRadius: '8px' }}>
                   Pogledaj detalje
                 </Link>
               </div>

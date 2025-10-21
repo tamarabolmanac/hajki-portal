@@ -30,8 +30,7 @@ export const Login = () => {
 
       // Store token and user data in localStorage
       localStorage.setItem('authToken', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
+      localStorage.setItem('userID', data.user_id);
       // Redirect to home page
       navigate('/');
     } catch (error) {
