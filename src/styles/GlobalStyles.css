@@ -64,6 +64,30 @@
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Clean page header without background - like NearbyRoutes */
+.page-header.clean {
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+  padding: 2rem 0;
+}
+
+.page-header.clean::before {
+  display: none;
+}
+
+.page-header.clean h1 {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  margin: 0 0 1rem 0;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.02em;
+}
+
 /* Universal card style */
 .glass-card {
   background: rgba(17, 153, 142, 0.12);

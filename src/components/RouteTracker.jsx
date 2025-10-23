@@ -2,25 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { GoogleMap, Polyline, Marker } from "@react-google-maps/api";
 import { authenticatedFetch } from "../utils/api";
 
-// Dynamic imports for Capacitor (only available in mobile build)
-let Geolocation = null;
-let Capacitor = null;
-let BackgroundMode = null;
-
-try {
-  // Try to import Capacitor modules (will fail in web build)
-  const capacitorCore = require('@capacitor/core');
-  const capacitorGeolocation = require('@capacitor/geolocation');
-  const capacitorBackgroundMode = require('@capacitor/background-mode');
-  
-  Capacitor = capacitorCore.Capacitor;
-  Geolocation = capacitorGeolocation.Geolocation;
-  BackgroundMode = capacitorBackgroundMode.BackgroundMode;
-} catch (error) {
-  // Capacitor not available (web build)
-  console.log('Running in web mode - Capacitor not available');
-}
-
 export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop }) {
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
@@ -28,20 +9,12 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
   const [pointsSaved, setPointsSaved] = useState(0);
   const [gpsUpdateCount, setGpsUpdateCount] = useState(0);
   const [currentRouteId, setCurrentRouteId] = useState(routeId);
-  const [backgroundTracking, setBackgroundTracking] = useState(false);
-  const [locationError, setLocationError] = useState(null);
 
-  // Ref za prikupljene tačke (ne renderuju se odmah)
   const routeRef = useRef([]);
   const watchIdRef = useRef(null);
   const lastSavedTimeRef = useRef(null);
+  const isSavingRef = useRef(false);
   const isTrackingRef = useRef(false);
-  const currentRouteIdRef = useRef(currentRouteId);
-
-  // Update ref when state changes
-  useEffect(() => {
-    currentRouteIdRef.current = currentRouteId;
-  }, [currentRouteId]);
 
   const startTracking = () => {
     if (!("geolocation" in navigator)) {
@@ -49,45 +22,36 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
       return;
     }
 
-    // Reset state i ref
     setRouteToRender([]);
     routeRef.current = [];
     setPointsSaved(0);
     setGpsUpdateCount(0);
-    lastSavedTimeRef.current = null;
     setError(null);
+    isSavingRef.current = false;
     setIsTracking(true);
     isTrackingRef.current = true;
-    
-    // Reset route ID for new tracking sessions (only if we started with null)
-    if (routeId === null) {
-      setCurrentRouteId(null);
-      currentRouteIdRef.current = null;
-    }
     onTrackingStart && onTrackingStart();
 
     const id = navigator.geolocation.watchPosition(
       async (pos) => {
         if (!isTrackingRef.current) return;
-
         const { latitude, longitude, accuracy } = pos.coords;
         const currentTime = Date.now();
-
         setGpsUpdateCount((prev) => prev + 1);
+
         const shouldSavePoint =
           !lastSavedTimeRef.current || currentTime - lastSavedTimeRef.current >= 5000;
 
         const newPoint = { lat: latitude, lng: longitude };
-
-        // Dodaj u ref, ali ne u state za render
         routeRef.current.push(newPoint);
 
-        if (shouldSavePoint) {
+        if (shouldSavePoint && !isSavingRef.current) {
           try {
+            isSavingRef.current = true;
             const response = await authenticatedFetch("/routes/track_point", {
               method: "POST",
               body: JSON.stringify({
-                route_id: currentRouteIdRef.current,
+                route_id: currentRouteId,
                 latitude,
                 longitude,
                 accuracy,
@@ -95,21 +59,18 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
               }),
             });
 
-            if (response && response.status === 200) {
-              lastSavedTimeRef.current = currentTime;
+            if (response?.status === 200) {
               setPointsSaved((prev) => prev + 1);
-              
-              // If this was the first point and we got a route_id back, save it
-              if (!currentRouteIdRef.current && response.route_id) {
-                currentRouteIdRef.current = response.route_id;
+              lastSavedTimeRef.current = currentTime;
+              if (response.route_id) {
                 setCurrentRouteId(response.route_id);
               }
-            } else {
-              console.error("Failed to save point:", response);
             }
           } catch (err) {
             console.error("Error saving tracking point:", err);
             setError(`Failed to save tracking point: ${err.message}`);
+          } finally {
+            isSavingRef.current = false;
           }
         }
       },
@@ -118,101 +79,35 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
         setError(`Geolocation error: ${err.message}`);
         stopTracking();
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 30000,
-        maximumAge: 0,
-      }
+      { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 }
     );
 
     watchIdRef.current = id;
   };
+
   const stopTracking = () => {
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
     }
-    
-    // Stop background tracking when stopping route tracking
-    if (backgroundTracking) {
-      stopBackgroundTracking();
-    }
-    
     setIsTracking(false);
     isTrackingRef.current = false;
     onTrackingStop && onTrackingStop();
   };
 
-  // Background tracking functions
-  const startBackgroundTracking = async () => {
-    if (!Capacitor || !BackgroundMode || !Capacitor.isNativePlatform()) {
-      setLocationError('Background tracking je dostupan samo u mobilnoj aplikaciji.');
-      return;
-    }
-
-    try {
-      // Request background mode permission
-      await BackgroundMode.enable();
-      
-      // Configure background mode
-      await BackgroundMode.setConfig({
-        title: 'Hajki Portal - Snimanje rute',
-        text: 'Aplikacija snima vašu rutu u pozadini.',
-        icon: 'icon',
-        color: '#11998e',
-        resume: true,
-        hidden: false,
-        bigText: false
-      });
-
-      // Request location permissions
-      const permissions = await Geolocation.requestPermissions();
-      if (permissions.location !== 'granted') {
-        throw new Error('Location permission not granted');
-      }
-
-      setBackgroundTracking(true);
-      setLocationError(null);
-      console.log('Background location tracking started for route recording');
-      
-    } catch (error) {
-      console.error('Failed to start background tracking:', error);
-      setLocationError('Greška pri pokretanju praćenja lokacije u pozadini.');
-    }
-  };
-
-  const stopBackgroundTracking = async () => {
-    try {
-      if (Capacitor && BackgroundMode && Capacitor.isNativePlatform()) {
-        await BackgroundMode.disable();
-      }
-      setBackgroundTracking(false);
-      setLocationError(null);
-      console.log('Background location tracking stopped');
-    } catch (error) {
-      console.error('Failed to stop background tracking:', error);
-    }
-  };
-
-  // Funkcija za renderovanje rute na mapi kada želimo
-  const showRouteOnMap = () => {
-    setRouteToRender([...routeRef.current]);
-  };
+  const showRouteOnMap = () => setRouteToRender([...routeRef.current]);
 
   useEffect(() => {
     return () => {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
-      isTrackingRef.current = false;
     };
   }, []);
 
   return (
     <div className="route-tracker">
-      {/* Control Panel */}
       <div
-        className="tracking-controls"
         style={{
           position: "absolute",
           top: "20px",
@@ -225,139 +120,55 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
         }}
       >
         <h3>Route Tracking</h3>
-        {/*{routeId && (
-          <p>
-            <strong>Route ID:</strong> {routeId}
-          </p>
-        )}
-          
-
         {error && (
-          <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
+          <div style={{ color: "red", fontSize: "14px", marginBottom: "10px" }}>
+            {error}
+          </div>
         )}
-
-        <div style={{ marginBottom: "10px" }}>
-          <strong>Status:</strong> {isTracking ? "Tracking Active" : "Tracking Stopped"}
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <strong>GPS Updates:</strong> {gpsUpdateCount}
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <strong>Points Saved to DB:</strong> {pointsSaved}
-        </div>
-        */}
-
+        {isTracking && (
+          <div style={{ fontSize: "14px", color: "#666", marginBottom: "10px" }}>
+            <div>GPS updates: {gpsUpdateCount}</div>
+            <div>Points saved: {pointsSaved}</div>
+          </div>
+        )}
         {!isTracking ? (
-          <button
-            onClick={startTracking}
-            style={{
-              background: "#28a745",
-              color: "white",
-              border: "none",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              marginRight: "10px",
-            }}
+          <button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              startTracking();
+            }} 
+            style={{ background: "#28a745", color: "white", border: "none", padding: "10px 15px", borderRadius: "5px", cursor: "pointer" }}
           >
             Start Tracking
           </button>
         ) : (
-          <button
-            onClick={stopTracking}
-            style={{
-              background: "#dc3545",
-              color: "white",
-              border: "none",
-              padding: "10px 20px",
-              borderRadius: "5px",
-              cursor: "pointer",
-              marginRight: "10px",
-            }}
+          <button 
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              stopTracking();
+            }} 
+            style={{ background: "#dc3545", color: "white", border: "none", padding: "10px 15px", borderRadius: "5px", cursor: "pointer" }}
           >
             Stop Tracking
           </button>
         )}
-
-        {/* Dugme za prikaz rute na mapi */}
         <button
-          onClick={showRouteOnMap}
-          style={{
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            padding: "10px 20px",
-            borderRadius: "5px",
-            cursor: "pointer",
-            marginRight: "10px",
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            showRouteOnMap();
           }}
+          style={{ background: "#007bff", color: "white", marginLeft: "10px", border: "none", padding: "10px 15px", borderRadius: "5px", cursor: "pointer" }}
         >
-          Show Route on Map
+          Show Route
         </button>
-
-        {/* Background tracking controls - only show on mobile */}
-        {(Capacitor && Capacitor.isNativePlatform()) && (
-          <div style={{ marginTop: "15px", padding: "10px", background: "#f8f9fa", borderRadius: "5px" }}>
-            <h4 style={{ margin: "0 0 10px 0", fontSize: "14px" }}>Background Tracking</h4>
-            <div style={{ marginBottom: "10px" }}>
-              {!backgroundTracking ? (
-                <button
-                  onClick={startBackgroundTracking}
-                  style={{
-                    background: "#28a745",
-                    color: "white",
-                    border: "none",
-                    padding: "8px 16px",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "12px",
-                  }}
-                >
-                  Enable Background Tracking
-                </button>
-              ) : (
-                <button
-                  onClick={stopBackgroundTracking}
-                  style={{
-                    background: "#dc3545",
-                    color: "white",
-                    border: "none",
-                    padding: "8px 16px",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "12px",
-                  }}
-                >
-                  Disable Background Tracking
-                </button>
-              )}
-            </div>
-            
-            {backgroundTracking && (
-              <div style={{ fontSize: "12px", color: "#28a745", fontWeight: "bold" }}>
-                ✓ Background tracking active
-              </div>
-            )}
-            
-            {locationError && (
-              <div style={{ fontSize: "12px", color: "#dc3545", marginTop: "5px" }}>
-                {locationError}
-              </div>
-            )}
-            
-            <div style={{ fontSize: "11px", color: "#6c757d", marginTop: "8px", lineHeight: "1.3" }}>
-              <p style={{ margin: "0 0 4px 0" }}>
-                <strong>Napomena:</strong> Background tracking omogućava aplikaciji da nastavi snimanje rute čak i kada je u pozadini.
-              </p>
-              <p style={{ margin: "0" }}>
-                Ovo je korisno za duže rute gde ne želite da držite aplikaciju otvorenu celo vreme.
-              </p>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Map */}
       <GoogleMap
         mapContainerStyle={{ height: "100vh", width: "100%" }}
         center={
@@ -367,50 +178,16 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
         }
         zoom={15}
       >
-          {routeToRender.length > 1 && (
-            <Polyline
-              path={routeToRender}
-              options={{
-                strokeColor: "#FF0000",
-                strokeWeight: 4,
-                strokeOpacity: 0.8,
-              }}
-            />
-          )}
-
-          {routeToRender.length > 0 && (
-            <>
-              <Marker
-                position={routeToRender[0]}
-                icon={{
-                  url:
-                    "data:image/svg+xml;charset=UTF-8," +
-                    encodeURIComponent(`
-                      <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="10" cy="10" r="8" fill="#00FF00" stroke="#FFFFFF" stroke-width="2"/>
-                      </svg>
-                    `),
-                  scaledSize: { width: 20, height: 20 },
-                }}
-                title="Start Position"
-              />
-              <Marker
-                position={routeToRender[routeToRender.length - 1]}
-                icon={{
-                  url:
-                    "data:image/svg+xml;charset=UTF-8," +
-                    encodeURIComponent(`
-                      <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="10" cy="10" r="8" fill="#FF0000" stroke="#FFFFFF" stroke-width="2"/>
-                      </svg>
-                    `),
-                  scaledSize: { width: 20, height: 20 },
-                }}
-                title="Current Position"
-              />
-            </>
-          )}
-        </GoogleMap>
+        {routeToRender.length > 1 && (
+          <Polyline path={routeToRender} options={{ strokeColor: "#FF0000", strokeWeight: 4 }} />
+        )}
+        {routeToRender.length > 0 && (
+          <>
+            <Marker position={routeToRender[0]} />
+            <Marker position={routeToRender[routeToRender.length - 1]} />
+          </>
+        )}
+      </GoogleMap>
     </div>
   );
 }

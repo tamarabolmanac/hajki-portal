@@ -48,10 +48,11 @@
 /* Mobile menu button - hidden on desktop */
 .navbar-toggle {
   display: none;
-  position: absolute; /* Position absolutely to place it exactly where we want */
-  right: 15px; /* Align with navbar right edge */
-  top: 50%; /* Center vertically */
-  transform: translateY(-50%); /* Perfect vertical centering */
+  position: absolute !important; /* Position absolutely to place it exactly where we want */
+  right: 15px !important; /* Align with navbar right edge */
+  top: 50% !important; /* Center vertically */
+  transform: translateY(-50%) !important; /* Perfect vertical centering */
+  margin: 0 !important; /* Remove any default margins */
   background: transparent;
   border: 2px solid #C6D870;
   border-radius: 8px;
@@ -154,7 +155,7 @@
 /* Mobile-only responsive adjustments */
 @media (max-width: 991px) {
   .navbar {
-    top: 10px; /* Less spacing on mobile */
+    top: 20px; /* Increased spacing from top for tablets */
     right: 10px;
     left: 10px;
   }
@@ -296,14 +297,12 @@
     border-radius: 20px !important;
     font-size: 14px !important;
     font-weight: 600 !important;
-    color: #556B2F !important;
-    box-shadow: 0 2px 8px rgba(198, 216, 112, 0.3) !important;
   }
 }
 
 @media (max-width: 768px) {
   .navbar {
-    top: 8px; /* Even less spacing on smaller screens */
+    top: 18px; /* Increased spacing from top for mobile */
     right: 8px;
     left: 8px;
     min-height: 55px !important;
@@ -350,7 +349,7 @@
 
 @media (max-width: 480px) {
   .navbar {
-    top: 5px; /* Minimal spacing on smallest screens */
+    top: 15px; /* Increased spacing from top for small phones */
     right: 5px;
     left: 5px;
     min-height: 50px !important;
@@ -421,7 +420,7 @@
 /* Extra small devices */
 @media (max-width: 360px) {
   .navbar {
-    top: 3px; /* Very minimal spacing on extra small screens */
+    top: 12px; /* Increased spacing from top for extra small screens */
     right: 3px;
     left: 3px;
   }

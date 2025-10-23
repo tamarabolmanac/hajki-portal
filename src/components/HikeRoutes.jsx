@@ -9,6 +9,7 @@ export const HikeRoutes = (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Check authentication status
   useEffect(() => {
@@ -81,9 +82,15 @@ export const HikeRoutes = (props) => {
     );
   }
 
+  // Filter routes based on search term
+  const filteredRoutes = data ? data.filter(route => 
+    route.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    route.description.toLowerCase().includes(searchTerm.toLowerCase())
+  ) : [];
+
   return (
     <div className="page-container">
-      <div className="page-header">
+      <div className="page-header clean">
         <h1>Pretraži rute</h1>
       </div>
       
@@ -102,8 +109,35 @@ export const HikeRoutes = (props) => {
           )}
         </div>
 
+        {/* Search Input */}
+        <div style={{ marginBottom: '2rem' }}>
+          <input
+            type="text"
+            placeholder="🔍 Pretraži rute po nazivu ili opisu..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="form-input-modern"
+            style={{
+              width: '100%',
+              padding: '1rem 1.5rem',
+              fontSize: '1rem',
+              borderRadius: '12px',
+              border: '2px solid rgba(255, 255, 255, 0.1)',
+              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              color: 'white',
+              transition: 'all 0.3s ease'
+            }}
+          />
+          {searchTerm && (
+            <p style={{ marginTop: '0.5rem', color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem' }}>
+              Pronađeno ruta: {filteredRoutes.length}
+            </p>
+          )}
+        </div>
+
         <div className="hike-cards-container">
-          {data && data.map((hike, index) => (
+          {filteredRoutes && filteredRoutes.length > 0 ? (
+            filteredRoutes.map((hike, index) => (
             <div key={`${hike.title}-${index}`} className="hike-card">
               <div className="hike-card-content">
                 <h3 className="hike-title">{hike.title}</h3>
@@ -137,7 +171,24 @@ export const HikeRoutes = (props) => {
                 </Link>
               </div>
             </div>
-          ))}
+          ))
+          ) : (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '3rem 2rem',
+              color: 'rgba(255, 255, 255, 0.7)'
+            }}>
+              <p style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>🔍</p>
+              <p style={{ fontSize: '1.1rem', fontWeight: '500' }}>
+                {searchTerm ? 'Nema ruta koje odgovaraju pretrazi' : 'Nema dostupnih ruta'}
+              </p>
+              {searchTerm && (
+                <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                  Pokušaj sa drugim terminom za pretragu
+                </p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

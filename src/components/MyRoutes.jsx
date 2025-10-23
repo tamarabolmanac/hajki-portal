@@ -12,6 +12,7 @@ export const MyRoutes = () => {
   const [error, setError] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [deleting, setDeleting] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const userIsAuthenticated = isAuthenticated();
 
   useEffect(() => {
@@ -117,9 +118,15 @@ export const MyRoutes = () => {
     );
   }
 
+  // Filter routes based on search term
+  const filteredRoutes = routes.filter(route => 
+    route.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (route.description && route.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   return (
     <div className="page-container">
-      <div className="page-header">
+      <div className="page-header clean">
         <h1>Moje rute</h1>
       </div>
       
@@ -130,6 +137,34 @@ export const MyRoutes = () => {
           </Link>
         </div>
 
+        {/* Search Input */}
+        {routes.length > 0 && (
+          <div style={{ marginBottom: '2rem', marginTop: '1.5rem' }}>
+            <input
+              type="text"
+              placeholder="🔍 Pretraži svoje rute..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="form-input-modern"
+              style={{
+                width: '100%',
+                padding: '1rem 1.5rem',
+                fontSize: '1rem',
+                borderRadius: '12px',
+                border: '2px solid rgba(255, 255, 255, 0.1)',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                color: 'white',
+                transition: 'all 0.3s ease'
+              }}
+            />
+            {searchTerm && (
+              <p style={{ marginTop: '0.5rem', color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.9rem' }}>
+                Pronađeno ruta: {filteredRoutes.length}
+              </p>
+            )}
+          </div>
+        )}
+
         {routes.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '3rem 2rem' }}>
             <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>🗺️</div>
@@ -139,9 +174,23 @@ export const MyRoutes = () => {
               Kreiraj prvu rutu
             </Link>
           </div>
+        ) : filteredRoutes.length === 0 ? (
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '3rem 2rem',
+            color: 'rgba(255, 255, 255, 0.7)'
+          }}>
+            <p style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>🔍</p>
+            <p style={{ fontSize: '1.1rem', fontWeight: '500' }}>
+              Nema ruta koje odgovaraju pretrazi
+            </p>
+            <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+              Pokušaj sa drugim terminom za pretragu
+            </p>
+          </div>
         ) : (
           <div className="routes-grid">
-            {routes.map((route, index) => (
+            {filteredRoutes.map((route, index) => (
               <div key={`${route.id}-${index}`} className="route-card">
                 <div className="route-card-header">
                   <h3 className="route-title">{route.title}</h3>
