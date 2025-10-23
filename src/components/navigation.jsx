@@ -96,7 +96,7 @@ export const Navigation = (props) => {
       <div className="container">
         <div className="navbar-header">
           <Link className="navbar-brand" to="/" onClick={handleHomeClick}>
-            <img className="logo-navbar" src="/img/logo_small.png" alt="Hajki Logo" />
+            <img className="logo-navbar" src="/img/small-logo.png" alt="Hajki Logo" />
           </Link>
           <button
             type="button"
