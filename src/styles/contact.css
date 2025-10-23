@@ -46,7 +46,7 @@ body:has(#contact)::before {
 }
 
 .contact-content h3 {
-  font-family: "Caveat", cursive;
+  font-family: "Poppins", "Raleway", sans-serif;
   font-weight: 700;
   color: #1F3F1F;
   font-size: clamp(2rem, 4vw, 3rem);
@@ -59,10 +59,10 @@ body:has(#contact)::before {
 }
 
 .contact-content p {
-  font-family: "Caveat", cursive;
-  font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 1.8;
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.7;
   color: #333;
   margin-bottom: 1.5rem;
 }
@@ -76,9 +76,9 @@ body:has(#contact)::before {
   position: relative;
   padding: 12px 0;
   margin-bottom: 12px;
-  font-family: "Caveat", cursive;
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
   line-height: 1.6;
   color: #444;
   border-bottom: 1px solid rgba(85, 107, 47, 0.1);
@@ -148,12 +148,12 @@ body:has(#contact)::before {
   }
   
   .contact-content h3 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     text-align: center;
   }
   
   .contact-content p {
-    font-size: 1.3rem;
+    font-size: 1rem;
     text-align: center;
   }
   
@@ -162,7 +162,7 @@ body:has(#contact)::before {
   }
   
   .contact-list li {
-    font-size: 1.2rem;
+    font-size: 1rem;
     text-align: center;
   }
 }

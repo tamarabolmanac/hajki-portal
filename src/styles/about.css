@@ -62,7 +62,7 @@ body:has(#about)::before {
 }
 
 .about-text h3 {
-  font-family: "Caveat", cursive;
+  font-family: "Poppins", "Raleway", sans-serif;
   font-weight: 700;
   color: #556B2F;
   font-size: clamp(2rem, 4vw, 3rem);
@@ -71,10 +71,10 @@ body:has(#about)::before {
 }
 
 .about-text p {
-  font-family: "Caveat", cursive;
-  font-size: 1.5rem;
-  font-weight: 600;
-  line-height: 1.8;
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.7;
   color: #333;
   margin-bottom: 1.5rem;
 }
@@ -173,12 +173,12 @@ body:has(#about)::before {
   }
   
   .about-text h3 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     text-align: center;
   }
   
   .about-text p {
-    font-size: 1.3rem;
+    font-size: 1rem;
     text-align: center;
   }
 }

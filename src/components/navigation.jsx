@@ -64,9 +64,7 @@ export const Navigation = (props) => {
   };
 
   const handleLinkClick = (path) => {
-    if (path !== '/#about') {
-      setActiveLink(path);
-    }
+    setActiveLink(path);
     closeMenu();
   };
 
@@ -84,9 +82,8 @@ export const Navigation = (props) => {
     closeMenu();
   };
 
-  const handleAboutClick = (e) => {
-    e.preventDefault();
-    setActiveLink('/#about'); // Set a unique identifier for 'O nama'
+  const handleAboutClick = () => {
+    setActiveLink('/about');
     closeMenu();
   };
 
@@ -144,9 +141,9 @@ export const Navigation = (props) => {
               </Link>
             </li>
             <li>
-              <a href="#about" className={`page-scroll ${activeLink === '/#about' ? 'active' : ''}`} onClick={handleAboutClick}>
+              <Link to="/about" className={`page-scroll ${activeLink === '/about' ? 'active' : ''}`} onClick={handleAboutClick}>
                 O nama
-              </a>
+              </Link>
             </li>
             {isLoggedIn ? (
               <>
