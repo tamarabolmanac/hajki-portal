@@ -8,13 +8,13 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
   const [routeToRender, setRouteToRender] = useState([]);
   const [pointsSaved, setPointsSaved] = useState(0);
   const [gpsUpdateCount, setGpsUpdateCount] = useState(0);
-  const [currentRouteId, setCurrentRouteId] = useState(routeId);
 
   const routeRef = useRef([]);
   const watchIdRef = useRef(null);
   const lastSavedTimeRef = useRef(null);
   const isSavingRef = useRef(false);
   const isTrackingRef = useRef(false);
+  const currentRouteIdRef = useRef(routeId);
 
   const startTracking = () => {
     if (!("geolocation" in navigator)) {
@@ -48,10 +48,11 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
         if (shouldSavePoint && !isSavingRef.current) {
           try {
             isSavingRef.current = true;
+            console.log("📤 Saving point with route_id:", currentRouteIdRef.current);
             const response = await authenticatedFetch("/routes/track_point", {
               method: "POST",
               body: JSON.stringify({
-                route_id: currentRouteId,
+                route_id: currentRouteIdRef.current,
                 latitude,
                 longitude,
                 accuracy,
@@ -63,7 +64,8 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
               setPointsSaved((prev) => prev + 1);
               lastSavedTimeRef.current = currentTime;
               if (response.route_id) {
-                setCurrentRouteId(response.route_id);
+                console.log("✅ Point saved! Route ID:", response.route_id);
+                currentRouteIdRef.current = response.route_id;
               }
             }
           } catch (err) {
