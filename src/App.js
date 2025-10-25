@@ -168,6 +168,11 @@ const AppContent = () => {
               }
             />
             <Route path="/routes/:id" element={<RouteDetails />} />
+            <Route path="/about" element={
+              <div className="content-container">
+                <About data={landingPageData.About} />
+              </div>
+            } />
             <Route path="/contact" element={
               <div className="content-container">
                 <Contact />
