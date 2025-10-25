@@ -1,6 +1,7 @@
 /* Nearby Routes Styles */
 .nearby-routes-container {
   padding: 2rem 1rem;
+  padding-top: 120px; /* Space for fixed navbar */
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
@@ -423,10 +424,18 @@
   transform: translateY(-2px);
 }
 
+/* Tablet Responsive */
+@media (max-width: 991px) {
+  .nearby-routes-container {
+    padding-top: 110px; /* Adjust for smaller navbar */
+  }
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .nearby-routes-container {
     padding: 1rem 0.5rem;
+    padding-top: 100px; /* Adjust for mobile navbar */
   }
   
   .filters-section {
@@ -444,6 +453,10 @@
 }
 
 @media (max-width: 480px) {
+  .nearby-routes-container {
+    padding-top: 90px; /* Adjust for extra small screens */
+  }
+
   .location-info {
     flex-direction: column;
     text-align: center;

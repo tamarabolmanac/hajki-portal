@@ -2,6 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem;
+  padding-top: 120px; /* Space for fixed navbar */
 }
 
 .route-header {
@@ -161,4 +162,38 @@
 
 .image-gallery img:hover {
   transform: scale(1.05);
+}
+
+/* Tablet Responsive */
+@media (max-width: 991px) {
+  .route-details-container {
+    padding-top: 110px; /* Adjust for smaller navbar */
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .route-details-container {
+    padding: 1rem;
+    padding-top: 100px; /* Adjust for mobile navbar */
+  }
+
+  .route-title {
+    font-size: 1.5rem;
+  }
+
+  .route-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .image-gallery {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .route-details-container {
+    padding-top: 90px; /* Adjust for extra small screens */
+  }
 }

@@ -3,6 +3,7 @@
 /* Universal container for all pages */
 .page-container {
   padding: 2rem 1rem;
+  padding-top: 120px; /* Space for fixed navbar */
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
@@ -301,10 +302,18 @@
 .p-4 { padding: 2rem; }
 .p-5 { padding: 3rem; }
 
+/* Tablet Responsive */
+@media (max-width: 991px) {
+  .page-container {
+    padding-top: 110px; /* Adjust for smaller navbar */
+  }
+}
+
 /* Responsive utilities */
 @media (max-width: 768px) {
   .page-container {
     padding: 1rem 0.5rem;
+    padding-top: 100px; /* Adjust for mobile navbar */
   }
   
   .page-header {
@@ -322,5 +331,11 @@
     width: 100%;
     text-align: center;
     margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-container {
+    padding-top: 90px; /* Adjust for extra small screens */
   }
 }

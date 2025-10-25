@@ -165,6 +165,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #EFF5D2, #C6D870);
   padding: 2rem 0;
+  padding-top: 120px; /* Space for fixed navbar */
 }
 
 .hike-routes-content {
@@ -205,8 +206,19 @@
   color: #3498db;
 }
 
+/* Tablet Responsive */
+@media (max-width: 991px) {
+  .hike-routes-container {
+    padding-top: 110px; /* Adjust for smaller navbar */
+  }
+}
+
 /* Media Queries for fine-tuning */
 @media (max-width: 768px) {
+  .hike-routes-container {
+    padding-top: 100px; /* Adjust for mobile navbar */
+  }
+
   .header-with-button {
     flex-direction: column;
     align-items: stretch;
@@ -223,5 +235,11 @@
 
   .hike-cards-container {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .hike-routes-container {
+    padding-top: 90px; /* Adjust for extra small screens */
   }
 }
