@@ -251,11 +251,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999; /* Above navbar (1030) */
+  padding: 20px;
 }
 
 .delete-modal {
@@ -264,7 +265,42 @@
   padding: 30px;
   max-width: 450px;
   width: 90%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 10000;
+}
+
+/* Modal button styles override */
+.delete-modal .btn-secondary-modern {
+  background: #f5f5f5;
+  color: #333 !important;
+  border: 2px solid #ddd;
+  font-weight: 600;
+}
+
+.delete-modal .btn-secondary-modern:hover {
+  background: #e0e0e0;
+  color: #000 !important;
+  border-color: #bbb;
+}
+
+.delete-modal .btn-primary-modern {
+  color: white !important;
+  font-weight: 600;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .delete-modal {
+    padding: 20px;
+    width: 95%;
+  }
+  
+  .delete-modal h3 {
+    font-size: 1.25rem;
+  }
 }
 
 .delete-modal h3 {

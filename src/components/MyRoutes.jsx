@@ -268,8 +268,8 @@ export const MyRoutes = () => {
         
         {/* Delete Confirmation Modal */}
         {deleteConfirm && (
-          <div className="delete-modal-overlay">
-            <div className="delete-modal">
+          <div className="delete-modal-overlay" onClick={cancelDelete}>
+            <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
               <h3>Potvrda brisanja</h3>
               <p>Da li ste sigurni da želite da obrišete rutu <strong>"{deleteConfirm.title}"</strong>?</p>
               <p className="delete-warning">Ova akcija se ne može poništiti.</p>
