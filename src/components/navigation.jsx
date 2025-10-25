@@ -15,23 +15,6 @@ export const Navigation = (props) => {
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
-  // Ensure menu is closed on mount/refresh
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, []);
-
-  // Close menu on window resize (if resizing from mobile to desktop)
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 992 && isMenuOpen) {
-        setIsMenuOpen(false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [isMenuOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -51,9 +34,8 @@ export const Navigation = (props) => {
   }, []);
 
   useEffect(() => {
-    // Update active link on route change and close menu
+    // Update active link on route change
     setActiveLink(location.pathname);
-    setIsMenuOpen(false); // Close menu on route change/refresh
   }, [location.pathname]);
 
 
@@ -75,10 +57,7 @@ export const Navigation = (props) => {
   }, []); // Removed dependency to avoid re-renders on every storage change
 
   const toggleMenu = () => {
-    // Only toggle on mobile devices
-    if (window.innerWidth < 992) {
-      setIsMenuOpen(prevIsMenuOpen => !prevIsMenuOpen);
-    }
+    setIsMenuOpen(prevIsMenuOpen => !prevIsMenuOpen);
   };
 
   const closeMenu = () => {

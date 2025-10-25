@@ -290,9 +290,11 @@
     border: none !important;
     border-top: none !important;
     box-shadow: none !important;
+    pointer-events: none !important; /* Don't block clicks when closed */
   }
 
   .navbar-collapse.in {
+    pointer-events: auto !important; /* Enable clicks when open */
     max-height: 500px !important;
     background: rgba(17, 153, 142, 0.95) !important;
     backdrop-filter: blur(20px) !important;
