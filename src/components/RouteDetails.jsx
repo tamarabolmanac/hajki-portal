@@ -5,7 +5,7 @@ import { authenticatedFetch } from '../utils/api';
 import { getCurrentUser, getCurrentUserID } from '../utils/authHandler';
 import { config } from '../config';
 import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
-import RouteTracker from './RouteTracker';
+import RouteTrackerHybrid from './RouteTrackerHybrid';
 
 // Placeholder dok se mapa učitava
 const MapPlaceholder = () => {
@@ -96,7 +96,15 @@ export const RouteDetails = () => {
   if (loading || !route) {
     return (
       <div className="loading-container">
-        <h2>Učitavanje...</h2>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{ width: "100px", height: "100px" }}
+        >
+          <source src="/animation/beaver.mp4" type="video/mp4" />
+        </video>
       </div>
     );
   }
@@ -122,7 +130,7 @@ export const RouteDetails = () => {
   // If tracker is shown, render only the tracker
   if (showTracker) {
     return (
-      <RouteTracker 
+      <RouteTracker
         routeId={id}
         onTrackingStart={() => console.log('Tracking started for route:', id)}
         onTrackingStop={handleStopTracking}
@@ -148,11 +156,6 @@ export const RouteDetails = () => {
               <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 GPS</small>
             )}
           </span>
-          {route.points_count > 0 && (
-            <span className="route-points">
-              Points: {route.points_count} GPS points
-            </span>
-          )}
         </div>
         
         {/* Action Buttons - Only show for route owner */}

@@ -107,16 +107,17 @@ export const NearbyRoutes = () => {
 
   if (loading) {
     return (
-      <div className="nearby-routes-container">
-        <div className="nearby-routes-header">
-          <h1>Blizu mene</h1>
-          <p>Pronađite rute u vašoj blizini</p>
-        </div>
+      <div className="loading-container">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{ width: "100px", height: "100px" }}
+        >
+          <source src="/animation/beaver.mp4" type="video/mp4" />
+        </video>
         
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Pronalaženje vaše lokacije...</p>
-        </div>
       </div>
     );
   }
@@ -210,13 +211,6 @@ export const NearbyRoutes = () => {
                         <span className="stat-icon">⛰️</span>
                         <span>{route.difficulty}</span>
                       </div>
-                      
-                      {route.points_count > 0 && (
-                        <div className="stat">
-                          <span className="stat-icon">📍</span>
-                          <span>{route.points_count} GPS points</span>
-                        </div>
-                      )}
                     </div>
                   </div>
                   
