@@ -107,7 +107,7 @@ export const NearbyRoutes = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
+      <div className="loading-container" style={{ textAlign: "center" }}>
         <video
           autoPlay
           loop
@@ -117,10 +117,21 @@ export const NearbyRoutes = () => {
         >
           <source src="/animation/beaver.mp4" type="video/mp4" />
         </video>
-        
+
+        <p
+          className="loading-text-modern"
+          style={{
+            marginTop: "0.6rem",
+            fontSize: "1.1rem",
+            fontWeight: "500"
+          }}
+        >
+          Učitavanje...
+        </p>
       </div>
     );
-  }
+}
+
 
   return (
     <div className="nearby-routes-container">

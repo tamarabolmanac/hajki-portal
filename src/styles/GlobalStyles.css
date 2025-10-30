@@ -275,6 +275,10 @@
   color: rgba(255, 255, 255, 0.95);
 }
 
+.text-black-modern {
+  color: rgb(0, 0, 0);
+}
+
 .text-white-secondary {
   color: rgba(255, 255, 255, 0.8);
 }

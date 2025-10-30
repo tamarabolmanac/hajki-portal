@@ -95,7 +95,7 @@ export const RouteDetails = () => {
 
   if (loading || !route) {
     return (
-      <div className="loading-container">
+      <div className="loading-container" style={{ textAlign: "center" }}>
         <video
           autoPlay
           loop
@@ -105,9 +105,17 @@ export const RouteDetails = () => {
         >
           <source src="/animation/beaver.mp4" type="video/mp4" />
         </video>
+
+        <p
+          className="loading-text-modern"
+          style={{ marginTop: "0.5rem", fontSize: "1.1rem", fontWeight: "500"}}
+        >
+          Učitavanje detalja rute...
+        </p>
       </div>
     );
   }
+
 
   const containerStyle = {
     width: '100%',

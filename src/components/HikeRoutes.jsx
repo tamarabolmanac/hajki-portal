@@ -72,15 +72,39 @@ export const HikeRoutes = (props) => {
   }
 
   if (loading) {
-    return (
-      <div className="page-container">
-        <div className="glass-card" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-          <div className="loading-spinner-modern" style={{ marginBottom: '1.5rem' }}></div>
-          <p className="text-white-modern" style={{ fontSize: '1.1rem', fontWeight: '500' }}>Učitavanje ruta...</p>
-        </div>
+  return (
+    <div className="loading-container">
+      <div
+        style={{
+          textAlign: "center",
+          padding: "4rem 2rem",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{ width: "120px", height: "120px", marginBottom: "1.2rem" }}
+        >
+          <source src="/animation/beaver.mp4" type="video/mp4" />
+        </video>
+
+        <p
+          className="text-black-modern"
+          style={{ fontSize: "1.2rem", fontWeight: "500", marginBottom: "0.3rem" }}
+        >
+          Učitavanje ruta...
+        </p>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   // Filter routes based on search term
   const filteredRoutes = data ? data.filter(route => 
@@ -156,11 +180,6 @@ export const HikeRoutes = (props) => {
                       {hike.calculated_from_points && (
                         <small style={{ color: '#28a745', marginLeft: '5px' }}>📍</small>
                       )}
-                    </span>
-                  )}
-                  {hike.points_count > 0 && (
-                    <span className="hike-points">
-                      {hike.points_count} GPS points
                     </span>
                   )}
                 </div>
