@@ -5,7 +5,7 @@ import { authenticatedFetch } from '../utils/api';
 import { getCurrentUser, getCurrentUserID } from '../utils/authHandler';
 import { config } from '../config';
 import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
-import RouteTrackerHybrid from './RouteTrackerHybrid';
+import RouteTracker from './RouteTracker';
 
 // Placeholder dok se mapa učitava
 const MapPlaceholder = () => {
