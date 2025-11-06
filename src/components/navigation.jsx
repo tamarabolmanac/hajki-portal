@@ -134,6 +134,11 @@ export const Navigation = (props) => {
                     Blizu mene
                   </Link>
                 </li>
+                <li>
+                  <Link to="/prirodnjacki-kviz" className={`page-scroll ${activeLink === '/prirodnjacki-kviz' ? 'active' : ''}`} onClick={() => handleLinkClick('/prirodnjacki-kviz')}>
+                    Prirodnjacki kviz
+                  </Link>
+                </li>
               </>
             )}
             <li>

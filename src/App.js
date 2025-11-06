@@ -29,6 +29,7 @@ import { REACT_APP_GOOGLE_MAPS_API_KEY } from './config';
 import "./App.css";
 import "./styles/main.css";
 import { config } from './config';
+import OnlineUsersList from "./components/OnlineUsersList";
 
 // Wrapper component to access useNavigate
 const AppContent = () => {
@@ -124,7 +125,7 @@ const AppContent = () => {
               element={
                 <PrivateRoute>
                   <div className="content-container">
-                    <RouteTracker 
+                    <RouteTracker
                       routeId={null}
                       onTrackingStart={() => console.log('Started tracking new route')}
                       onTrackingStop={() => {
@@ -153,6 +154,16 @@ const AppContent = () => {
                 <PrivateRoute>
                   <div className="content-container">
                     <NearbyRoutes />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/prirodnjacki-kviz"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <OnlineUsersList token={localStorage.getItem('authToken') || ''} />
                   </div>
                 </PrivateRoute>
               }
