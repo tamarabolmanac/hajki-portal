@@ -29,7 +29,8 @@ import { REACT_APP_GOOGLE_MAPS_API_KEY } from './config';
 import "./App.css";
 import "./styles/main.css";
 import { config } from './config';
-import OnlineUsersList from "./components/OnlineUsersList";
+import QuizLobby from "./components/QuizLobby";
+import QuizRoom from "./components/QuizRoom";
 
 // Wrapper component to access useNavigate
 const AppContent = () => {
@@ -159,11 +160,35 @@ const AppContent = () => {
               }
             />
             <Route
+              path="/quiz/:roomId"
+              element={
+                <PrivateRoute>
+                  <QuizRoom />
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/prirodnjacki-kviz"
               element={
                 <PrivateRoute>
                   <div className="content-container">
-                    <OnlineUsersList token={localStorage.getItem('authToken') || ''} />
+                    <QuizLobby 
+                      token={localStorage.getItem('authToken') || ''}
+                      currentUserId={(() => {
+                        const id1 = localStorage.getItem('userID');
+                        if (id1) return Number(id1);
+                        try {
+                          const obj = JSON.parse(localStorage.getItem('user') || 'null');
+                          if (obj?.id != null) return Number(obj.id);
+                        } catch {}
+                        try {
+                          const det = JSON.parse(localStorage.getItem('userDetails') || 'null');
+                          return det?.id != null ? Number(det.id) : null;
+                        } catch {
+                          return null;
+                        }
+                      })()}
+                    />
                   </div>
                 </PrivateRoute>
               }
