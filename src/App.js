@@ -163,7 +163,7 @@ const AppContent = () => {
               path="/quiz/:roomId"
               element={
                 <PrivateRoute>
-                  <QuizRoom />
+                  <QuizRoom token={localStorage.getItem("authToken")} />
                 </PrivateRoute>
               }
             />
