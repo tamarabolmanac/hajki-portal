@@ -154,6 +154,58 @@ export default function QuizRoom({ token }) {
     fontSize: 13
   };
 
+  const scoreboardRow = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    marginBottom: 12
+  };
+  
+  const playersRow = {
+    display: 'flex',
+    gap: 8,
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    minHeight: 32
+  };
+
+  const scoreItem = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+    padding: '6px 8px',
+    borderRadius: 10,
+    background: 'rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.12)'
+  };
+
+  const scoreName = {
+    maxWidth: 120,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    fontWeight: 600
+  };
+
+  const scoreBadge = {
+    padding: '2px 6px',
+    borderRadius: 8,
+    background: 'rgba(56,239,125,0.18)',
+    border: '1px solid rgba(56,239,125,0.35)',
+    fontWeight: 700
+  };
+
+  const timerPill = {
+    padding: '6px 10px',
+    borderRadius: 10,
+    background: 'rgba(255,255,255,0.08)',
+    border: '1px solid rgba(255,255,255,0.15)',
+    fontWeight: 700,
+    minWidth: 48,
+    textAlign: 'center'
+  };
+
   const isTie = !!gameOver && gameOver.p1 === gameOver.p2;
   const winnerName = !!gameOver && roomInfo?.players?.find(p => p.id === gameOver.winnerId)?.name;
 
@@ -166,40 +218,32 @@ export default function QuizRoom({ token }) {
 
   return (
     <div className="page-container">
-      <div className="page-header clean">
-        <h1>Quiz soba #{roomId}</h1>
-        <p style={{ marginTop: '0.5rem' }}>Odaberi tačan odgovor među ponuđenim opcijama</p>
-
-      </div>
-
       <div className="glass-card" style={{ padding: '1.2rem', maxWidth: 800, margin: '0 auto' }}>
         {gameOver ? (
-          <>
-            <h3 style={{ marginTop: 0 }}>Kraj igre</h3>
-            <p style={{ margin: '8px 0 8px', fontSize: '1.1rem' }}>Rezultat: {gameOver.p1} : {gameOver.p2}</p>
-            <p style={{ margin: 0, fontSize: '1.1rem' }}>{isTie ? 'Nerešeno' : `Pobednik: ${winnerName || gameOver.winnerId}`}</p>
-          </>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 10, padding: '8px 0' }}>
+            <div style={{ fontSize: '1.1rem', fontWeight: 700, marginTop: 0 }}>Kraj igre</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: 800 }}>{gameOver.p1} : {gameOver.p2}</div>
+            <div style={{ marginTop: 4, padding: '6px 10px', borderRadius: 10, background: 'rgba(56,239,125,0.18)', border: '1px solid rgba(56,239,125,0.35)', fontWeight: 700 }}>
+              {isTie ? 'Nerešeno' : `Pobednik: ${winnerName || gameOver.winnerId}`}
+            </div>
+          </div>
         ) : question ? (
           <>
             {roomInfo?.players && (
-                <div className="room-info" style={{ marginTop: 16 }}>
-                <h3>Igrači u sobi:</h3>
-                {roomInfo.players.map(p => (
-                <div key={p.id} style={{ marginBottom: 8 }}>
-                    {p.name}
-                    <span style={{ marginLeft: 6, color: "lightgreen" }}>{answers[p.id]}</span>
-     
+              <div style={scoreboardRow}>
+                <div style={playersRow}>
+                  {roomInfo.players.map(p => (
+                    <div key={p.id} style={scoreItem}>
+                      <span style={scoreName}>{p.name}</span>
+                      <span style={scoreBadge}>{answers[p.id] || 0}</span>
+                    </div>
+                  ))}
                 </div>
-                ))}
-        </div>
-        )}
-        <br/>
-        <h3 style={{ marginTop: 0 }}>Pitanje</h3>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-          <span style={{ padding: '4px 8px', borderRadius: 8, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>{timeLeft}s</span>
-        </div>
+                <div style={timerPill}>{timeLeft}s</div>
+              </div>
+            )}
 
-            <p style={{ margin: '8px 0 16px', fontSize: '1.1rem' }}>{question.text}</p>
+            <p style={{ margin: '6px 0 14px', fontSize: '1.1rem' }}>{question.text}</p>
             <div style={optionsGrid}>
               <button className="btn-primary-modern" style={{ ...optionBtn, ...(selectedChoice === 'A' ? selectedBtnStyle : {}) }} onClick={() => answer('A')} disabled={timeLeft <= 0 || !!gameOver || selectedChoice !== null}>
                 <span style={badgeStyle}>A</span>{question.a}
