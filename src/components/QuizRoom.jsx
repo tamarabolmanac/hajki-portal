@@ -13,6 +13,7 @@ export default function QuizRoom({ token }) {
   const [messages, setMessages] = useState([]);
   const [question, setQuestion] = useState(null);
   const [answers, setAnswers] = useState({});
+  const [gameOver, setGameOver] = useState(null);
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef(null);
 
@@ -45,11 +46,13 @@ export default function QuizRoom({ token }) {
             setRoomInfo(data);
             if (data.current_question) {
                 setQuestion(data.current_question);
+                setGameOver(null);
             }
           }
 
           if (data.event === "new_question") {
             setQuestion(data.current_question);
+            setGameOver(null);
           }
 
           if (data.event === "answer_result") {
@@ -60,6 +63,12 @@ export default function QuizRoom({ token }) {
                 : (prev[data.user_id] || 0)      
             }));
 
+          }
+
+          if (data.event === "game_over") {
+            try { timerRef.current && clearInterval(timerRef.current); } catch {}
+            setTimeLeft(0);
+            setGameOver({ winnerId: data.winner, p1: data.p1_score, p2: data.p2_score });
           }
 
         },
@@ -131,6 +140,8 @@ export default function QuizRoom({ token }) {
     fontSize: 13
   };
 
+  const isTie = !!gameOver && gameOver.p1 === gameOver.p2;
+  const winnerName = !!gameOver && roomInfo?.players?.find(p => p.id === gameOver.winnerId)?.name;
 
   const leaveRoom = () => {
     if (quizRef.current) {
@@ -148,7 +159,13 @@ export default function QuizRoom({ token }) {
       </div>
 
       <div className="glass-card" style={{ padding: '1.2rem', maxWidth: 800, margin: '0 auto' }}>
-        {question ? (
+        {gameOver ? (
+          <>
+            <h3 style={{ marginTop: 0 }}>Kraj igre</h3>
+            <p style={{ margin: '8px 0 8px', fontSize: '1.1rem' }}>Rezultat: {gameOver.p1} : {gameOver.p2}</p>
+            <p style={{ margin: 0, fontSize: '1.1rem' }}>{isTie ? 'Nerešeno' : `Pobednik: ${winnerName || gameOver.winnerId}`}</p>
+          </>
+        ) : question ? (
           <>
             {roomInfo?.players && (
                 <div className="room-info" style={{ marginTop: 16 }}>
@@ -170,16 +187,16 @@ export default function QuizRoom({ token }) {
 
             <p style={{ margin: '8px 0 16px', fontSize: '1.1rem' }}>{question.text}</p>
             <div style={optionsGrid}>
-              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('A')} disabled={timeLeft <= 0}>
+              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('A')} disabled={timeLeft <= 0 || !!gameOver}>
                 <span style={badgeStyle}>A</span>{question.a}
               </button>
-              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('B')} disabled={timeLeft <= 0}>
+              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('B')} disabled={timeLeft <= 0 || !!gameOver}>
                 <span style={badgeStyle}>B</span>{question.b}
               </button>
-              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('C')} disabled={timeLeft <= 0}>
+              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('C')} disabled={timeLeft <= 0 || !!gameOver}>
                 <span style={badgeStyle}>C</span>{question.c}
               </button>
-              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('D')} disabled={timeLeft <= 0}>
+              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('D')} disabled={timeLeft <= 0 || !!gameOver}>
                 <span style={badgeStyle}>D</span>{question.d}
               </button>
             </div>
