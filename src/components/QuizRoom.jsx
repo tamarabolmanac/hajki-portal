@@ -15,8 +15,7 @@ export default function QuizRoom({ token }) {
   const [answers, setAnswers] = useState({});
   const [selectedChoice, setSelectedChoice] = useState(null);
   const [gameOver, setGameOver] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const timerRef = useRef(null);
+  
 
   // povezivanje na kanal
   useEffect(() => {
@@ -69,8 +68,6 @@ export default function QuizRoom({ token }) {
           }
 
           if (data.event === "game_over") {
-            try { timerRef.current && clearInterval(timerRef.current); } catch {}
-            setTimeLeft(0);
             setGameOver({ winnerId: data.winner, p1: data.p1_score, p2: data.p2_score });
           }
 
@@ -85,30 +82,12 @@ export default function QuizRoom({ token }) {
 
     return () => {
       try { quizRef.current && quizRef.current.unsubscribe(); } catch {}
-      try { timerRef.current && clearInterval(timerRef.current); } catch {}
     };
   }, [token, roomId, navigate]);
 
-  useEffect(() => {
-    if (!question) return;
-    try { timerRef.current && clearInterval(timerRef.current); } catch {}
-    setTimeLeft(10);
-    timerRef.current = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          try { timerRef.current && clearInterval(timerRef.current); } catch {}
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-    return () => {
-      try { timerRef.current && clearInterval(timerRef.current); } catch {}
-    };
-  }, [question]);
 
   const answer = (choice) => {
-    if (selectedChoice !== null || timeLeft <= 0 || !!gameOver) return;
+    if (selectedChoice !== null || !!gameOver) return;
     setSelectedChoice(choice);
     quizRef.current.send({
         action: "answer_question",
@@ -196,15 +175,7 @@ export default function QuizRoom({ token }) {
     fontWeight: 700
   };
 
-  const timerPill = {
-    padding: '6px 10px',
-    borderRadius: 10,
-    background: 'rgba(255,255,255,0.08)',
-    border: '1px solid rgba(255,255,255,0.15)',
-    fontWeight: 700,
-    minWidth: 48,
-    textAlign: 'center'
-  };
+  
 
   const isTie = !!gameOver && gameOver.p1 === gameOver.p2;
   const winnerName = !!gameOver && roomInfo?.players?.find(p => p.id === gameOver.winnerId)?.name;
@@ -239,22 +210,22 @@ export default function QuizRoom({ token }) {
                     </div>
                   ))}
                 </div>
-                <div style={timerPill}>{timeLeft}s</div>
+                
               </div>
             )}
 
             <p style={{ margin: '6px 0 14px', fontSize: '1.1rem' }}>{question.text}</p>
             <div style={optionsGrid}>
-              <button className="btn-primary-modern" style={{ ...optionBtn, ...(selectedChoice === 'A' ? selectedBtnStyle : {}) }} onClick={() => answer('A')} disabled={timeLeft <= 0 || !!gameOver || selectedChoice !== null}>
+              <button className="btn-primary-modern" style={{ ...optionBtn, ...(selectedChoice === 'A' ? selectedBtnStyle : {}) }} onClick={() => answer('A')} disabled={!!gameOver || selectedChoice !== null}>
                 <span style={badgeStyle}>A</span>{question.a}
               </button>
-              <button className="btn-primary-modern" style={{ ...optionBtn, ...(selectedChoice === 'B' ? selectedBtnStyle : {}) }} onClick={() => answer('B')} disabled={timeLeft <= 0 || !!gameOver || selectedChoice !== null}>
+              <button className="btn-primary-modern" style={{ ...optionBtn, ...(selectedChoice === 'B' ? selectedBtnStyle : {}) }} onClick={() => answer('B')} disabled={!!gameOver || selectedChoice !== null}>
                 <span style={badgeStyle}>B</span>{question.b}
               </button>
-              <button className="btn-primary-modern" style={{ ...optionBtn, ...(selectedChoice === 'C' ? selectedBtnStyle : {}) }} onClick={() => answer('C')} disabled={timeLeft <= 0 || !!gameOver || selectedChoice !== null}>
+              <button className="btn-primary-modern" style={{ ...optionBtn, ...(selectedChoice === 'C' ? selectedBtnStyle : {}) }} onClick={() => answer('C')} disabled={!!gameOver || selectedChoice !== null}>
                 <span style={badgeStyle}>C</span>{question.c}
               </button>
-              <button className="btn-primary-modern" style={{ ...optionBtn, ...(selectedChoice === 'D' ? selectedBtnStyle : {}) }} onClick={() => answer('D')} disabled={timeLeft <= 0 || !!gameOver || selectedChoice !== null}>
+              <button className="btn-primary-modern" style={{ ...optionBtn, ...(selectedChoice === 'D' ? selectedBtnStyle : {}) }} onClick={() => answer('D')} disabled={!!gameOver || selectedChoice !== null}>
                 <span style={badgeStyle}>D</span>{question.d}
               </button>
             </div>
