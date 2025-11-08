@@ -13,6 +13,8 @@ export default function QuizRoom({ token }) {
   const [messages, setMessages] = useState([]);
   const [question, setQuestion] = useState(null);
   const [answers, setAnswers] = useState({});
+  const [timeLeft, setTimeLeft] = useState(0);
+  const timerRef = useRef(null);
 
   // povezivanje na kanal
   useEffect(() => {
@@ -70,8 +72,27 @@ export default function QuizRoom({ token }) {
 
     return () => {
       try { quizRef.current && quizRef.current.unsubscribe(); } catch {}
+      try { timerRef.current && clearInterval(timerRef.current); } catch {}
     };
   }, [token, roomId, navigate]);
+
+  useEffect(() => {
+    if (!question) return;
+    try { timerRef.current && clearInterval(timerRef.current); } catch {}
+    setTimeLeft(6);
+    timerRef.current = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
+          try { timerRef.current && clearInterval(timerRef.current); } catch {}
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+    return () => {
+      try { timerRef.current && clearInterval(timerRef.current); } catch {}
+    };
+  }, [question]);
 
   const answer = (choice) => {
     quizRef.current.send({
@@ -143,19 +164,22 @@ export default function QuizRoom({ token }) {
         )}
         <br/>
         <h3 style={{ marginTop: 0 }}>Pitanje</h3>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+          <span style={{ padding: '4px 8px', borderRadius: 8, background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', fontWeight: 600 }}>{timeLeft}s</span>
+        </div>
 
             <p style={{ margin: '8px 0 16px', fontSize: '1.1rem' }}>{question.text}</p>
             <div style={optionsGrid}>
-              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('A')}>
+              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('A')} disabled={timeLeft <= 0}>
                 <span style={badgeStyle}>A</span>{question.a}
               </button>
-              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('B')}>
+              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('B')} disabled={timeLeft <= 0}>
                 <span style={badgeStyle}>B</span>{question.b}
               </button>
-              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('C')}>
+              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('C')} disabled={timeLeft <= 0}>
                 <span style={badgeStyle}>C</span>{question.c}
               </button>
-              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('D')}>
+              <button className="btn-primary-modern" style={optionBtn} onClick={() => answer('D')} disabled={timeLeft <= 0}>
                 <span style={badgeStyle}>D</span>{question.d}
               </button>
             </div>
