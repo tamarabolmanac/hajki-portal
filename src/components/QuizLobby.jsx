@@ -46,14 +46,7 @@ export default function QuizLobby({ token, currentUserId }) {
   // 1) Učitavanje početne liste + otvaranje JEDNE WS konekcije
   useEffect(() => {
     // fetch initial online users
-    fetch(`${config.apiUrl}/online_users`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        setOnlineUsers(Array.isArray(data) ? data : []);
-      })
-      .catch(() => setOnlineUsers([]));
+    
 
     // open ActionCable consumer
     const consumer = connectWebsocket(token);
@@ -77,6 +70,15 @@ export default function QuizLobby({ token, currentUserId }) {
         },
       }
     );
+
+    fetch(`${config.apiUrl}/online_users`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setOnlineUsers(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setOnlineUsers([]));
 
     // CHALLENGE CHANNEL
     const challengeSub = consumer.subscriptions.create(
