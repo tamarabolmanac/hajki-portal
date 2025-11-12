@@ -8,6 +8,13 @@ export const Profile = () => {
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [name, setName] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('');
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [savedMsg, setSavedMsg] = useState('');
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -21,6 +28,10 @@ export const Profile = () => {
         const userDetails = await authenticatedFetch('/user_data');
         setUserDetails(userDetails);
         localStorage.setItem('userDetails', JSON.stringify(userDetails));
+        setName(userDetails?.name || '');
+        setCity(userDetails?.city || '');
+        setCountry(userDetails?.country || '');
+        setAvatarPreview(userDetails?.avatar_url || null);
       } catch (err) {
         setError(`Greška: ${err.message}`);
         console.error('Error fetching profile:', err);
@@ -31,6 +42,39 @@ export const Profile = () => {
 
     fetchUserProfile();
   }, []);
+
+  const onAvatarChange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    setAvatarFile(file);
+    const url = URL.createObjectURL(file);
+    setAvatarPreview(url);
+  };
+
+  const saveProfile = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setSavedMsg('');
+    try {
+      const form = new FormData();
+      if (name) form.append('name', name);
+      if (city) form.append('city', city);
+      if (country) form.append('country', country);
+      if (avatarFile) form.append('avatar', avatarFile);
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      const url = isDevelopment ? '/user' : 'https://upload.hajki.com/user';
+      const updated = await authenticatedFetch(url, { method: 'PUT', body: form, useProductionUrl: !isDevelopment });
+      setUserDetails(updated);
+      localStorage.setItem('userDetails', JSON.stringify(updated));
+      setAvatarPreview(updated?.avatar_url || null);
+      setAvatarFile(null);
+      setSavedMsg('Uspešno sačuvano.');
+    } catch (err) {
+      setError(`Greška: ${err.message}`);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -67,9 +111,20 @@ export const Profile = () => {
           <h3>Moja lokacija</h3>
           <LocationTracker />
         </div>
+        <div className="profile-avatar-block">
+          {avatarPreview ? (
+            <img src={avatarPreview} alt="avatar" className="profile-avatar" />
+          ) : (
+            <div className="profile-avatar placeholder">{(name || userDetails?.name || '?').slice(0,1).toUpperCase()}</div>
+          )}
+          <label className="btn-file">
+            <input type="file" accept="image/*" onChange={onAvatarChange} />
+            Promeni avatar
+          </label>
+        </div>
         <div className="profile-field">
           <label>Ime:</label>
-          <span>{userDetails?.name}</span>
+          <input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="profile-field">
           <label>Email:</label>
@@ -81,11 +136,15 @@ export const Profile = () => {
         </div>
         <div className="profile-field">
           <label>Grad:</label>
-          <span>{userDetails?.city}</span>
+          <input value={city} onChange={(e) => setCity(e.target.value)} />
         </div>
         <div className="profile-field">
           <label>Zemlja:</label>
-          <span>{userDetails?.country}</span>
+          <input value={country} onChange={(e) => setCountry(e.target.value)} />
+        </div>
+        <div className="profile-actions">
+          <button className="btn-primary-modern" onClick={saveProfile} disabled={saving}>{saving ? 'Čuvanje...' : 'Sačuvaj'}</button>
+          {savedMsg && <span className="saved-msg">{savedMsg}</span>}
         </div>
       </div>
     </div>

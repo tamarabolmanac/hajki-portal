@@ -1,7 +1,27 @@
 import React from "react";
+import { config } from "../config";
 
 export default function OnlineUsersList({ onlineUsers, currentUserId, onChallenge, hideHeader }) {
   const selfIdNum = Number(currentUserId);
+
+  const avatarStyle = {
+    width: 28,
+    height: 28,
+    borderRadius: "50%",
+    objectFit: "cover",
+    border: "1px solid rgba(255,255,255,0.25)",
+    background: "rgba(255,255,255,0.08)",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: 700
+  };
+
+  const fullUrl = (p) => {
+    if (!p) return null;
+    if (p.startsWith("http://") || p.startsWith("https://")) return p;
+    return `${config.apiUrl}${p}`;
+  };
 
   const listCard = (
     <div className="glass-card" style={{ maxWidth: 700, margin: "0 auto" }}>
@@ -23,15 +43,11 @@ export default function OnlineUsersList({ onlineUsers, currentUserId, onChalleng
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <span
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: "50%",
-                  background: "#38ef7d",
-                  display: "inline-block",
-                }}
-              />
+              {user.avatar_url ? (
+                <img src={fullUrl(user.avatar_url)} alt="" style={avatarStyle} />
+              ) : (
+                <div style={avatarStyle}>{(user.name || user.email || "?").slice(0,1).toUpperCase()}</div>
+              )}
               <span>{user.name || user.email}</span>
             </div>
 

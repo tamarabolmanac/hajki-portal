@@ -67,3 +67,68 @@
   flex: 1;
   font-size: 1.1rem;
 }
+
+/* Inputs inside profile fields */
+.profile-field input {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1px solid #dcdfe6;
+  border-radius: 6px;
+  background: #fff;
+}
+
+/* Avatar block */
+.profile-avatar-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1rem 0 1.5rem;
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(17,153,142,0.35);
+}
+
+.profile-avatar.placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #eafaf5;
+  color: #11998e;
+  font-weight: 800;
+  border: 2px solid rgba(17,153,142,0.35);
+}
+
+.btn-file {
+  display: inline-block;
+  padding: 8px 12px;
+  border: 1px solid rgba(17,153,142,0.45);
+  color: #11998e;
+  background: rgba(56,239,125,0.08);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-file input[type="file"] {
+  display: none;
+}
+
+.profile-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.saved-msg {
+  color: #2e7d32;
+  font-weight: 600;
+}

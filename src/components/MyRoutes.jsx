@@ -213,12 +213,6 @@ export const MyRoutes = () => {
                         <small style={{ color: '#28a745', marginLeft: '5px' }}>📍</small>
                       )}
                     </span>
-                    {route.points_count > 0 && (
-                      <span className="route-points">
-                        <i className="icon-location"></i>
-                        {route.points_count} GPS points
-                      </span>
-                    )}
                   </div>
                 </div>
                 <div className="route-card-footer" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>

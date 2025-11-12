@@ -183,6 +183,20 @@ export default function QuizRoom({ token }) {
     border: '1px solid rgba(255,255,255,0.25)'
   };
 
+  const avatarWrapper = {
+    position: 'relative',
+    width: 24,
+    height: 24
+  };
+
+  const avatarFallback = {
+    ...avatarStyle,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(255,255,255,0.08)'
+  };
+
   const fullUrl = (p) => {
     if (!p) return null;
     if (p.startsWith('http://') || p.startsWith('https://')) return p;
@@ -217,19 +231,28 @@ export default function QuizRoom({ token }) {
             {roomInfo?.players && (
               <div style={scoreboardRow}>
                 <div style={playersRow}>
-                  {roomInfo.players.map(p => (
-                    <div key={p.id} style={scoreItem}>
-                      {p.avatar_path ? (
-                        <img src={fullUrl(p.avatar_path)} alt="" style={avatarStyle} />
-                      ) : (
-                        <div style={{...avatarStyle, display:'inline-flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,0.08)'}}>
-                          {(p.name || '?').slice(0,1).toUpperCase()}
+                  {roomInfo.players.map(p => {
+                    const raw = p.avatar_url || p.avatar_path;
+                    const src = fullUrl(raw);
+                    const initial = (p.name || '?').slice(0,1).toUpperCase();
+                    return (
+                      <div key={p.id} style={scoreItem}>
+                        <div style={avatarWrapper}>
+                          <div style={avatarFallback}>{initial}</div>
+                          {src && (
+                            <img
+                              src={src}
+                              alt=""
+                              style={{ ...avatarStyle, position: 'absolute', top: 0, left: 0 }}
+                              onError={(e)=>{ e.currentTarget.style.display='none'; }}
+                            />
+                          )}
                         </div>
-                      )}
-                      <span style={{...scoreName, marginLeft: 6}}>{p.name}</span>
-                      <span style={scoreBadge}>{answers[p.id] || 0}</span>
-                    </div>
-                  ))}
+                        <span style={{...scoreName, marginLeft: 6}}>{p.name}</span>
+                        <span style={scoreBadge}>{answers[p.id] || 0}</span>
+                      </div>
+                    );
+                  })}
                 </div>
                 
               </div>

@@ -179,7 +179,7 @@ export const EditRoute = () => {
         
         {route?.calculated_from_points && (
           <div className="info-message">
-            <strong>📍 GPS Tracking Detected:</strong> Distance and duration are automatically calculated from your {route.points_count} GPS tracking points and cannot be manually edited.
+            <strong>📍 GPS Tracking Detected:</strong> Distance and duration are automatically calculated from your GPS tracking points and cannot be manually edited.
           </div>
         )}
         
