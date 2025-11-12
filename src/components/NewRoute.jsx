@@ -231,6 +231,27 @@ export const NewRoute = () => {
 
           <div className="form-group">
             <label htmlFor="location">Location</label>
+            <div className="location-search">
+              <input
+                type="text"
+                placeholder="Pretraži lokaciju (npr. Kopaonik, Tara...)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyPress}
+                className="search-input"
+              />
+              <button type="button" className="search-btn" onClick={handleSearch}>Traži</button>
+            </div>
+            {searchResults.length > 0 && (
+              <ul className="search-results">
+                {searchResults.map((r, idx) => (
+                  <li key={idx} className="search-item" onClick={() => handleSelectLocation(r)}>
+                    <div className="result-name">{r.name}</div>
+                    <div className="result-coords">{r.lat.toFixed(5)}, {r.lng.toFixed(5)}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
             <div className="map-container">
               <SelectableMap selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} />
             </div>

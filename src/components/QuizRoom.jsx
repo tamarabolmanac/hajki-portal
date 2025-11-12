@@ -175,6 +175,20 @@ export default function QuizRoom({ token }) {
     fontWeight: 700
   };
 
+  const avatarStyle = {
+    width: 24,
+    height: 24,
+    borderRadius: '50%',
+    objectFit: 'cover',
+    border: '1px solid rgba(255,255,255,0.25)'
+  };
+
+  const fullUrl = (p) => {
+    if (!p) return null;
+    if (p.startsWith('http://') || p.startsWith('https://')) return p;
+    return `${config.apiUrl}${p}`;
+  };
+
   
 
   const isTie = !!gameOver && gameOver.p1 === gameOver.p2;
@@ -205,7 +219,14 @@ export default function QuizRoom({ token }) {
                 <div style={playersRow}>
                   {roomInfo.players.map(p => (
                     <div key={p.id} style={scoreItem}>
-                      <span style={scoreName}>{p.name}</span>
+                      {p.avatar_path ? (
+                        <img src={fullUrl(p.avatar_path)} alt="" style={avatarStyle} />
+                      ) : (
+                        <div style={{...avatarStyle, display:'inline-flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,0.08)'}}>
+                          {(p.name || '?').slice(0,1).toUpperCase()}
+                        </div>
+                      )}
+                      <span style={{...scoreName, marginLeft: 6}}>{p.name}</span>
                       <span style={scoreBadge}>{answers[p.id] || 0}</span>
                     </div>
                   ))}

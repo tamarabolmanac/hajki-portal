@@ -20,15 +20,15 @@
   backdrop-filter: blur(20px);
   border: 1px solid rgba(56, 239, 125, 0.3);
   position: fixed;
-  top: 15px; /* Add space from top of screen */
-  right: 15px;
-  left: 15px;
+  top: 0; /* Stick to top edge */
+  right: 0;
+  left: 0;
   z-index: 1030;
   min-height: 70px; /* Increased height */
   padding: 5px 0;
   display: flex;
   align-items: center;
-  border-radius: 12px; /* Rounded corners for floating effect */
+  border-radius: 0; /* Flush to screen edges */
 }
 
 .navbar .container {
@@ -181,7 +181,7 @@
 
 /* Spacer for fixed navbar */
 .nav-spacer {
-  height: 100px; /* Match navbar height + top spacing */
+  height: 70px; /* Match fixed navbar height */
 }
 
 /* Desktop - ensure menu always visible and properly styled */
@@ -248,9 +248,9 @@
 /* Mobile-only responsive adjustments */
 @media (max-width: 991px) {
   .navbar {
-    top: 20px; /* Increased spacing from top for tablets */
-    right: 10px;
-    left: 10px;
+    top: 0; /* No gap on tablets */
+    right: 0;
+    left: 0;
   }
 
   .nav-spacer {
@@ -402,9 +402,9 @@
 
 @media (max-width: 768px) {
   .navbar {
-    top: 18px; /* Increased spacing from top for mobile */
-    right: 8px;
-    left: 8px;
+    top: 0; /* No gap on mobile */
+    right: 0;
+    left: 0;
     min-height: 55px !important;
     padding: 3px 0 !important;
   }
@@ -449,9 +449,9 @@
 
 @media (max-width: 480px) {
   .navbar {
-    top: 15px; /* Increased spacing from top for small phones */
-    right: 5px;
-    left: 5px;
+    top: 0; /* No gap on small phones */
+    right: 0;
+    left: 0;
     min-height: 50px !important;
     padding: 2px 0 !important;
   }
@@ -520,9 +520,9 @@
 /* Extra small devices */
 @media (max-width: 360px) {
   .navbar {
-    top: 12px; /* Increased spacing from top for extra small screens */
-    right: 3px;
-    left: 3px;
+    top: 0; /* No gap on extra small screens */
+    right: 0;
+    left: 0;
   }
 
   .nav-spacer {

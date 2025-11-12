@@ -22,6 +22,12 @@ const SelectableMap = ({ selectedLocation, setSelectedLocation }) => {
     mapRef.current = undefined;
   }, []);
 
+  React.useEffect(() => {
+    if (mapRef.current && selectedLocation) {
+      mapRef.current.panTo(selectedLocation);
+    }
+  }, [selectedLocation]);
+
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <GoogleMap

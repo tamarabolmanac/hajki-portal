@@ -25,3 +25,50 @@
   background: #cccccc !important;
   transform: none !important;
 }
+
+/* Location search UI */
+.location-search {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 10px;
+}
+
+.location-search .search-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #dcdfe6;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.location-search .search-btn {
+  padding: 10px 14px;
+  border: 1px solid rgba(17,153,142,0.45);
+  color: #11998e;
+  background: rgba(56,239,125,0.08);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.search-results {
+  list-style: none;
+  margin: 0 0 10px 0;
+  padding: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 240px;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.search-item {
+  padding: 10px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f3f5;
+}
+.search-item:last-child { border-bottom: none; }
+.search-item:hover { background: #f9fafb; }
+.search-item .result-name { font-weight: 600; color: #2c3e50; font-size: 14px; }
+.search-item .result-coords { font-size: 12px; color: #6b7280; }
