@@ -107,27 +107,65 @@ export const NearbyRoutes = () => {
 
   if (loading) {
     return (
-      <div className="loading-container" style={{ textAlign: "center" }}>
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{ width: "100px", height: "100px" }}
-        >
-          <source src="/animation/beaver.mp4" type="video/mp4" />
-        </video>
+      <div className="loading-container" style={{
+        minHeight: '60vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+        borderRadius: '16px',
+        margin: '2rem auto',
+        maxWidth: '1200px' 
+      }}>
+        <div style={{
+          textAlign: 'center',
+          padding: '3rem 2rem',
+          maxWidth: '500px',
+          width: '100%'
+        }}>
+          <div style={{
+            position: 'relative',
+            width: '150px',
+            height: '150px',
+            margin: '0 auto 1.5rem',
+            borderRadius: '50%',
+            background: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden'
+          }}>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                width: '90%',
+                height: '90%',
+                objectFit: 'contain',
+                transform: 'scale(1)',
+                outline: 'none',
+                border: 'none',
+                boxShadow: 'none'
+              }}
+            >
+              <source src="/animation/beaver.mp4" type="video/mp4" />
+            </video>
+          </div>
 
-        <p
-          className="loading-text-modern"
-          style={{
-            marginTop: "0.6rem",
-            fontSize: "1.1rem",
-            fontWeight: "500"
-          }}
-        >
-          Učitavanje...
-        </p>
+          <h2 style={{
+            color: '#2c3e50',
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            marginBottom: '0.5rem',
+            background: 'linear-gradient(90deg, #556B2F, #8FA31E)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            Učitavanje...
+          </h2>
+        </div>
       </div>
     );
 }

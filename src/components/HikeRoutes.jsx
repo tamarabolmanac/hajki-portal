@@ -72,36 +72,110 @@ export const HikeRoutes = (props) => {
   }
 
   if (loading) {
-  return (
-    <div className="loading-container">
-      <div
-        style={{
-          textAlign: "center",
-          padding: "4rem 2rem",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center"
-        }}
-      >
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{ width: "120px", height: "120px", marginBottom: "1.2rem" }}
-        >
-          <source src="/animation/beaver.mp4" type="video/mp4" />
-        </video>
+    return (
+      <div className="loading-container" style={{
+        minHeight: '60vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+        borderRadius: '16px',
+        margin: '2rem auto',
+        maxWidth: '1200px' 
+      }}>
+        <div style={{
+          textAlign: 'center',
+          padding: '3rem 2rem',
+          maxWidth: '500px',
+          width: '100%'
+        }}>
+          <div style={{
+            position: 'relative',
+            width: '180px',
+            height: '180px',
+            margin: '0 auto 2rem',
+            borderRadius: '50%',
+            background: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden'
+          }}>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                width: '90%',
+                height: '90%',
+                objectFit: 'contain',
+                transform: 'scale(1)',
+                outline: 'none',
+                border: 'none',
+                boxShadow: 'none'
+              }}
+            >
+              <source src="/animation/beaver.mp4" type="video/mp4" />
+            </video>
+          </div>
 
-        <p
-          className="text-black-modern"
-          style={{ fontSize: "1.2rem", fontWeight: "500", marginBottom: "0.3rem" }}
-        >
-          Učitavanje ruta...
-        </p>
+          <h2 style={{
+            color: '#2c3e50',
+            fontSize: '1.75rem',
+            fontWeight: '700',
+            marginBottom: '0.75rem',
+            background: 'linear-gradient(90deg, #556B2F, #8FA31E)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            Učitavanje ruta
+          </h2>
+          
+          <p style={{
+            color: '#6c757d',
+            fontSize: '1.1rem',
+            lineHeight: '1.6',
+            marginBottom: '1.5rem'
+          }}>
+            Pripremamo sve potrebno za vašu avanturu...
+          </p>
+          
+          <div style={{
+            display: 'flex',
+            gap: '0.5rem',
+            justifyContent: 'center'
+          }}>
+            {[...Array(3)].map((_, i) => (
+              <div 
+                key={i}
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  background: '#8FA31E',
+                  opacity: 0.4,
+                  animation: `pulse 1.4s ease-in-out ${i * 0.2}s infinite`
+                }}
+              />
+            ))}
+          </div>
+          
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              @keyframes loading {
+                0% { transform: scaleX(0.3); }
+                50% { transform: scaleX(1); }
+                100% { transform: scaleX(0.3); }
+              }
+              @keyframes pulse {
+                0%, 100% { opacity: 0.4; transform: scale(0.8); }
+                50% { opacity: 1; transform: scale(1.2); }
+              }
+            `
+          }} />
+        </div>
       </div>
-    </div>
   );
 }
 
