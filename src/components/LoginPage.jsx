@@ -1,120 +1,149 @@
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { config } from '../config';
-import '../styles/LoginPage.css'
+import '../styles/LoginPage.css';
+import GoogleLoginButton from "./GoogleLoginButton";
+import { FaEnvelope, FaLock, FaArrowRight, FaHiking } from 'react-icons/fa';
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  
+  const handleGoogleLogin = (userData) => {
+    // setUser(userData);
+    navigate('/dashboard');
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Clear previous errors
+    setErrorMessage("");
+    setIsLoading(true);
 
     if (!email || !password) {
-      setErrorMessage("Molimo vas da unesete podatke.");
+      setErrorMessage("Molimo vas da unesete sve podatke.");
+      setIsLoading(false);
       return;
     }
 
     try {
       const response = await fetch(`${config.apiUrl}/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          auth: { email, password }
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ auth: { email, password } })
       });
 
-      // Check if response is successful first
       if (!response.ok) {
         let data;
         try {
           data = await response.json();
         } catch (e) {
-          // If we can't parse JSON, use generic error
           throw new Error('Greška pri prijavljivanju. Pokušajte ponovo.');
         }
         
-        console.log('Login error response:', data); // Debug log
-        
-        // Handle different error cases based on server response
         let errorMessage = 'Greška pri prijavljivanju. Pokušajte ponovo.';
         
         if (response.status === 401) {
-          // Check if error is about unconfirmed email
-          if (data.message && data.message.toLowerCase().includes('confirm')) {
-            errorMessage = 'Vaš nalog nije potvrđen. Proverite email i kliknite na link za potvrdu.';
-          } else {
-            errorMessage = 'Korisnik sa ovim email-om ne postoji. Molimo registrujte se prvo.';
-          }
+          errorMessage = data.message?.toLowerCase().includes('confirm') 
+            ? 'Vaš nalog nije potvrđen. Proverite email i kliknite na link za potvrdu.'
+            : 'Pogrešna email adresa ili lozinka.';
         } else if (response.status === 404) {
-          errorMessage = 'Korisnik sa ovim email-om ne postoji. Molimo registrujte se prvo.';
+          errorMessage = 'Korisnik sa ovim email-om ne postoji.';
         } else if (response.status === 422) {
-          errorMessage = 'Neispravni podaci. Proverite format email-a.';
+          errorMessage = 'Neispravan format email-a.';
         } else if (response.status === 403) {
-          errorMessage = 'Vaš nalog nije potvrđen. Proverite email i kliknite na link za potvrdu.';
-        } else if (data.message) {
-          // Use server message if available
-          errorMessage = data.message;
+          errorMessage = 'Vaš nalog nije potvrđen. Proverite email.';
+        } else {
+          errorMessage = data.message || errorMessage;
         }
         
         throw new Error(errorMessage);
       }
       
-      // Only parse JSON if response was successful
       const data = await response.json();
-      console.log('Login success response:', data); // Debug log
       
-      // Check if token exists in response
       if (!data.token) {
-        throw new Error('Došlo je do neočekivane greške. Molimo pokušajte ponovo za nekoliko trenutaka.');
+        throw new Error('Došlo je do neočekivane greške. Pokušajte ponovo.');
       }
       
-      // Store only token in localStorage
       localStorage.setItem('authToken', data.token);
       localStorage.setItem('userID', data.user_id);
-      // We don't have user data in the login response, so we'll fetch it later in Profile component
-
-      // Redirect to home page
       window.location.href = '/';
     } catch (error) {
       console.error('Login error:', error);
       setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-form">
-        <h2 className="login-title">Prijavite se</h2>
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-        <form onSubmit={handleLogin}>
-          <div className="input-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              placeholder="Unesite svoj email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+    <div className="login-page">
+      <div className="login-container">
+        <div className="login-logo">
+          <h1>Dobrodošli nazad</h1>
+          <p>Prijavite se za nastavak</p>
+        </div>
+
+        {errorMessage && (
+          <div className="error-message">
+            <span>!</span> {errorMessage}
           </div>
-          <br></br>
-          <div className="input-group">
-            <label htmlFor="password">Lozinka</label>
-            <input
-              type="password"
-              id="password"
-              placeholder="Unesite svoju lozinku"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+        )}
+      
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="form-group">
+            <div className="input-icon">
+              <FaEnvelope className="icon" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Email adresa"
+                required
+              />
+            </div>
           </div>
-          <br></br>
-          <button type="submit" className="submit-button button-login">Prijavite se</button>
+          
+          <div className="form-group">
+            <div className="input-icon">
+              <FaLock className="icon" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Lozinka"
+                required
+              />
+            </div>
+            <div className="forgot-password">
+              <Link to="/forgot-password">Zaboravili ste lozinku?</Link>
+            </div>
+          </div>
+          
+          <button 
+            type="submit" 
+            className={`login-button ${isLoading ? 'loading' : ''}`}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Prijavljivanje...' : 'Prijavi se'}
+            {!isLoading && <FaArrowRight className="button-icon" />}
+          </button>
         </form>
+
+        <div className="divider">
+          <span>ili se prijavite sa</span>
+        </div>
+        
+        <div className="google-login-container">
+          <GoogleLoginButton onLoggedIn={handleGoogleLogin} />
+        </div>
+
+        <div className="register-link">
+          Nemate nalog? <Link to="/register">Registrujte se</Link>
+        </div>
       </div>
     </div>
   );
