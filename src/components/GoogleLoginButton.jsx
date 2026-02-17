@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { config } from '../config';
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
 function GoogleSignInButton({ onLoggedIn }) {
@@ -21,6 +22,7 @@ function GoogleSignInButton({ onLoggedIn }) {
     console.log("Google ID token:", idToken);
 
     setLoading(true);
+    
     try {
       const res = await fetch(`${config.apiUrl}/auth/google`, {
         method: "POST",
