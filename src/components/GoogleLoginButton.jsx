@@ -22,7 +22,7 @@ function GoogleSignInButton({ onLoggedIn }) {
 
     setLoading(true);
     try {
-      const res = await fetch(`${apiUrl}/auth/google`, {
+      const res = await fetch(`${config.apiUrl}/auth/google`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
