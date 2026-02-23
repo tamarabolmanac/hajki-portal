@@ -76,7 +76,9 @@ export const ResetPassword = () => {
           <div className="login-form">
             <div className="login-logo">
               <div className="logo-text">
-                <span className="logo-icon">🥾</span>
+                <span className="logo-icon">
+                <img src="/img/beaver_image.png" alt="Hajki Beaver" style={{width: "40px", height: "60px", borderRadius: "50%"}} />
+              </span>
                 <span>Hajki</span>
               </div>
               <h1>Proveravanje tokena...</h1>
@@ -94,7 +96,9 @@ export const ResetPassword = () => {
           <div className="login-form">
             <div className="login-logo">
               <div className="logo-text">
-                <span className="logo-icon">🥾</span>
+                <span className="logo-icon">
+                <img src="/img/beaver_image.png" alt="Hajki Beaver" style={{width: "40px", height: "60px", borderRadius: "50%"}} />
+              </span>
                 <span>Hajki</span>
               </div>
               <h1>Greška</h1>
@@ -115,7 +119,9 @@ export const ResetPassword = () => {
         <div className="login-form">
           <div className="login-logo">
             <div className="logo-text">
-              <span className="logo-icon">🥾</span>
+              <span className="logo-icon">
+                <img src="/img/beaver_image.png" alt="Hajki Beaver" style={{width: "40px", height: "60px", borderRadius: "50%"}} />
+              </span>
               <span>Hajki</span>
             </div>
             <h1>Reset Lozinke</h1>

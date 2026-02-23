@@ -50,7 +50,9 @@ export const ForgotPassword = () => {
         <div className="login-form">
           <div className="login-logo">
             <div className="logo-text">
-              <span className="logo-icon">🥾</span>
+              <span className="logo-icon">
+                <img src="/img/beaver_image.png" alt="Hajki Beaver" style={{width: "40px", height: "60px", borderRadius: "50%"}} />
+              </span>
               <span>Hajki</span>
             </div>
             <h1>Reset lozinke</h1>
