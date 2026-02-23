@@ -17,6 +17,8 @@ import { Contact } from "./components/contact";
 import RouteTracker from "./components/RouteTracker";
 import PrivateRoute from "./components/PrivateRoute"; 
 import LoginPage from "./components/LoginPage";
+import ForgotPassword from "./components/ForgotPassword";
+import ResetPassword from "./components/ResetPassword";
 import Register from "./components/Register";
 import "./styles/GlobalStyles.css";
 import { Profile } from "./components/Profile";
@@ -165,6 +167,22 @@ const AppContent = () => {
                 <PrivateRoute>
                   <QuizRoom token={localStorage.getItem("authToken")} />
                 </PrivateRoute>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <div className="content-container">
+                  <ForgotPassword />
+                </div>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <div className="content-container">
+                  <ResetPassword />
+                </div>
               }
             />
             <Route
