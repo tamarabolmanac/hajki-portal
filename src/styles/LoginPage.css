@@ -4,20 +4,47 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem;
+  background-image: url('../../public/img/hike2.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.login-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
 }
 
 /* Login container */
 .login-container {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 450px;
   padding: 2.5rem;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  z-index: 2;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 2rem;
 }
 
 /* Logo section */
@@ -195,6 +222,57 @@
 /* Google login button container */
 .google-login-container {
   margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: visible;
+  position: relative;
+  min-height: 50px;
+}
+
+/* Style for the Google login button */
+[data-testid="google-signin-button"] {
+  width: 100% !important;
+  max-width: 300px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Google button wrapper */
+.google-login-container > div {
+  width: 100% !important;
+  max-width: 300px !important;
+  display: flex !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Override Google button styles */
+.google-login-container iframe {
+  max-width: 100% !important;
+  width: 300px !important;
+  margin: 0 auto !important;
+  position: relative !important;
+  z-index: 10 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Google button parent container */
+.google-login-container > div > div {
+  width: 100% !important;
+  max-width: 300px !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  position: relative !important;
+  z-index: 10 !important;
 }
 
 /* Register link */
@@ -237,9 +315,23 @@
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
+  .login-page {
+    padding: 0;
+    background-attachment: scroll;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+  }
+  
   .login-container {
     padding: 1.5rem;
     margin: 1rem;
+    max-width: calc(100% - 2rem);
+    overflow: visible;
   }
   
   .login-logo .logo-text {
@@ -260,6 +352,37 @@
   
   .input-icon input {
     padding: 12px 14px 12px 40px;
+  }
+  
+  .google-login-container {
+    margin-bottom: 1.5rem;
+    overflow: visible;
+    min-height: 50px;
+  }
+  
+  [data-testid="google-signin-button"] {
+    max-width: 250px !important;
+    position: relative !important;
+    z-index: 10 !important;
+  }
+  
+  .google-login-container iframe {
+    width: 250px !important;
+    max-width: 100% !important;
+    position: relative !important;
+    z-index: 10 !important;
+  }
+  
+  .google-login-container > div {
+    max-width: 250px !important;
+    position: relative !important;
+    z-index: 10 !important;
+  }
+  
+  .google-login-container > div > div {
+    max-width: 250px !important;
+    position: relative !important;
+    z-index: 10 !important;
   }
 }
 

@@ -77,7 +77,7 @@ function GoogleSignInButton({ onLoggedIn }) {
   };
 
   return (
-    <div style={{ width: 300, maxWidth: "100%" }}>
+    <div style={{ width: '100%', maxWidth: '300px', margin: '0 auto', display: 'flex', justifyContent: 'center' }}>
       {/* Google dugme - stabilno, podržava One Tap itd. */}
       <GoogleLogin
         onSuccess={handleSuccess}
@@ -86,13 +86,20 @@ function GoogleSignInButton({ onLoggedIn }) {
         // theme/size/shape mogu po želji
         theme="outline"
         size="large"
-        width="300"
+        width="250"
         text={loading ? "signin_with" : "signin_with"}
+        containerProps={{
+          style: {
+            width: '100%',
+            maxWidth: '250px',
+            margin: '0 auto'
+          }
+        }}
       />
 
       {/* Mala zaštita od duplog klika dok čeka backend */}
       {loading && (
-        <div style={{ marginTop: 8, fontSize: 12, color: "#5f6368" }}>
+        <div style={{ marginTop: 8, fontSize: 12, color: "#5f6368", textAlign: 'center' }}>
           Signing in…
         </div>
       )}
