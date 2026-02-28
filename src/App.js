@@ -7,6 +7,7 @@ import { EditRoute } from "./components/EditRoute";
 import { NearbyRoutes } from "./components/NearbyRoutes";
 import { ChoseRouteCreationType } from "./components/ChoseRouteCreationType";
 import { About } from "./components/about";
+import { Guide } from "./components/Guide";
 import { Services } from "./components/services";
 import { Gallery } from "./components/gallery";
 import { Testimonials } from "./components/testimonials";
@@ -225,6 +226,11 @@ const AppContent = () => {
             <Route path="/about" element={
               <div className="content-container">
                 <About data={landingPageData.About} />
+              </div>
+            } />
+            <Route path="/guide" element={
+              <div className="content-container">
+                <Guide />
               </div>
             } />
             <Route path="/contact" element={

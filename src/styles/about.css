@@ -1,4 +1,4 @@
-/* About Section with Background Image */
+/* Modern Hero Section - Inspired by Bite Design */
 #about {
   position: relative;
   min-height: 100vh;
@@ -7,12 +7,9 @@
   margin-right: calc(-50vw + 50%) !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
-  background-image: url('../../public/img/hike2.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+  background: linear-gradient(135deg, #f8faf9 0%, #e8f5e8 100%);
   z-index: 1;
+  overflow: hidden;
 }
 
 /* Override body gradient background when About is visible */
@@ -30,83 +27,262 @@ body:has(#about)::before {
   margin-top: 0px !important;
 }
 
-/* No overlay - clean background image */
-
-/* Ensure content is above the overlay */
-#about .container {
-  position: relative;
-  z-index: 2;
-  padding: 20px 0;
-}
-
-/* Style the content area */
-#about .row {
+/* Hero Container */
+.hero-container {
+  min-height: 100vh;
   display: flex;
   align-items: center;
-  min-height: 80vh;
+  padding: 0;
+  position: relative;
 }
 
-/* Hide the original image since we're using it as background */
-#about img {
-  display: none;
+.hero-content {
+  display: flex;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
 }
 
-/* Style the text content */
-.about-text {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* Left Side - Text Content */
+.hero-left {
+  flex: 1;
+  max-width: 600px;
+  z-index: 10;
 }
 
-.about-text h3 {
+.hero-text h1 {
   font-family: "Poppins", "Raleway", sans-serif;
-  font-weight: 700;
-  color: #556B2F;
-  font-size: clamp(2rem, 4vw, 3rem);
-  margin-bottom: 1rem;
-  margin-top: 1.5rem;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-.about-text p {
+.hero-text h2 {
   font-family: "Poppins", "Raleway", sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  color: #4a5568;
+  margin-bottom: 2rem;
+  line-height: 1.4;
+}
+
+.hero-text p {
+  font-family: "Inter", "Poppins", sans-serif;
   font-size: 1.1rem;
   font-weight: 400;
   line-height: 1.7;
-  color: #333;
-  margin-bottom: 1.5rem;
+  color: #718096;
+  margin-bottom: 3rem;
+  max-width: 500px;
 }
 
-.about-text b {
-  color: #556B2F;
-  font-weight: 700;
+/* Hero Buttons */
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.about-text .heart-icon {
-  height: 1.2em;
-  width: auto;
-  vertical-align: middle;
-  display: inline-block;
-  margin: 0 2px;
-}
-
-.list-style {
-  list-style: none;
-  padding: 0;
-}
-
-.list-style li {
-  position: relative;
-  padding-left: 30px;
-  margin-bottom: 12px;
+.btn-primary {
+  background: #2d3748;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-family: "Inter", "Poppins", sans-serif;
+  font-weight: 600;
   font-size: 1rem;
-  line-height: 1.6;
-  color: #444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(45, 55, 72, 0.2);
 }
 
-/* Responsive adjustments */
+.btn-primary:hover {
+  background: #1a202c;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(45, 55, 72, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #2d3748;
+  border: 2px solid #2d3748;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-family: "Inter", "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: #2d3748;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Right Side - Visual Graphic */
+.hero-right {
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-visual {
+  width: 100%;
+  height: 500px;
+  position: relative;
+}
+
+/* Mountain Graphic Design */
+.mountain-graphic {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #87ceeb 0%, #98d8e8 50%, #f0f8ff 100%);
+}
+
+.mountain-layer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: #4a5568;
+}
+
+.layer-1 {
+  height: 200px;
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  clip-path: polygon(0 40%, 25% 0%, 50% 30%, 75% 10%, 100% 35%, 100% 100%, 0 100%);
+  z-index: 3;
+}
+
+.layer-2 {
+  height: 250px;
+  background: linear-gradient(135deg, #4a5568 0%, #718096 100%);
+  clip-path: polygon(0 60%, 20% 20%, 40% 50%, 60% 30%, 80% 45%, 100% 25%, 100% 100%, 0 100%);
+  z-index: 2;
+}
+
+.layer-3 {
+  height: 300px;
+  background: linear-gradient(135deg, #718096 0%, #a0aec0 100%);
+  clip-path: polygon(0 80%, 15% 40%, 35% 65%, 55% 50%, 75% 60%, 90% 45%, 100% 70%, 100% 100%, 0 100%);
+  z-index: 1;
+}
+
+.sun {
+  position: absolute;
+  top: 80px;
+  right: 100px;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, #ffd700 0%, #ffed4e 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+  z-index: 4;
+}
+
+.cloud {
+  position: absolute;
+  background: white;
+  border-radius: 50px;
+  opacity: 0.8;
+  z-index: 5;
+}
+
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  background: white;
+  border-radius: 50px;
+}
+
+.cloud-1 {
+  width: 60px;
+  height: 20px;
+  top: 120px;
+  left: 80px;
+  animation: float 20s infinite ease-in-out;
+}
+
+.cloud-1::before {
+  width: 30px;
+  height: 30px;
+  top: -15px;
+  left: 10px;
+}
+
+.cloud-1::after {
+  width: 40px;
+  height: 25px;
+  top: -10px;
+  right: 10px;
+}
+
+.cloud-2 {
+  width: 80px;
+  height: 25px;
+  top: 60px;
+  right: 60px;
+  animation: float 25s infinite ease-in-out reverse;
+}
+
+.cloud-2::before {
+  width: 40px;
+  height: 35px;
+  top: -17px;
+  left: 15px;
+}
+
+.cloud-2::after {
+  width: 50px;
+  height: 30px;
+  top: -12px;
+  right: 15px;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(20px) translateY(-10px); }
+  50% { transform: translateX(-10px) translateY(5px); }
+  75% { transform: translateX(15px) translateY(-5px); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 40px;
+    padding: 0 30px;
+  }
+  
+  .hero-left {
+    max-width: 100%;
+  }
+  
+  .hero-right {
+    max-width: 100%;
+  }
+  
+  .hero-visual {
+    height: 400px;
+  }
+}
+
 @media (max-width: 768px) {
   html, body {
     padding: 0 !important;
@@ -117,76 +293,229 @@ body:has(#about)::before {
   }
   
   #about {
-    background-attachment: scroll !important;
-    background-position: center center !important;
-    background-size: cover !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     min-height: 100vh;
-    height: 100%;
     padding: 0 !important;
     margin: 0 !important;
     margin-left: calc(-50vw + 50%) !important;
     margin-right: calc(-50vw + 50%) !important;
     width: 100vw !important;
     max-width: 100vw !important;
-    left: 0 !important;
-    right: 0 !important;
-    position: relative !important;
-    box-sizing: border-box !important;
-  }
-  
-  #about .container {
-    padding: 20px 15px !important;
-    margin: 0 !important;
     display: flex;
-    justify-content: center;
     align-items: center;
-    width: 100vw !important;
-    max-width: 100vw !important;
+    background-image: url('../../public/img/hike2.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: scroll !important;
+    background-repeat: no-repeat !important;
   }
   
-  #about .row {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+  .hero-container {
+    padding: 60px 20px 40px;
+    min-height: auto;
     width: 100%;
-    margin: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-  
-  #about .col-xs-10 {
     display: flex;
-    justify-content: center;
-    width: 100%;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    align-items: center;
   }
   
-  .about-text {
-    padding: 30px 20px;
-    margin: 0 auto;
-    max-width: 90%;
+  .hero-content {
+    padding: 0;
+    gap: 40px;
     width: 100%;
+    max-width: 100%;
   }
   
-  .about-text h3 {
-    font-size: 1.5rem;
+  .hero-left {
+    max-width: 100%;
     text-align: center;
+    margin-bottom: 20px;
   }
   
-  .about-text p {
+  .hero-text {
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 30px 25px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  .hero-text h1 {
+    font-size: 2.2rem;
+    margin-bottom: 1.2rem;
+    line-height: 1.1;
+    color: #2d3748 !important;
+  }
+  
+  .hero-text h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.8rem;
+    line-height: 1.4;
+    color: #4a5568 !important;
+  }
+  
+  .hero-text p {
     font-size: 1rem;
-    text-align: center;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    max-width: 100%;
+    color: #718096 !important;
+  }
+  
+  .hero-buttons {
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.9rem 1.8rem;
+    font-size: 0.95rem;
+    min-width: 140px;
+  }
+  
+  .hero-right {
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .hero-visual {
+    height: 320px;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .mountain-graphic {
+    border-radius: 16px;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .sun {
+    width: 45px;
+    height: 45px;
+    top: 70px;
+    right: 70px;
+  }
+  
+  .cloud-1 {
+    width: 45px;
+    height: 18px;
+    top: 90px;
+    left: 50px;
+  }
+  
+  .cloud-2 {
+    width: 55px;
+    height: 20px;
+    top: 50px;
+    right: 50px;
   }
 }
 
 @media (max-width: 480px) {
-  .about-text {
-    padding: 25px 15px;
-    margin: 10px auto;
-    max-width: 95%;
+  #about {
+    display: flex;
+    align-items: center;
+    background-image: url('../../public/img/hike2.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: scroll !important;
+    background-repeat: no-repeat !important;
+  }
+  
+  .hero-container {
+    padding: 100px 15px 30px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .hero-content {
+    gap: 30px;
+  }
+  
+  .hero-left {
+    margin-bottom: 15px;
+  }
+  
+  .hero-text {
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 25px 20px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  .hero-text h1 {
+    font-size: 1.9rem;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+    color: #2d3748 !important;
+  }
+  
+  .hero-text h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+    color: #4a5568 !important;
+  }
+  
+  .hero-text p {
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    color: #718096 !important;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    max-width: 280px;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .hero-right {
+    margin-top: 15px;
+  }
+  
+  .hero-visual {
+    height: 280px;
+    width: 100%;
+    max-width: 350px;
+  }
+  
+  .mountain-graphic {
+    border-radius: 12px;
+  }
+  
+  .sun {
+    width: 35px;
+    height: 35px;
+    top: 60px;
+    right: 60px;
+  }
+  
+  .cloud-1 {
+    width: 35px;
+    height: 14px;
+    top: 70px;
+    left: 40px;
+  }
+  
+  .cloud-2 {
+    width: 45px;
+    height: 16px;
+    top: 40px;
+    right: 40px;
   }
 }
