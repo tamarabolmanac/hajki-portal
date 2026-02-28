@@ -1,0 +1,378 @@
+/* Guide Page Styles */
+.guide-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8faf9 0%, #e8f5e8 100%);
+  padding: 100px 20px 50px;
+  position: relative;
+}
+
+/* Override body gradient background */
+body:has(.guide-container) {
+  background: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body:has(.guide-container)::before {
+  display: none !important;
+}
+
+.guide-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 60px;
+}
+
+.guide-header h1 {
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.guide-header p {
+  font-family: "Inter", "Poppins", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #718096;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.guide-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.guide-section {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 60px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.guide-section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.step-number {
+  flex-shrink: 0;
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-size: 3rem;
+  border-radius: 0 16px 16px 0;
+  margin-right: 40px;
+}
+
+.step-content {
+  flex: 1;
+  padding: 40px;
+}
+
+.step-content h2 {
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.step-content > p {
+  font-family: "Inter", "Poppins", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: #718096;
+  margin-bottom: 2rem;
+}
+
+.step-details {
+  background: #f8faf9;
+  border-radius: 12px;
+  padding: 25px;
+  border-left: 4px solid #11998e;
+}
+
+.step-details h3 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.step-details ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.step-details li {
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #4a5568;
+  margin-bottom: 0.8rem;
+  padding-left: 25px;
+  position: relative;
+}
+
+.step-details li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #11998e;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.step-details li:last-child {
+  margin-bottom: 0;
+}
+
+/* Tips Section */
+.guide-tips {
+  margin-top: 80px;
+  text-align: center;
+}
+
+.guide-tips h2 {
+  font-family: "Poppins", "Raleway", sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  color: #2d3748;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 3rem;
+}
+
+.tip-card {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-top: 4px solid #11998e;
+}
+
+.tip-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.tip-card h3 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.tip-card p {
+  font-family: "Inter", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #718096;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .guide-container {
+    padding: 80px 20px 40px;
+  }
+  
+  .guide-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .step-number {
+    width: 100%;
+    height: 80px;
+    border-radius: 16px 16px 0 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    font-size: 2rem;
+  }
+  
+  .step-content {
+    padding: 30px;
+  }
+  
+  .step-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .step-details {
+    text-align: left;
+  }
+}
+
+@media (max-width: 768px) {
+  html, body {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+  }
+  
+  .guide-container {
+    padding: 70px 15px 30px;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+  
+  .guide-header h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .guide-header p {
+    font-size: 1rem;
+  }
+  
+  .guide-section {
+    margin-bottom: 40px;
+  }
+  
+  .step-number {
+    height: 60px;
+    font-size: 1.5rem;
+  }
+  
+  .step-content {
+    padding: 25px 20px;
+  }
+  
+  .step-content h2 {
+    font-size: 1.3rem;
+  }
+  
+  .step-content > p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .step-details {
+    padding: 20px;
+  }
+  
+  .step-details h3 {
+    font-size: 1.1rem;
+  }
+  
+  .step-details li {
+    font-size: 0.95rem;
+  }
+  
+  .guide-tips h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .tips-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .tip-card {
+    padding: 25px 20px;
+  }
+  
+  .tip-card h3 {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .guide-container {
+    padding: 60px 10px 20px;
+  }
+  
+  .guide-header {
+    margin-bottom: 40px;
+  }
+  
+  .guide-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .guide-header p {
+    font-size: 0.95rem;
+  }
+  
+  .step-number {
+    height: 50px;
+    font-size: 1.3rem;
+  }
+  
+  .step-content {
+    padding: 20px 15px;
+  }
+  
+  .step-content h2 {
+    font-size: 1.2rem;
+  }
+  
+  .step-content > p {
+    font-size: 0.95rem;
+  }
+  
+  .step-details {
+    padding: 15px;
+  }
+  
+  .step-details h3 {
+    font-size: 1rem;
+  }
+  
+  .step-details li {
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  .guide-tips h2 {
+    font-size: 1.8rem;
+  }
+  
+  .tip-card {
+    padding: 20px 15px;
+  }
+  
+  .tip-card h3 {
+    font-size: 1.1rem;
+  }
+  
+  .tip-card p {
+    font-size: 0.9rem;
+  }
+}
