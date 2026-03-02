@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
 import { config } from '../config';
+import { BackgroundImage } from './BackgroundImage';
 import '../styles/MyRoutes.css';
 import '../styles/RoutesList.css';
 
@@ -83,7 +84,7 @@ export const MyRoutes = () => {
     return (
       <div className="routes-page">
         <div className="routes-background">
-          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
           <div className="routes-overlay" />
         </div>
       <div className="page-container">
@@ -104,7 +105,7 @@ export const MyRoutes = () => {
     return (
       <div className="routes-page">
         <div className="routes-background">
-          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
           <div className="routes-overlay" />
         </div>
       <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -179,7 +180,7 @@ export const MyRoutes = () => {
     return (
       <div className="routes-page">
         <div className="routes-background">
-          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
           <div className="routes-overlay" />
         </div>
       <div className="page-container">
@@ -204,7 +205,7 @@ export const MyRoutes = () => {
   return (
     <div className="routes-page">
       <div className="routes-background">
-        <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+        <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
         <div className="routes-overlay" />
       </div>
     <div className="page-container">

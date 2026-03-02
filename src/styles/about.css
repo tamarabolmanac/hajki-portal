@@ -42,6 +42,12 @@ body:has(#about)::before {
   object-fit: cover;
   object-position: center;
   display: block;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.hero-image.bg-image-loaded {
+  opacity: 1;
 }
 
 /* Gradient overlay for text readability */

@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { BackgroundImage } from "./BackgroundImage";
 import "../styles/about.css";
 
 export const About = (props) => {
@@ -16,7 +17,7 @@ export const About = (props) => {
   return (
     <div id="about" className="hero-landing">
       <div className="hero-background">
-        <img
+        <BackgroundImage
           src="/img/hike-landing.jpg"
           alt="Planinarenje u prirodi"
           className="hero-image"

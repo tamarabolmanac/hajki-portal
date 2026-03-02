@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
+import { BackgroundImage } from './BackgroundImage';
 import '../styles/NearbyRoutes.css';
 import '../styles/RoutesList.css';
 
@@ -87,7 +88,7 @@ export const NearbyRoutes = () => {
     return (
       <div className="routes-page">
         <div className="routes-background">
-          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
           <div className="routes-overlay" />
         </div>
       <div className="nearby-routes-container">
@@ -116,7 +117,7 @@ export const NearbyRoutes = () => {
     return (
       <div className="routes-page">
         <div className="routes-background">
-          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
           <div className="routes-overlay" />
         </div>
       <div className="nearby-routes-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -191,7 +192,7 @@ export const NearbyRoutes = () => {
   return (
     <div className="routes-page">
       <div className="routes-background">
-        <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+        <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
         <div className="routes-overlay" />
       </div>
     <div className="nearby-routes-container">

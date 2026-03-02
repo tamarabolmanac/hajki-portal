@@ -21,6 +21,12 @@
   object-fit: cover;
   object-position: center;
   display: block;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.routes-bg-image.bg-image-loaded {
+  opacity: 1;
 }
 
 .routes-overlay {

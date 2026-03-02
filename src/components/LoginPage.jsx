@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { BackgroundImage } from "./BackgroundImage";
 import { config } from '../config';
 import '../styles/LoginPage.css';
 import GoogleLoginButton from "./GoogleLoginButton";
@@ -82,10 +83,11 @@ const LoginPage = () => {
   return (
     <div className="login-page">
       <div className="login-background">
-        <img
+        <BackgroundImage
           src="/img/hike-login.jpg"
           alt="Planinarenje"
           className="login-bg-image"
+          fetchPriority="high"
         />
         <div className="login-overlay" />
       </div>

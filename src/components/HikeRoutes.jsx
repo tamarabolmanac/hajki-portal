@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { config } from '../config';
 import { isAuthenticated } from '../utils/auth';
+import { BackgroundImage } from './BackgroundImage';
 import '../styles/HikeRoutes.css';
 import '../styles/RoutesList.css';
 
@@ -65,7 +66,7 @@ export const HikeRoutes = (props) => {
     return (
       <div className="routes-page">
         <div className="routes-background">
-          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
           <div className="routes-overlay" />
         </div>
       <div className="page-container">
@@ -82,7 +83,7 @@ export const HikeRoutes = (props) => {
     return (
       <div className="routes-page">
         <div className="routes-background">
-          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
           <div className="routes-overlay" />
         </div>
       <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -206,7 +207,7 @@ export const HikeRoutes = (props) => {
   return (
     <div className="routes-page">
       <div className="routes-background">
-        <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+        <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
         <div className="routes-overlay" />
       </div>
     <div className="page-container">
