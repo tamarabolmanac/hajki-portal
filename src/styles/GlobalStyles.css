@@ -45,7 +45,7 @@
 }
 
 .page-header h1 {
-  font-family: "Poppins", "Raleway", sans-serif;
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
   font-weight: 800;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   -webkit-background-clip: text;
@@ -58,6 +58,7 @@
 }
 
 .page-header p {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
   color: rgba(255, 255, 255, 0.9);
   font-size: 1.2rem;
   margin: 0;
@@ -104,6 +105,7 @@
 
 /* Universal button styles */
 .btn-primary-modern {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   color: white;
   padding: 14px 32px;
@@ -143,6 +145,7 @@
 }
 
 .btn-secondary-modern {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
   background: rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.9);
   padding: 12px 24px;
