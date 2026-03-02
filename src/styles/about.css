@@ -1,20 +1,22 @@
-/* Modern Hero Section - Inspired by Bite Design */
-#about {
+/* Modern Hero Section - Full-bleed image with overlay */
+#about.hero-landing {
   position: relative;
   min-height: 100vh;
   width: 100vw !important;
+  max-width: 100vw;
   margin-left: calc(-50vw + 50%) !important;
   margin-right: calc(-50vw + 50%) !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
-  background: linear-gradient(135deg, #f8faf9 0%, #e8f5e8 100%);
-  z-index: 1;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Override body gradient background when About is visible */
+/* Override body when hero is visible */
 body:has(#about) {
-  background: none !important;
+  background: #0f1419 !important;
   padding: 0 !important;
   margin: 0 !important;
 }
@@ -24,66 +26,84 @@ body:has(#about)::before {
 }
 
 .main-content {
-  margin-top: 0px !important;
+  margin-top: 0 !important;
 }
 
-/* Hero Container */
+/* Full-bleed background image */
+.hero-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Gradient overlay for text readability */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 20, 25, 0.75) 0%,
+    rgba(30, 40, 50, 0.5) 40%,
+    rgba(45, 55, 72, 0.35) 100%
+  );
+  z-index: 1;
+}
+
+/* Content container */
 .hero-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  padding: 0;
   position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 40px;
 }
 
 .hero-content {
-  display: flex;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 40px;
-  align-items: center;
-  justify-content: space-between;
-  gap: 60px;
+  max-width: 640px;
 }
 
-/* Left Side - Text Content */
-.hero-left {
-  flex: 1;
-  max-width: 600px;
-  z-index: 10;
-}
-
+/* Typography */
 .hero-text h1 {
   font-family: "Poppins", "Raleway", sans-serif;
   font-weight: 800;
   font-size: clamp(2.5rem, 5vw, 4rem);
-  color: #2d3748;
-  margin-bottom: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 1rem;
   line-height: 1.1;
   letter-spacing: -0.02em;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
 }
 
 .hero-text h2 {
   font-family: "Poppins", "Raleway", sans-serif;
   font-weight: 400;
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
-  color: #4a5568;
-  margin-bottom: 2rem;
-  line-height: 1.4;
+  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
 }
 
 .hero-text p {
   font-family: "Inter", "Poppins", sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 400;
   line-height: 1.7;
-  color: #718096;
-  margin-bottom: 3rem;
-  max-width: 500px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2.5rem;
+  max-width: 520px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Hero Buttons */
+/* Buttons */
 .hero-buttons {
   display: flex;
   gap: 1rem;
@@ -91,431 +111,120 @@ body:has(#about)::before {
 }
 
 .btn-primary {
-  background: #2d3748;
-  color: white;
+  background: #ffffff;
+  color: #1a202c;
   border: none;
   padding: 1rem 2rem;
-  border-radius: 8px;
+  border-radius: 10px;
   font-family: "Inter", "Poppins", sans-serif;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(45, 55, 72, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .btn-primary:hover {
-  background: #1a202c;
+  background: #f0f4f0;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(45, 55, 72, 0.3);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
 
 .btn-secondary {
-  background: transparent;
-  color: #2d3748;
-  border: 2px solid #2d3748;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 2px solid rgba(255, 255, 255, 0.6);
   padding: 1rem 2rem;
-  border-radius: 8px;
+  border-radius: 10px;
   font-family: "Inter", "Poppins", sans-serif;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
 }
 
 .btn-secondary:hover {
-  background: #2d3748;
-  color: white;
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.9);
   transform: translateY(-2px);
 }
 
-/* Right Side - Visual Graphic */
-.hero-right {
-  flex: 1;
-  max-width: 600px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.hero-visual {
-  width: 100%;
-  height: 500px;
-  position: relative;
-}
-
-/* Mountain Graphic Design */
-.mountain-graphic {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-  border-radius: 20px;
-  background: linear-gradient(180deg, #87ceeb 0%, #98d8e8 50%, #f0f8ff 100%);
-}
-
-.mountain-layer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  background: #4a5568;
-}
-
-.layer-1 {
-  height: 200px;
-  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-  clip-path: polygon(0 40%, 25% 0%, 50% 30%, 75% 10%, 100% 35%, 100% 100%, 0 100%);
-  z-index: 3;
-}
-
-.layer-2 {
-  height: 250px;
-  background: linear-gradient(135deg, #4a5568 0%, #718096 100%);
-  clip-path: polygon(0 60%, 20% 20%, 40% 50%, 60% 30%, 80% 45%, 100% 25%, 100% 100%, 0 100%);
-  z-index: 2;
-}
-
-.layer-3 {
-  height: 300px;
-  background: linear-gradient(135deg, #718096 0%, #a0aec0 100%);
-  clip-path: polygon(0 80%, 15% 40%, 35% 65%, 55% 50%, 75% 60%, 90% 45%, 100% 70%, 100% 100%, 0 100%);
-  z-index: 1;
-}
-
-.sun {
-  position: absolute;
-  top: 80px;
-  right: 100px;
-  width: 60px;
-  height: 60px;
-  background: radial-gradient(circle, #ffd700 0%, #ffed4e 100%);
-  border-radius: 50%;
-  box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
-  z-index: 4;
-}
-
-.cloud {
-  position: absolute;
-  background: white;
-  border-radius: 50px;
-  opacity: 0.8;
-  z-index: 5;
-}
-
-.cloud::before,
-.cloud::after {
-  content: '';
-  position: absolute;
-  background: white;
-  border-radius: 50px;
-}
-
-.cloud-1 {
-  width: 60px;
-  height: 20px;
-  top: 120px;
-  left: 80px;
-  animation: float 20s infinite ease-in-out;
-}
-
-.cloud-1::before {
-  width: 30px;
-  height: 30px;
-  top: -15px;
-  left: 10px;
-}
-
-.cloud-1::after {
-  width: 40px;
-  height: 25px;
-  top: -10px;
-  right: 10px;
-}
-
-.cloud-2 {
-  width: 80px;
-  height: 25px;
-  top: 60px;
-  right: 60px;
-  animation: float 25s infinite ease-in-out reverse;
-}
-
-.cloud-2::before {
-  width: 40px;
-  height: 35px;
-  top: -17px;
-  left: 15px;
-}
-
-.cloud-2::after {
-  width: 50px;
-  height: 30px;
-  top: -12px;
-  right: 15px;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateX(0) translateY(0); }
-  25% { transform: translateX(20px) translateY(-10px); }
-  50% { transform: translateX(-10px) translateY(5px); }
-  75% { transform: translateX(15px) translateY(-5px); }
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .hero-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 40px;
-    padding: 0 30px;
-  }
-  
-  .hero-left {
-    max-width: 100%;
-  }
-  
-  .hero-right {
-    max-width: 100%;
-  }
-  
-  .hero-visual {
-    height: 400px;
-  }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-  html, body {
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-  }
-  
-  #about {
+  #about.hero-landing {
     min-height: 100vh;
-    padding: 0 !important;
-    margin: 0 !important;
-    margin-left: calc(-50vw + 50%) !important;
-    margin-right: calc(-50vw + 50%) !important;
-    width: 100vw !important;
-    max-width: 100vw !important;
-    display: flex;
-    align-items: center;
-    background-image: url('../../public/img/hike2.jpg') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-attachment: scroll !important;
-    background-repeat: no-repeat !important;
+    min-height: 100dvh;
   }
-  
+
   .hero-container {
-    padding: 60px 20px 40px;
-    min-height: auto;
-    width: 100%;
-    display: flex;
-    align-items: center;
+    padding: 0 24px;
   }
-  
+
   .hero-content {
-    padding: 0;
-    gap: 40px;
-    width: 100%;
     max-width: 100%;
   }
-  
-  .hero-left {
-    max-width: 100%;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .hero-text {
-    background: rgba(255, 255, 255, 0.95) !important;
-    padding: 30px 25px !important;
-    border-radius: 16px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  }
-  
+
   .hero-text h1 {
-    font-size: 2.2rem;
-    margin-bottom: 1.2rem;
-    line-height: 1.1;
-    color: #2d3748 !important;
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
   }
-  
+
   .hero-text h2 {
-    font-size: 1.3rem;
-    margin-bottom: 1.8rem;
-    line-height: 1.4;
-    color: #4a5568 !important;
+    font-size: 1.15rem;
+    margin-bottom: 1.25rem;
   }
-  
+
   .hero-text p {
     font-size: 1rem;
-    margin-bottom: 2.5rem;
-    line-height: 1.6;
-    max-width: 100%;
-    color: #718096 !important;
-  }
-  
-  .hero-buttons {
-    justify-content: center;
-    gap: 1rem;
-  }
-  
-  .btn-primary,
-  .btn-secondary {
-    padding: 0.9rem 1.8rem;
-    font-size: 0.95rem;
-    min-width: 140px;
-  }
-  
-  .hero-right {
-    max-width: 100%;
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-  }
-  
-  .hero-visual {
-    height: 320px;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-  }
-  
-  .mountain-graphic {
-    border-radius: 16px;
-    width: 100%;
-    height: 100%;
-  }
-  
-  .sun {
-    width: 45px;
-    height: 45px;
-    top: 70px;
-    right: 70px;
-  }
-  
-  .cloud-1 {
-    width: 45px;
-    height: 18px;
-    top: 90px;
-    left: 50px;
-  }
-  
-  .cloud-2 {
-    width: 55px;
-    height: 20px;
-    top: 50px;
-    right: 50px;
-  }
-}
-
-@media (max-width: 480px) {
-  #about {
-    display: flex;
-    align-items: center;
-    background-image: url('../../public/img/hike2.jpg') !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-attachment: scroll !important;
-    background-repeat: no-repeat !important;
-  }
-  
-  .hero-container {
-    padding: 100px 15px 30px;
-    display: flex;
-    align-items: center;
-  }
-  
-  .hero-content {
-    gap: 30px;
-  }
-  
-  .hero-left {
-    margin-bottom: 15px;
-  }
-  
-  .hero-text {
-    background: rgba(255, 255, 255, 0.95) !important;
-    padding: 25px 20px !important;
-    border-radius: 16px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-    backdrop-filter: blur(10px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  }
-  
-  .hero-text h1 {
-    font-size: 1.9rem;
-    margin-bottom: 1rem;
-    line-height: 1.1;
-    color: #2d3748 !important;
-  }
-  
-  .hero-text h2 {
-    font-size: 1.2rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.4;
-    color: #4a5568 !important;
-  }
-  
-  .hero-text p {
-    font-size: 0.95rem;
     margin-bottom: 2rem;
-    line-height: 1.6;
-    color: #718096 !important;
+    max-width: 100%;
   }
-  
+
   .hero-buttons {
     flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
+    gap: 0.75rem;
   }
-  
+
   .btn-primary,
   .btn-secondary {
     width: 100%;
     max-width: 280px;
-    padding: 0.8rem 1.5rem;
-    font-size: 0.9rem;
+    padding: 0.9rem 1.5rem;
+    justify-content: center;
   }
-  
-  .hero-right {
-    margin-top: 15px;
+
+  .hero-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(15, 20, 25, 0.4) 0%,
+      rgba(15, 20, 25, 0.7) 50%,
+      rgba(15, 20, 25, 0.9) 100%
+    );
   }
-  
-  .hero-visual {
-    height: 280px;
-    width: 100%;
-    max-width: 350px;
+}
+
+@media (max-width: 480px) {
+  .hero-container {
+    padding: 0 20px;
   }
-  
-  .mountain-graphic {
-    border-radius: 12px;
+
+  .hero-text h1 {
+    font-size: 1.75rem;
   }
-  
-  .sun {
-    width: 35px;
-    height: 35px;
-    top: 60px;
-    right: 60px;
+
+  .hero-text h2 {
+    font-size: 1.05rem;
   }
-  
-  .cloud-1 {
-    width: 35px;
-    height: 14px;
-    top: 70px;
-    left: 40px;
+
+  .hero-text p {
+    font-size: 0.95rem;
+    margin-bottom: 1.75rem;
   }
-  
-  .cloud-2 {
-    width: 45px;
-    height: 16px;
-    top: 40px;
-    right: 40px;
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.85rem 1.25rem;
+    font-size: 0.95rem;
   }
 }
