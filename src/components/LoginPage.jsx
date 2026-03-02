@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { config } from '../config';
 import '../styles/LoginPage.css';
 import GoogleLoginButton from "./GoogleLoginButton";
-import { FaEnvelope, FaLock, FaArrowRight, FaHiking } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaArrowRight } from 'react-icons/fa';
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -81,6 +81,14 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
+      <div className="login-background">
+        <img
+          src="/img/hike-login.jpg"
+          alt="Planinarenje"
+          className="login-bg-image"
+        />
+        <div className="login-overlay" />
+      </div>
       <div className="login-container">
         <div className="login-logo">
           <h1>Dobrodošli nazad</h1>
