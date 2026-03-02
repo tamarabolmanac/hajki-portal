@@ -4,6 +4,7 @@ import { authenticatedFetch } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
 import { config } from '../config';
 import '../styles/MyRoutes.css';
+import '../styles/RoutesList.css';
 
 export const MyRoutes = () => {
   const navigate = useNavigate();
@@ -80,6 +81,11 @@ export const MyRoutes = () => {
 
   if (!userIsAuthenticated) {
     return (
+      <div className="routes-page">
+        <div className="routes-background">
+          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <div className="routes-overlay" />
+        </div>
       <div className="page-container">
         <div className="page-header">
           <h1>Moje rute</h1>
@@ -90,20 +96,29 @@ export const MyRoutes = () => {
           <Link to="/login" className="btn-primary-modern">Uloguj se</Link>
         </div>
       </div>
+      </div>
     );
   }
 
   if (loading) {
     return (
+      <div className="routes-page">
+        <div className="routes-background">
+          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <div className="routes-overlay" />
+        </div>
+      <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div className="loading-container" style={{
         minHeight: '60vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        borderRadius: '16px',
+        background: 'rgba(255, 255, 255, 0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
         margin: '2rem auto',
-        maxWidth: '1200px' 
+        maxWidth: '1200px',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
         <div style={{
           textAlign: 'center',
@@ -143,7 +158,7 @@ export const MyRoutes = () => {
           </div>
 
           <h2 style={{
-            color: '#2c3e50',
+            color: '#ffffff',
             fontSize: '1.5rem',
             fontWeight: '700',
             marginBottom: '0.5rem',
@@ -155,11 +170,18 @@ export const MyRoutes = () => {
           </h2>
         </div>
       </div>
+      </div>
+      </div>
     );
   }
 
   if (error) {
     return (
+      <div className="routes-page">
+        <div className="routes-background">
+          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <div className="routes-overlay" />
+        </div>
       <div className="page-container">
         <div className="page-header">
           <h1>Moje rute</h1>
@@ -168,6 +190,7 @@ export const MyRoutes = () => {
           <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem' }}>⚠️ Greška</h3>
           <p style={{ margin: 0, fontSize: '1.1rem' }}>{error}</p>
         </div>
+      </div>
       </div>
     );
   }
@@ -179,6 +202,11 @@ export const MyRoutes = () => {
   );
 
   return (
+    <div className="routes-page">
+      <div className="routes-background">
+        <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+        <div className="routes-overlay" />
+      </div>
     <div className="page-container">
       <div className="page-header clean">
         <h1>Moje rute</h1>
@@ -346,6 +374,7 @@ export const MyRoutes = () => {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 };

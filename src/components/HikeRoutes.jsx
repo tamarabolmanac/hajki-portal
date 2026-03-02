@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { config } from '../config';
 import { isAuthenticated } from '../utils/auth';
-import '../styles/HikeRoutes.css'
+import '../styles/HikeRoutes.css';
+import '../styles/RoutesList.css';
 
 export const HikeRoutes = (props) => {
   const [data, setData] = useState(null);
@@ -62,26 +63,40 @@ export const HikeRoutes = (props) => {
 
   if (error) {
     return (
+      <div className="routes-page">
+        <div className="routes-background">
+          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <div className="routes-overlay" />
+        </div>
       <div className="page-container">
         <div className="alert-error-modern">
           <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem' }}>⚠️ Greška</h3>
           <p style={{ margin: 0, fontSize: '1.1rem' }}>{error}</p>
         </div>
       </div>
+      </div>
     );
   }
 
   if (loading) {
     return (
+      <div className="routes-page">
+        <div className="routes-background">
+          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <div className="routes-overlay" />
+        </div>
+      <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div className="loading-container" style={{
         minHeight: '60vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        borderRadius: '16px',
+        background: 'rgba(255, 255, 255, 0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
         margin: '2rem auto',
-        maxWidth: '1200px' 
+        maxWidth: '1200px',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
         <div style={{
           textAlign: 'center',
@@ -121,7 +136,7 @@ export const HikeRoutes = (props) => {
           </div>
 
           <h2 style={{
-            color: '#2c3e50',
+            color: '#ffffff',
             fontSize: '1.75rem',
             fontWeight: '700',
             marginBottom: '0.75rem',
@@ -133,7 +148,7 @@ export const HikeRoutes = (props) => {
           </h2>
           
           <p style={{
-            color: '#6c757d',
+            color: 'rgba(255, 255, 255, 0.8)',
             fontSize: '1.1rem',
             lineHeight: '1.6',
             marginBottom: '1.5rem'
@@ -176,6 +191,8 @@ export const HikeRoutes = (props) => {
           }} />
         </div>
       </div>
+      </div>
+      </div>
   );
 }
 
@@ -187,6 +204,11 @@ export const HikeRoutes = (props) => {
   ) : [];
 
   return (
+    <div className="routes-page">
+      <div className="routes-background">
+        <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+        <div className="routes-overlay" />
+      </div>
     <div className="page-container">
       <div className="page-header clean">
         <h1>Pretraži rute</h1>
@@ -284,6 +306,7 @@ export const HikeRoutes = (props) => {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

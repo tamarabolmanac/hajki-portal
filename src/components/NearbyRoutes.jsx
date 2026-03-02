@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import '../styles/NearbyRoutes.css';
+import '../styles/RoutesList.css';
 
 export const NearbyRoutes = () => {
   const [routes, setRoutes] = useState([]);
@@ -84,6 +85,11 @@ export const NearbyRoutes = () => {
 
   if (locationError) {
     return (
+      <div className="routes-page">
+        <div className="routes-background">
+          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <div className="routes-overlay" />
+        </div>
       <div className="nearby-routes-container">
         <div className="nearby-routes-header">
           <h1>Blizu mene</h1>
@@ -102,20 +108,29 @@ export const NearbyRoutes = () => {
           </button>
         </div>
       </div>
+      </div>
     );
   }
 
   if (loading) {
     return (
+      <div className="routes-page">
+        <div className="routes-background">
+          <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+          <div className="routes-overlay" />
+        </div>
+      <div className="nearby-routes-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div className="loading-container" style={{
         minHeight: '60vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        borderRadius: '16px',
+        background: 'rgba(255, 255, 255, 0.08)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
         margin: '2rem auto',
-        maxWidth: '1200px' 
+        maxWidth: '1200px',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
         <div style={{
           textAlign: 'center',
@@ -155,7 +170,7 @@ export const NearbyRoutes = () => {
           </div>
 
           <h2 style={{
-            color: '#2c3e50',
+            color: '#ffffff',
             fontSize: '1.5rem',
             fontWeight: '700',
             marginBottom: '0.5rem',
@@ -167,11 +182,18 @@ export const NearbyRoutes = () => {
           </h2>
         </div>
       </div>
+      </div>
+      </div>
     );
 }
 
 
   return (
+    <div className="routes-page">
+      <div className="routes-background">
+        <img src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" />
+        <div className="routes-overlay" />
+      </div>
     <div className="nearby-routes-container">
       <div className="nearby-routes-header">
         <h1>Blizu mene</h1>
@@ -274,6 +296,7 @@ export const NearbyRoutes = () => {
           </>
         )}
       </div>
+    </div>
     </div>
   );
 };
