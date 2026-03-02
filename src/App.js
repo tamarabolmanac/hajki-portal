@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { Navigation } from "./components/navigation";
 import { HikeRoutes } from "./components/HikeRoutes";
+import { Hikers } from "./components/Hikers";
 import { RouteDetails } from "./components/RouteDetails";
 import { EditRoute } from "./components/EditRoute";
 import { NearbyRoutes } from "./components/NearbyRoutes";
@@ -90,6 +91,16 @@ const AppContent = () => {
                 <PrivateRoute>
                   <div className="content-container">
                     <HikeRoutes />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/hikers"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <Hikers />
                   </div>
                 </PrivateRoute>
               }

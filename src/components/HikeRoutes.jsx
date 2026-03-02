@@ -12,6 +12,7 @@ export const HikeRoutes = (props) => {
   const [error, setError] = useState(null);
   const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showFollowingOnly, setShowFollowingOnly] = useState(false);
 
   // Check authentication status
   useEffect(() => {
@@ -43,8 +44,23 @@ export const HikeRoutes = (props) => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        // Fetch all routes - no authentication required for viewing
-        const response = await fetch(`${config.apiUrl}/routes`);
+        const token = localStorage.getItem('authToken');
+        const params = new URLSearchParams();
+        if (showFollowingOnly) {
+          params.set('scope', 'following');
+        }
+
+        const url = `${config.apiUrl}/routes${params.toString() ? `?${params.toString()}` : ''}`;
+
+        const headers = {
+          'Content-Type': 'application/json',
+        };
+
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const response = await fetch(url, { headers });
         const data = await response.json();
         
         if (!response.ok) {
@@ -60,7 +76,7 @@ export const HikeRoutes = (props) => {
     };
 
     fetchRoutes();
-  }, []);
+  }, [showFollowingOnly]);
 
   if (error) {
     return (
@@ -230,6 +246,19 @@ export const HikeRoutes = (props) => {
           )}
         </div>
 
+        {userIsAuthenticated && (
+          <div style={{ margin: '1.5rem 0', display: 'flex', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              className={showFollowingOnly ? 'btn-primary-modern' : 'btn-secondary-modern'}
+              style={{ borderRadius: '999px', padding: '0.5rem 1.4rem', fontSize: '0.9rem' }}
+              onClick={() => setShowFollowingOnly((prev) => !prev)}
+            >
+              {showFollowingOnly ? 'Prikaži sve rute' : 'Samo rute koje pratiš'}
+            </button>
+          </div>
+        )}
+
         {/* Search Input */}
         <div style={{ marginBottom: '2rem' }}>
           <input
@@ -260,7 +289,55 @@ export const HikeRoutes = (props) => {
           {filteredRoutes && filteredRoutes.length > 0 ? (
             filteredRoutes.map((hike, index) => (
             <div key={`${hike.title}-${index}`} className="hike-card">
+              {hike.thumbnail_url && (
+                <div style={{ width: '100%', maxHeight: 180, overflow: 'hidden' }}>
+                  <img
+                    src={hike.thumbnail_url}
+                    alt={hike.title}
+                    loading="lazy"
+                    style={{
+                      width: '100%',
+                      height: '180px',
+                      objectFit: 'cover'
+                    }}
+                  />
+                </div>
+              )}
               <div className="hike-card-content">
+                {hike.author && (
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem', gap: '0.5rem' }}>
+                    <div
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        background: '#e2e8f0',
+                        flexShrink: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        color: '#4a5568'
+                      }}
+                    >
+                      {hike.author.avatar_url ? (
+                        <img
+                          src={hike.author.avatar_url}
+                          alt={hike.author.name}
+                          loading="lazy"
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                      ) : (
+                        (hike.author.name || '?').trim().charAt(0).toUpperCase()
+                      )}
+                    </div>
+                    <div style={{ fontSize: '0.9rem', color: '#4a5568' }}>
+                      Autor: <span style={{ fontWeight: 600 }}>{hike.author.name}</span>
+                    </div>
+                  </div>
+                )}
                 <h3 className="hike-title">{hike.title}</h3>
                 <p className="hike-description">{hike.description}</p>
                 <div className="hike-details">
