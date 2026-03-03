@@ -135,11 +135,6 @@ export const Navigation = (props) => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/hikers" className={`page-scroll ${activeLink === '/hikers' ? 'active' : ''}`} onClick={() => handleLinkClick('/hikers')}>
-                    Pretraži planinare
-                  </Link>
-                </li>
-                <li>
                   <Link to="/prirodnjacki-kviz" className={`page-scroll ${activeLink === '/prirodnjacki-kviz' ? 'active' : ''}`} onClick={() => handleLinkClick('/prirodnjacki-kviz')}>
                     Prirodnjacki kviz
                   </Link>

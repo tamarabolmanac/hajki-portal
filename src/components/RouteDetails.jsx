@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import '../styles/RouteDetails.css';
 import { authenticatedFetch } from '../utils/api';
 import { getCurrentUser, getCurrentUserID } from '../utils/authHandler';
@@ -149,6 +149,42 @@ export const RouteDetails = () => {
   return (
     <div className="route-details-container">
       <div className="route-header">
+        {route.author && (
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem', gap: '0.5rem' }}>
+            <Link
+              to={`/user/${route.author.id}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit' }}
+            >
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  background: '#e2e8f0',
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  color: '#4a5568',
+                }}
+              >
+                {route.author.avatar_url ? (
+                  <img
+                    src={route.author.avatar_url}
+                    alt={route.author.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  (route.author.name || '?').trim().charAt(0).toUpperCase()
+                )}
+              </div>
+              <span style={{ fontWeight: 600, color: '#2d3748' }}>{route.author.name}</span>
+            </Link>
+          </div>
+        )}
         <h1 className="route-title">{route.title}</h1>
         <div className="route-meta">
           <span className="route-duration">
