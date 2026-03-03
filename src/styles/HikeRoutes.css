@@ -83,6 +83,26 @@
   gap: 2rem;
 }
 
+/* Optimized route thumbnail - placeholder until load, then fade-in */
+.route-thumbnail-wrap {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(226, 232, 240, 0.9) 0%, rgba(203, 213, 224, 0.9) 100%);
+}
+
+.route-thumbnail-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.35s ease-out;
+}
+
+.route-thumbnail-wrap img.route-thumbnail-loaded {
+  opacity: 1;
+}
+
 /* Hike Card - overridden by RoutesList when on routes-page */
 .hike-card {
   background: rgba(255, 255, 255, 0.95);

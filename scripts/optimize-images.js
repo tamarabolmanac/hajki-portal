@@ -18,6 +18,7 @@ const IMAGES_TO_OPTIMIZE = [
   "routes-bgd.jpg",
   "create-route.jpg",
   "about-us.jpg",
+  "contact.jpg",
 ];
 
 async function optimizeImage(filename) {

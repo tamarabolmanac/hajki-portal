@@ -6,6 +6,24 @@ import { BackgroundImage } from './BackgroundImage';
 import '../styles/HikeRoutes.css';
 import '../styles/RoutesList.css';
 
+/** Optimized thumbnail: priority for first N cards, lazy + async decode for rest, fade-in on load */
+const RouteThumbnail = ({ src, alt, isPriority }) => {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="route-thumbnail-wrap">
+      <img
+        src={src}
+        alt={alt}
+        loading={isPriority ? 'eager' : 'lazy'}
+        fetchPriority={isPriority ? 'high' : 'auto'}
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        className={loaded ? 'route-thumbnail-loaded' : ''}
+      />
+    </div>
+  );
+};
+
 export const HikeRoutes = (props) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -290,18 +308,11 @@ export const HikeRoutes = (props) => {
             filteredRoutes.map((hike, index) => (
             <div key={`${hike.title}-${index}`} className="hike-card">
               {hike.thumbnail_url && (
-                <div style={{ width: '100%', maxHeight: 180, overflow: 'hidden' }}>
-                  <img
-                    src={hike.thumbnail_url}
-                    alt={hike.title}
-                    loading="lazy"
-                    style={{
-                      width: '100%',
-                      height: '180px',
-                      objectFit: 'cover'
-                    }}
-                  />
-                </div>
+                <RouteThumbnail
+                  src={hike.thumbnail_url}
+                  alt={hike.title}
+                  isPriority={index < 3}
+                />
               )}
               <div className="hike-card-content">
                 {hike.author && (
@@ -327,6 +338,7 @@ export const HikeRoutes = (props) => {
                           src={hike.author.avatar_url}
                           alt={hike.author.name}
                           loading="lazy"
+                          decoding="async"
                           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         />
                       ) : (

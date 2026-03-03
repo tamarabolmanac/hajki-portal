@@ -1,23 +1,22 @@
-/* Contact Section with Background Image */
-#contact {
+/* Contact hero section - full-bleed image with overlay */
+#contact.contact-hero {
   position: relative;
   min-height: 100vh;
   width: 100vw !important;
+  max-width: 100vw;
   margin-left: calc(-50vw + 50%) !important;
   margin-right: calc(-50vw + 50%) !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
-  background-image: url('../../public/img/routes.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  z-index: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Override body gradient background when Contact is visible */
+/* Override body background when Contact is visible */
 body:has(#contact) {
-  background: none !important;
+  background: #0f1419 !important;
   padding: 0 !important;
   margin: 0 !important;
 }
@@ -26,151 +25,177 @@ body:has(#contact)::before {
   display: none !important;
 }
 
-/* Ensure content is above the background */
-#contact .container {
+.main-content {
+  margin-top: 0 !important;
+}
+
+/* Full-bleed background image */
+.contact-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.contact-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.contact-hero-image.bg-image-loaded {
+  opacity: 1;
+}
+
+/* Gradient overlay for readability */
+.contact-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    155deg,
+    rgba(15, 22, 28, 0.82) 0%,
+    rgba(20, 32, 40, 0.7) 35%,
+    rgba(30, 48, 58, 0.55) 60%,
+    rgba(40, 60, 68, 0.35) 100%
+  );
+  z-index: 1;
+}
+
+/* Content container */
+.contact-container {
   position: relative;
   z-index: 2;
-  padding: 80px 0;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 24px;
 }
 
-/* Style the content area */
-.contact-content {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  max-width: 800px;
-  margin: 0 auto;
+.contact-card {
+  max-width: 520px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 24px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
-.contact-content h3 {
+.contact-badge {
+  display: inline-block;
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-  font-weight: 700;
-  color: #1F3F1F;
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1f3f1f;
+  background: rgba(143, 163, 30, 0.12);
+  border: 1px solid rgba(143, 163, 30, 0.35);
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
   margin-bottom: 1rem;
-  margin-top: 1.5rem;
 }
 
-.contact-content h3:first-child {
-  margin-top: 0;
-}
-
-.contact-content p {
+.contact-title {
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1f3f1f;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  margin: 0 0 1rem 0;
+}
+
+.contact-lead {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.7;
+  color: #2d3748;
+  margin-bottom: 1rem;
+}
+
+.contact-text {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.7;
-  color: #333;
+  color: #4a5568;
   margin-bottom: 1.5rem;
 }
 
 .contact-list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .contact-list li {
-  position: relative;
-  padding: 12px 0;
-  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0;
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
-  font-size: 1.1rem;
-  font-weight: 400;
-  line-height: 1.6;
-  color: #444;
-  border-bottom: 1px solid rgba(85, 107, 47, 0.1);
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2d3748;
+  border-top: 1px solid rgba(107, 142, 35, 0.08);
 }
 
-.contact-list li:last-child {
-  border-bottom: none;
+.contact-list li:first-child {
+  border-top: none;
+}
+
+.contact-list-icon {
+  font-size: 1.2rem;
 }
 
 .contact-list strong {
-  color: #556B2F;
-  font-weight: 600;
+  color: #556b2f;
+  font-weight: 700;
 }
 
-.contact-title {
-  color: #1F3F1F;
-}
-
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
-  html, body {
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow-x: hidden !important;
-    width: 100% !important;
-    max-width: 100vw !important;
-  }
-  
-  #contact {
-    background-attachment: scroll !important;
-    background-position: center center !important;
-    background-size: cover !important;
-    background-image: url('../../public/img/routes.jpg') !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  #contact.contact-hero {
     min-height: 100vh;
-    height: 100%;
-    padding: 0 !important;
-    margin: 0 !important;
-    margin-left: calc(-50vw + 50%) !important;
-    margin-right: calc(-50vw + 50%) !important;
-    width: 100vw !important;
-    max-width: 100vw !important;
-    left: 0 !important;
-    right: 0 !important;
-    position: relative !important;
-    box-sizing: border-box !important;
+    min-height: 100dvh;
   }
-  
-  #contact .container {
-    padding: 20px 15px !important;
-    margin: 0 !important;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100vw !important;
-    max-width: 100vw !important;
+
+  .contact-container {
+    padding: 0 18px;
   }
-  
-  .contact-content {
-    padding: 30px 20px;
-    margin: 0 auto;
-    max-width: 90%;
-    width: 100%;
-    text-align: center;
+
+  .contact-card {
+    padding: 2rem 1.5rem;
+    max-width: 100%;
   }
-  
-  .contact-content h3 {
-    font-size: 1.5rem;
-    text-align: center;
+
+  .contact-title {
+    font-size: 1.9rem;
   }
-  
-  .contact-content p {
-    font-size: 1rem;
-    text-align: center;
+
+  .contact-lead,
+  .contact-text {
+    font-size: 0.98rem;
   }
-  
-  .contact-list {
-    text-align: center;
-  }
-  
+
   .contact-list li {
-    font-size: 1rem;
-    text-align: center;
+    font-size: 0.96rem;
   }
 }
 
 @media (max-width: 480px) {
-  .contact-content {
-    padding: 25px 15px;
-    margin: 10px auto;
-    max-width: 95%;
+  .contact-card {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .contact-title {
+    font-size: 1.7rem;
+  }
+
+  .contact-lead,
+  .contact-text {
+    font-size: 0.95rem;
   }
 }
+
