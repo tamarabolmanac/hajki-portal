@@ -148,21 +148,24 @@ export const UserProfile = () => {
                   <span style={{ marginLeft: 8, fontSize: 14, color: '#718096', fontWeight: 400 }}>(ti)</span>
                 )}
               </h2>
-              {(user.city || user.country) && (
-                <p className="hike-description" style={{ marginBottom: 0 }}>
-                  {[user.city, user.country].filter(Boolean).join(', ')}
-                </p>
-              )}
+              <p className="hike-description" style={{ marginBottom: '0.25rem', fontSize: '0.95rem' }}>
+                <strong>Grad:</strong>{' '}
+                {user.city && user.city !== 'Unknown' ? user.city : 'Nije uneto'}
+              </p>
+              <p className="hike-description" style={{ marginBottom: 0, fontSize: '0.95rem' }}>
+                <strong>Država:</strong>{' '}
+                {user.country && user.country !== 'Unknown' ? user.country : 'Nije uneto'}
+              </p>
             </div>
             {!user.is_me && user.is_following !== undefined && (
               <div>
                 <button
                   type="button"
-                  className={user.is_following ? 'btn-secondary-modern' : 'btn-primary-modern'}
+                  className={user.is_following ? 'btn-unfollow' : 'btn-primary-modern'}
                   style={{ borderRadius: 8, padding: '0.75rem 1.5rem' }}
                   onClick={toggleFollow}
                 >
-                  {user.is_following ? 'Pratiš' : 'Prati'}
+                  {user.is_following ? 'Otprati' : 'Prati'}
                 </button>
               </div>
             )}

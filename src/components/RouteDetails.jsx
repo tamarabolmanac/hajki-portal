@@ -11,7 +11,8 @@ import RouteTracker from './RouteTracker';
 const MapPlaceholder = () => {
   return (
     <div className="map-placeholder">
-      <p>Loading map...</p>
+      <div className="loading-spinner-modern" />
+      <p style={{ marginTop: '0.75rem', color: '#4a5568', fontWeight: 500 }}>Učitavanje mape...</p>
     </div>
   );
 };

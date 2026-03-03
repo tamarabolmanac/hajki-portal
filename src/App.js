@@ -52,6 +52,25 @@ const AppContent = () => {
       googleMapsApiKey={config.googleMapsApiKey}
       libraries={['places']}
       id="google-map-script"
+      loadingElement={
+        <div className="routes-page">
+          <div className="routes-background">
+            <div className="routes-bg-image bg-image-loaded" style={{ background: 'radial-gradient(circle at 20% 20%, #8FA31E 0, transparent 55%), radial-gradient(circle at 80% 80%, #11998e 0, transparent 55%)' }} />
+            <div className="routes-overlay" />
+          </div>
+          <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="loading-container" style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 20, padding: '2.5rem 2rem', maxWidth: 420, textAlign: 'center', border: '1px solid rgba(255,255,255,0.18)', boxShadow: '0 18px 45px rgba(0,0,0,0.45)' }}>
+              <div className="loading-spinner-modern" />
+              <h2 style={{ marginTop: '1.25rem', marginBottom: '0.5rem', color: '#f7fafc', fontSize: '1.5rem', fontWeight: 700 }}>
+                Učitavanje Hajki aplikacije
+              </h2>
+              <p style={{ margin: 0, color: 'rgba(226, 232, 240, 0.9)', fontSize: '0.95rem' }}>
+                Pripremamo staze, planinare i mape za tvoju sledeću avanturu...
+              </p>
+            </div>
+          </div>
+        </div>
+      }
     >
       <div>
         <Navigation />

@@ -15,17 +15,18 @@ export const About = (props) => {
   };
 
   return (
-    <div id="about" className="hero-landing">
+    <div id="about" className="hero-landing about-modern">
       <div className="hero-background">
         <BackgroundImage
-          src="/img/hike-landing.jpg"
-          alt="Planinarenje u prirodi"
+          src="/img/about-us.jpg"
+          alt="O nama - planinarenje"
           className="hero-image"
         />
         <div className="hero-overlay" />
       </div>
       <div className="hero-container">
         <div className="hero-content">
+          <span className="hero-badge">O nama</span>
           <div className="hero-text">
             <h1>Vreme je za bolje planinarenje</h1>
             <h2>Otkrij prirodu, prati svoje rute, deli avanture</h2>

@@ -1,22 +1,30 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BackgroundImage } from './BackgroundImage';
 import '../styles/ChoseRouteCreationType.css';
 
 export const ChoseRouteCreationType = () => {
   const navigate = useNavigate();
 
   const handleTrackRoute = () => {
-    // Navigate to route tracker for creating new route
     navigate('/track-new-route');
   };
 
   const handleCreateManually = () => {
-    // Navigate to manual route creation form
     navigate('/create-route-manual');
   };
 
   return (
     <div className="chose-route-creation-container">
+      <div className="chose-route-creation-bg">
+        <BackgroundImage
+          src="/img/create-route.jpg"
+          alt=""
+          className="chose-route-creation-bg-image"
+          fetchPriority="high"
+        />
+        <div className="chose-route-creation-overlay" />
+      </div>
       <div className="chose-route-creation-content">
         <h1 className="chose-route-title">Kreiranje nove rute</h1>
         <p className="chose-route-subtitle">

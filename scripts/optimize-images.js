@@ -16,6 +16,8 @@ const IMAGES_TO_OPTIMIZE = [
   "hike-landing.jpg",
   "hike-login.jpg",
   "routes-bgd.jpg",
+  "create-route.jpg",
+  "about-us.jpg",
 ];
 
 async function optimizeImage(filename) {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SelectableMap from './SelectableMap';
 import { authenticatedFetch } from '../utils/api';
+import { BackgroundImage } from './BackgroundImage';
 import '../styles/NewRoute.css';
 
 const DEFAULT_LOCATION = {
@@ -119,6 +120,15 @@ export const NewRoute = () => {
   
   return (
     <div className="new-route-container">
+      <div className="new-route-bg">
+        <BackgroundImage
+          src="/img/create-route.jpg"
+          alt=""
+          className="new-route-bg-image"
+          fetchPriority="low"
+        />
+        <div className="new-route-overlay" />
+      </div>
       <div className="route-form">
         <h2>Dodaj novu rutu</h2>
         <form onSubmit={handleSubmit}>

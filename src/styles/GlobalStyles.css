@@ -170,6 +170,30 @@
   color: rgba(255, 255, 255, 0.95);
 }
 
+/* Unfollow button - visible on light cards (e.g. profile) */
+.btn-unfollow {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  background: transparent;
+  color: #1a202c;
+  padding: 12px 24px;
+  border: 2px solid #2d3748;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-unfollow:hover {
+  background: rgba(45, 55, 72, 0.08);
+  border-color: #1a202c;
+  transform: translateY(-2px);
+  color: #1a202c;
+  text-decoration: none;
+}
+
 /* Universal form styles */
 .form-modern {
   background: rgba(17, 153, 142, 0.12);

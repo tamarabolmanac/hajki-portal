@@ -50,15 +50,16 @@ body:has(#about)::before {
   opacity: 1;
 }
 
-/* Gradient overlay for text readability */
+/* Gradient overlay for text readability - modern blend */
 .hero-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    135deg,
-    rgba(15, 20, 25, 0.75) 0%,
-    rgba(30, 40, 50, 0.5) 40%,
-    rgba(45, 55, 72, 0.35) 100%
+    160deg,
+    rgba(15, 22, 28, 0.78) 0%,
+    rgba(25, 40, 48, 0.55) 35%,
+    rgba(35, 55, 60, 0.4) 70%,
+    rgba(45, 65, 70, 0.25) 100%
   );
   z-index: 1;
 }
@@ -74,6 +75,23 @@ body:has(#about)::before {
 
 .hero-content {
   max-width: 640px;
+}
+
+/* Modern badge */
+.hero-badge {
+  display: inline-block;
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1.25rem;
+  backdrop-filter: blur(8px);
 }
 
 /* Typography */
