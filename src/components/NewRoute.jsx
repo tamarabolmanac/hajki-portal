@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SelectableMap from './SelectableMap';
 import { authenticatedFetch } from '../utils/api';
 import { BackgroundImage } from './BackgroundImage';
@@ -15,6 +16,7 @@ const normalizeDecimal = (value) => {
 };
 
 export const NewRoute = () => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [hours, setHours] = useState(0);
@@ -96,12 +98,19 @@ export const NewRoute = () => {
       const isDevelopment = process.env.NODE_ENV === 'development';
       const url = isDevelopment ? '/new_route' : 'https://upload.hajki.com/new_route';
       
-      await authenticatedFetch(url, {
+      const data = await authenticatedFetch(url, {
         method: 'POST',
         body: formData,
         useProductionUrl: !isDevelopment,
       });
-  
+
+      // Ako backend vrati ID nove rute, prebaci korisnika na stranicu detalja
+      if (data && data.id) {
+        navigate(`/route/${data.id}`);
+        return;
+      }
+
+      // Fallback ako iz nekog razloga nema ID-ja
       setMessage("Ruta uspešno kreirana!");
       setTitle("");
       setDescription("");

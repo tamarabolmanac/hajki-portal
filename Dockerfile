@@ -12,8 +12,15 @@ RUN npm install
 # Copy the rest of your application files
 COPY . .
 
+# Build-time env vars (CRA bakes these into the JS bundle)
 ARG REACT_APP_GOOGLE_MAPS_API_KEY
 ENV REACT_APP_GOOGLE_MAPS_API_KEY=$REACT_APP_GOOGLE_MAPS_API_KEY
+
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
+ARG REACT_APP_GOOGLE_CLIENT_ID
+ENV REACT_APP_GOOGLE_CLIENT_ID=$REACT_APP_GOOGLE_CLIENT_ID
 
 RUN npm run build 
 # Expose the port your app runs on
