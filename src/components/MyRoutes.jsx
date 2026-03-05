@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
@@ -52,21 +53,17 @@ export const MyRoutes = () => {
 
   const handleDeleteRoute = async (routeId) => {
     setDeleting(routeId);
+    setError(null);
     try {
-      const response = await authenticatedFetch(`/routes/${routeId}`, {
+      await authenticatedFetch(`/routes/${routeId}`, {
         method: 'DELETE'
       });
-      
-      if (response.status === 200) {
-        // Remove the deleted route from the state
-        setRoutes(prevRoutes => prevRoutes.filter(route => route.id !== routeId));
-        setDeleteConfirm(null);
-      } else {
-        setError(response.message || 'Greška pri brisanju rute');
-      }
-    } catch (error) {
-      console.error('Error deleting route:', error);
-      setError('Greška pri brisanju rute');
+      // Ako nije bacio, brisanje je uspelo – ukloni rutu iz liste i zatvori modal
+      setRoutes(prevRoutes => prevRoutes.filter(route => route.id !== routeId));
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error('Error deleting route:', err);
+      setError(err.message || 'Greška pri brisanju rute');
     } finally {
       setDeleting(null);
     }
@@ -343,11 +340,11 @@ export const MyRoutes = () => {
           </div>
         )}
         
-        {/* Delete Confirmation Modal */}
-        {deleteConfirm && (
-          <div className="delete-modal-overlay" onClick={cancelDelete}>
+        {/* Delete Confirmation Modal – renderovan u body da bude uvek centriran na ekranu */}
+        {deleteConfirm && createPortal(
+          <div className="delete-modal-overlay" onClick={cancelDelete} role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
             <div className="delete-modal" onClick={(e) => e.stopPropagation()}>
-              <h3>Potvrda brisanja</h3>
+              <h3 id="delete-modal-title">Potvrda brisanja</h3>
               <p>Da li ste sigurni da želite da obrišete rutu <strong>"{deleteConfirm.title}"</strong>?</p>
               <p className="delete-warning">Ova akcija se ne može poništiti.</p>
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '2rem' }}>
@@ -372,7 +369,8 @@ export const MyRoutes = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </div>

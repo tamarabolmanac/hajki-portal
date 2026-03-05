@@ -245,19 +245,17 @@
   cursor: not-allowed;
 }
 
-/* Delete Modal Styles */
+/* Delete Modal Styles – fiksiran na viewport, uvek centriran na ekranu */
 .delete-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Above navbar (1030) */
+  z-index: 9999;
   padding: 20px;
+  overflow-y: auto;
 }
 
 .delete-modal {
