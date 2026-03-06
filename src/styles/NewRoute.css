@@ -106,6 +106,12 @@
   transform: none !important;
 }
 
+.duration-hint {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
 /* Location search UI */
 .location-search {
   display: flex;

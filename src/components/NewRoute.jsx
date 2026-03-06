@@ -19,8 +19,8 @@ export const NewRoute = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(0);
+  const [hours, setHours] = useState("");
+  const [minutes, setMinutes] = useState("");
   const [difficulty, setDifficulty] = useState("");
   const [distance, setDistance] = useState("");
   const [files, setFiles] = useState([]);
@@ -87,7 +87,14 @@ export const NewRoute = () => {
       const formData = new FormData();
       formData.append("hike_route[title]", title);
       formData.append("hike_route[description]", description);
-      formData.append("hike_route[duration]", (hours * 60) + parseInt(minutes));
+      const h = Math.max(0, parseInt(hours, 10) || 0);
+      const mRaw = parseInt(minutes, 10) || 0;
+      if (mRaw < 0 || mRaw > 59) {
+        setMessage("Minuti moraju biti između 0 i 59");
+        setIsLoading(false);
+        return;
+      }
+      formData.append("hike_route[duration]", h * 60 + mRaw);
       formData.append("hike_route[difficulty]", difficulty);
       formData.append("hike_route[distance]", parseFloat(normalizeDecimal(distance)).toFixed(2));
       formData.append("hike_route[location_latitude]", selectedLocation.lat);
@@ -114,8 +121,8 @@ export const NewRoute = () => {
       setMessage("Ruta uspešno kreirana!");
       setTitle("");
       setDescription("");
-      setHours(0);
-      setMinutes(0);
+      setHours("");
+      setMinutes("");
       setDifficulty("");
       setDistance("");
       setSelectedLocation(DEFAULT_LOCATION);
@@ -168,30 +175,33 @@ export const NewRoute = () => {
             <div className="duration-inputs">
               <div className="duration-input">
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={hours}
-                  onChange={(e) => setHours(parseInt(e.target.value) || 0)}
-                  required
+                  onChange={(e) => setHours(e.target.value.replace(/\D/g, ''))}
                   className="form-control"
-                  min="0"
-                  placeholder="Časova"
+                  placeholder="0"
+                  aria-label="Časova"
                 />
                 <span>časova</span>
               </div>
               <div className="duration-input">
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={minutes}
-                  onChange={(e) => setMinutes(parseInt(e.target.value) || 0)}
-                  required
+                  onChange={(e) => setMinutes(e.target.value.replace(/\D/g, '').slice(0, 2))}
                   className="form-control"
-                  min="0"
-                  max="59"
-                  placeholder="Minuta"
+                  placeholder="0"
+                  maxLength={2}
+                  aria-label="Minuta"
                 />
                 <span>minuta</span>
               </div>
             </div>
+            {(hours !== '' || minutes !== '') && (
+              <p className="duration-hint">Ukupno: {(parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0)} min</p>
+            )}
           </div>
 
           <div className="form-group">
@@ -214,30 +224,16 @@ export const NewRoute = () => {
             <label>Dužina (km):</label>
             <div className="distance-input">
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={distance}
-                onChange={(e) => {
-                  const value = normalizeDecimal(e.target.value);
-                  if (value === '') {
-                    setDistance('');
-                    return;
-                  }
-                  const num = parseFloat(value);
-                  if (!isNaN(num)) {
-                    const totalDigits = value.replace(/[^0-9]/g, '').length;
-                    if (totalDigits <= 10) {
-                      setDistance(num.toFixed(2));
-                    }
-                  }
-                }}
+                onChange={(e) => setDistance(normalizeDecimal(e.target.value))}
                 required
                 className="form-control"
-                min="0.01"
-                step="0.01"
-                placeholder="Unesi dužinu u kilometrima"
+                placeholder="npr. 5.5"
               />
             </div>
-            {distance && (
+            {distance && !isNaN(parseFloat(distance)) && (
               <div className="distance-preview">
                 <span>{parseFloat(distance).toFixed(2)}</span> km
               </div>
