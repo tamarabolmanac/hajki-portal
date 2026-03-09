@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { config } from '../config';
+import { authenticatedFetch } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
 import { BackgroundImage } from './BackgroundImage';
 import '../styles/HikeRoutes.css';
@@ -62,30 +63,14 @@ export const HikeRoutes = (props) => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        const token = localStorage.getItem('authToken');
         const params = new URLSearchParams();
         if (showFollowingOnly) {
           params.set('scope', 'following');
         }
 
-        const url = `${config.apiUrl}/routes${params.toString() ? `?${params.toString()}` : ''}`;
-
-        const headers = {
-          'Content-Type': 'application/json',
-        };
-
-        if (token) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        const response = await fetch(url, { headers });
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.message || 'Failed to fetch routes');
-        }
-        
-        setData(data.data);
+        const url = `/routes${params.toString() ? `?${params.toString()}` : ''}`;
+        const responseData = await authenticatedFetch(url);
+        setData(responseData.data);
       } catch (error) {
         setError(error.message);
       } finally {
