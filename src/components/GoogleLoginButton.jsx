@@ -77,30 +77,70 @@ function GoogleSignInButton({ onLoggedIn }) {
   };
 
   return (
-    <div style={{ width: '100%', maxWidth: '300px', margin: '0 auto', display: 'flex', justifyContent: 'center' }}>
+    <div
+      style={{
+        width: '100%',
+        maxWidth: '300px',
+        margin: '0 auto',
+        display: 'flex',
+        justifyContent: 'center',
+        position: 'relative',
+      }}
+    >
       {/* Google dugme - stabilno, podržava One Tap itd. */}
       <GoogleLogin
         onSuccess={handleSuccess}
         onError={handleError}
         useOneTap={false}
-        // theme/size/shape mogu po želji
         theme="outline"
         size="large"
         width="250"
-        text={loading ? "signin_with" : "signin_with"}
+        text="signin_with"
         containerProps={{
           style: {
             width: '100%',
             maxWidth: '250px',
-            margin: '0 auto'
-          }
+            margin: '0 auto',
+          },
         }}
       />
 
-      {/* Mala zaštita od duplog klika dok čeka backend */}
+      {/* Jasno vidljiv overlay za vreme Google prijave – unutar bloka, ne dira ostatak forme */}
       {loading && (
-        <div style={{ marginTop: 8, fontSize: 12, color: "#5f6368", textAlign: 'center' }}>
-          Signing in…
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(15, 23, 42, 0.8)',
+            borderRadius: 999,
+            pointerEvents: 'none',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '4px 12px',
+              borderRadius: 999,
+              background: 'rgba(15, 23, 42, 0.9)',
+              boxShadow: '0 6px 16px rgba(0,0,0,0.4)',
+            }}
+          >
+            <div className="loading-spinner-modern" />
+            <span
+              style={{
+                fontSize: 13,
+                color: '#e5e7eb',
+                fontWeight: 600,
+              }}
+            >
+              Prijavljivanje Google nalogom…
+            </span>
+          </div>
         </div>
       )}
     </div>
