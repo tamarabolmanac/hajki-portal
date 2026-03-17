@@ -1,13 +1,24 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authenticatedFetch } from '../utils/api';
 import { BackgroundImage } from './BackgroundImage';
 import '../styles/ChoseRouteCreationType.css';
 
 export const ChoseRouteCreationType = () => {
   const navigate = useNavigate();
 
-  const handleTrackRoute = () => {
-    navigate('/track-new-route');
+  const handleTrackRoute = async () => {
+    try {
+      const res = await authenticatedFetch('/routes/start_new', { method: 'POST' });
+      if (res && res.id) {
+        navigate(`/track-new-route/${res.id}`);
+      } else {
+        throw new Error('Nije moguće kreirati rutu za snimanje.');
+      }
+    } catch (e) {
+      console.error('Greška pri kreiranju rute za snimanje:', e);
+      alert(e.message || 'Nije moguće započeti snimanje putanje.');
+    }
   };
 
   const handleCreateManually = () => {

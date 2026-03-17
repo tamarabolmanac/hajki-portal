@@ -170,6 +170,60 @@ export const UserProfile = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Rute ovog korisnika */}
+        <div className="glass-card" style={{ marginTop: '2rem' }}>
+          <div className="header-with-button" style={{ marginBottom: '1rem' }}>
+            <h2 style={{ margin: 0, fontSize: '1.4rem', color: '#ffffff' }}>
+              Rute ovog planinara
+            </h2>
+          </div>
+
+          {!user.routes || user.routes.length === 0 ? (
+            <p className="hike-description" style={{ marginBottom: 0 }}>
+              Ovaj korisnik još uvek nije podelio nijednu rutu.
+            </p>
+          ) : (
+            <div className="hike-cards-container">
+              {user.routes.map((route) => (
+                <div key={route.id} className="hike-card">
+                  <div className="hike-card-content">
+                    <h3 className="hike-title" style={{ marginBottom: '0.4rem' }}>
+                      {route.title}
+                    </h3>
+                    {route.description && (
+                      <p className="hike-description">
+                        {route.description.length > 140
+                          ? `${route.description.slice(0, 140)}…`
+                          : route.description}
+                      </p>
+                    )}
+                    <div className="hike-details">
+                      <span className="hike-duration">
+                        🕒{` ${(route.duration || 0)} min`}
+                      </span>
+                      <span className="hike-distance">
+                        🥾{` ${(route.distance || 0).toFixed ? route.distance.toFixed(2) : Number(route.distance || 0).toFixed(2)} km`}
+                      </span>
+                      <span className="hike-points">
+                        📍{` ${route.points_count || 0} tačaka`}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="hike-card-footer">
+                    <Link
+                      to={`/route/${route.id}`}
+                      className="btn-primary-modern"
+                      style={{ borderRadius: '8px' }}
+                    >
+                      Pogledaj rutu
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div style={{ marginTop: '1.5rem' }}>
             <Link to="/routes" className="btn-secondary-modern" style={{ borderRadius: 8 }}>

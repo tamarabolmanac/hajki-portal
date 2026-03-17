@@ -245,7 +245,7 @@ export const NewRoute = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="location">Location</label>
+            <label htmlFor="location">Lokacija:</label>
             <div className="location-search">
               <input
                 type="text"

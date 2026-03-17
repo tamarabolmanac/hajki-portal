@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Profile } from './Profile';
 import '../styles/Navigation.css';
+import { authenticatedFetch } from '../utils/api';
 
 export const Navigation = (props) => {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ export const Navigation = (props) => {
   const [user, setUser] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState(location.pathname); // State for active link
+  const [confirmLeave, setConfirmLeave] = useState(false);
+  const [pendingPath, setPendingPath] = useState(null);
   
   
   const menuRef = useRef(null);
@@ -64,7 +67,19 @@ export const Navigation = (props) => {
     setIsMenuOpen(false);
   };
 
-  const handleLinkClick = (path) => {
+  const handleLinkClick = (path, e) => {
+    const isTrackingScreen = location.pathname.startsWith('/track-new-route/');
+    const activeRouteId = localStorage.getItem('tracking:active_route_id');
+    const startedKey = activeRouteId ? `tracking:route:${activeRouteId}:started` : null;
+    const started = startedKey ? localStorage.getItem(startedKey) === '1' : false;
+
+    if (isTrackingScreen && activeRouteId && started && path !== location.pathname) {
+      if (e?.preventDefault) e.preventDefault();
+      setPendingPath(path);
+      setConfirmLeave(true);
+      closeMenu();
+      return;
+    }
     setActiveLink(path);
     closeMenu();
   };
@@ -118,31 +133,31 @@ export const Navigation = (props) => {
         >
           <ul className="nav navbar-nav navbar-right">
             <li>
-              <Link to="/routes" className={`page-scroll ${activeLink === '/routes' ? 'active' : ''}`} onClick={() => handleLinkClick('/routes')}>
+              <Link to="/routes" className={`page-scroll ${activeLink === '/routes' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/routes', e)}>
                 Pretraži rute
               </Link>
             </li>
             {isLoggedIn && (
               <>
                 <li>
-                  <Link to="/my_routes" className={`page-scroll ${activeLink === '/my_routes' ? 'active' : ''}`} onClick={() => handleLinkClick('/my_routes')}>
+                  <Link to="/my_routes" className={`page-scroll ${activeLink === '/my_routes' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/my_routes', e)}>
                     Moje rute
                   </Link>
                 </li>
                 <li>
-                  <Link to="/nearby" className={`page-scroll ${activeLink === '/nearby' ? 'active' : ''}`} onClick={() => handleLinkClick('/nearby')}>
+                  <Link to="/nearby" className={`page-scroll ${activeLink === '/nearby' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/nearby', e)}>
                     Blizu mene
                   </Link>
                 </li>
                 <li>
-                  <Link to="/prirodnjacki-kviz" className={`page-scroll ${activeLink === '/prirodnjacki-kviz' ? 'active' : ''}`} onClick={() => handleLinkClick('/prirodnjacki-kviz')}>
+                  <Link to="/prirodnjacki-kviz" className={`page-scroll ${activeLink === '/prirodnjacki-kviz' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/prirodnjacki-kviz', e)}>
                     Prirodnjacki kviz
                   </Link>
                 </li>
               </>
             )}
             <li>
-              <Link to="/contact" className={`page-scroll ${activeLink === '/contact' ? 'active' : ''}`} onClick={() => handleLinkClick('/contact')}>
+              <Link to="/contact" className={`page-scroll ${activeLink === '/contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/contact', e)}>
                 Kontakt
               </Link>
             </li>
@@ -154,7 +169,7 @@ export const Navigation = (props) => {
             {isLoggedIn ? (
               <>
                 <li>
-                  <Link to="/profile" className={`page-scroll ${activeLink === '/profile' ? 'active' : ''}`} onClick={() => handleLinkClick('/profile')}>
+                  <Link to="/profile" className={`page-scroll ${activeLink === '/profile' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/profile', e)}>
                     Moj profil
                   </Link>
                 </li>
@@ -167,12 +182,12 @@ export const Navigation = (props) => {
             ) : (
               <>
                 <li>
-                  <Link to="/login" className={`page-scroll ${activeLink === '/login' ? 'active' : ''}`} onClick={() => handleLinkClick('/login')}>
+                  <Link to="/login" className={`page-scroll ${activeLink === '/login' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/login', e)}>
                     Prijava
                   </Link>
                 </li>
                 <li>
-                  <Link to="/register" className={`page-scroll ${activeLink === '/register' ? 'active' : ''}`} onClick={() => handleLinkClick('/register')}>
+                  <Link to="/register" className={`page-scroll ${activeLink === '/register' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/register', e)}>
                     Registracija
                   </Link>
                 </li>
@@ -182,6 +197,89 @@ export const Navigation = (props) => {
           </ul>
         </div>
       </div>
+
+      {confirmLeave && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.45)',
+            zIndex: 4000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 16,
+          }}
+          onClick={() => setConfirmLeave(false)}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: 14,
+              padding: '18px 16px',
+              maxWidth: 520,
+              width: '100%',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: '0 0 8px 0' }}>Prekid snimanja rute</h3>
+            <p style={{ margin: '0 0 14px 0', color: '#4a5568' }}>
+              Da li zaista želite da prekinete snimanje rute?
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={async () => {
+                  // DA: prekini i SAČUVAJ (finalize), pa idi dalje
+                  const rid = localStorage.getItem('tracking:active_route_id');
+                  try {
+                    if (rid) {
+                      await authenticatedFetch(`/routes/${rid}/finalize`, { method: 'POST' });
+                    }
+                  } catch (e) {
+                    console.error('Greška pri finalizaciji rute:', e);
+                  } finally {
+                    if (rid) localStorage.removeItem(`tracking:route:${rid}:started`);
+                    localStorage.removeItem('tracking:active_route_id');
+                    setConfirmLeave(false);
+                    if (pendingPath) navigate(pendingPath);
+                  }
+                }}
+                style={{
+                  background: 'rgba(15, 23, 42, 0.08)',
+                  border: '1px solid rgba(15, 23, 42, 0.15)',
+                  padding: '10px 12px',
+                  borderRadius: 10,
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                }}
+              >
+                Da, prekini
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  // Nastavi snimanje: ostani na ekranu i zatvori modal
+                  setConfirmLeave(false);
+                  setPendingPath(null);
+                }}
+                style={{
+                  background: '#dc3545',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 12px',
+                  borderRadius: 10,
+                  cursor: 'pointer',
+                  fontWeight: 800,
+                }}
+              >
+                Nastavi snimanje
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
     </nav>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { Navigation } from "./components/navigation";
 import { HikeRoutes } from "./components/HikeRoutes";
 import { RouteDetails } from "./components/RouteDetails";
@@ -35,6 +35,7 @@ import "./styles/main.css";
 import { config } from './config';
 import QuizLobby from "./components/QuizLobby";
 import QuizRoom from "./components/QuizRoom";
+import { authenticatedFetch } from "./utils/api";
 
 // Wrapper component to access useNavigate
 const AppContent = () => {
@@ -46,6 +47,30 @@ const AppContent = () => {
     // Set navigate function for auth handler
     setNavigate(navigate);
   }, [navigate]);
+
+  // Posebna stranica za snimanje postojeće rute po ID-ju
+  const TrackRoutePage = () => {
+    const { id } = useParams();
+    const nav = useNavigate();
+
+    const handleStop = async () => {
+      nav(`/route/${id}`);
+    };
+
+    const trackingStartedKey = `tracking:route:${id}:started`;
+    const shouldAutoStart = localStorage.getItem(trackingStartedKey) === "1";
+
+    return (
+      <div className="content-container">
+        <RouteTracker
+          routeId={id}
+          autoStart={shouldAutoStart}
+          onTrackingStart={() => console.log("Started tracking route", id)}
+          onTrackingStop={handleStop}
+        />
+      </div>
+    );
+  };
 
   return (
     <LoadScript
@@ -150,20 +175,10 @@ const AppContent = () => {
               }
             />
             <Route
-              path="/track-new-route"
+              path="/track-new-route/:id"
               element={
                 <PrivateRoute>
-                  <div className="content-container">
-                    <RouteTracker
-                      routeId={null}
-                      onTrackingStart={() => console.log('Started tracking new route')}
-                      onTrackingStop={() => {
-                        console.log('Stopped tracking new route');
-                        // Navigate to my routes after tracking is complete
-                        window.location.href = '/my_routes';
-                      }}
-                    />
-                  </div>
+                  <TrackRoutePage />
                 </PrivateRoute>
               }
             />

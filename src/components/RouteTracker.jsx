@@ -2,12 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { GoogleMap, Polyline, Marker } from "@react-google-maps/api";
 import { authenticatedFetch } from "../utils/api";
 
-export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop }) {
+export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop, autoStart = false }) {
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
   const [routeToRender, setRouteToRender] = useState([]);
-  const [pointsSaved, setPointsSaved] = useState(0);
-  const [gpsUpdateCount, setGpsUpdateCount] = useState(0);
+  const [showFinishConfirm, setShowFinishConfirm] = useState(false);
 
   const routeRef = useRef([]);
   const watchIdRef = useRef(null);
@@ -15,6 +14,8 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
   const isSavingRef = useRef(false);
   const isTrackingRef = useRef(false);
   const currentRouteIdRef = useRef(routeId);
+
+  const startedKey = routeId ? `tracking:route:${routeId}:started` : null;
 
   const startTracking = () => {
     if (!("geolocation" in navigator)) {
@@ -24,12 +25,14 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
 
     setRouteToRender([]);
     routeRef.current = [];
-    setPointsSaved(0);
-    setGpsUpdateCount(0);
     setError(null);
     isSavingRef.current = false;
     setIsTracking(true);
     isTrackingRef.current = true;
+    if (startedKey) localStorage.setItem(startedKey, "1");
+    if (currentRouteIdRef.current) {
+      localStorage.setItem("tracking:active_route_id", String(currentRouteIdRef.current));
+    }
     onTrackingStart && onTrackingStart();
 
     const id = navigator.geolocation.watchPosition(
@@ -37,13 +40,14 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
         if (!isTrackingRef.current) return;
         const { latitude, longitude, accuracy } = pos.coords;
         const currentTime = Date.now();
-        setGpsUpdateCount((prev) => prev + 1);
 
         const shouldSavePoint =
           !lastSavedTimeRef.current || currentTime - lastSavedTimeRef.current >= 5000;
 
         const newPoint = { lat: latitude, lng: longitude };
         routeRef.current.push(newPoint);
+        // odmah osveži putanju na mapi
+        setRouteToRender([...routeRef.current]);
 
         if (shouldSavePoint && !isSavingRef.current) {
           try {
@@ -61,7 +65,6 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
             });
 
             if (response?.status === 200) {
-              setPointsSaved((prev) => prev + 1);
               lastSavedTimeRef.current = currentTime;
               if (response.route_id) {
                 console.log("✅ Point saved! Route ID:", response.route_id);
@@ -97,15 +100,30 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
     onTrackingStop && onTrackingStop();
   };
 
-  const showRouteOnMap = () => setRouteToRender([...routeRef.current]);
+  const finalizeRoute = async () => {
+    if (!currentRouteIdRef.current) return;
+    try {
+      await authenticatedFetch(`/routes/${currentRouteIdRef.current}/finalize`, { method: "POST" });
+    } catch (e) {
+      console.error("Greška pri finalizaciji rute:", e);
+      // i dalje zatvaramo snimanje lokalno, ali ostavljamo grešku korisniku
+      setError(e.message || "Greška pri finalizaciji rute.");
+    } finally {
+      if (startedKey) localStorage.removeItem(startedKey);
+      localStorage.removeItem("tracking:active_route_id");
+    }
+  };
 
   useEffect(() => {
+    if (autoStart && !isTrackingRef.current) {
+      startTracking();
+    }
     return () => {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
     };
-  }, []);
+  }, [autoStart]);
 
   return (
     <div className="route-tracker">
@@ -121,16 +139,10 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
           boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
         }}
       >
-        <h3>Route Tracking</h3>
+        <h3>Snimanje rute</h3>
         {error && (
           <div style={{ color: "red", fontSize: "14px", marginBottom: "10px" }}>
             {error}
-          </div>
-        )}
-        {isTracking && (
-          <div style={{ fontSize: "14px", color: "#666", marginBottom: "10px" }}>
-            <div>GPS updates: {gpsUpdateCount}</div>
-            <div>Points saved: {pointsSaved}</div>
           </div>
         )}
         {!isTracking ? (
@@ -143,7 +155,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
             }} 
             style={{ background: "#28a745", color: "white", border: "none", padding: "10px 15px", borderRadius: "5px", cursor: "pointer" }}
           >
-            Start Tracking
+            Započni snimanje rute
           </button>
         ) : (
           <button 
@@ -151,25 +163,82 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop 
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              stopTracking();
+              setShowFinishConfirm(true);
             }} 
             style={{ background: "#dc3545", color: "white", border: "none", padding: "10px 15px", borderRadius: "5px", cursor: "pointer" }}
           >
-            Stop Tracking
+            Završi snimanje rute
           </button>
         )}
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            showRouteOnMap();
-          }}
-          style={{ background: "#007bff", color: "white", marginLeft: "10px", border: "none", padding: "10px 15px", borderRadius: "5px", cursor: "pointer" }}
-        >
-          Show Route
-        </button>
       </div>
+
+      {showFinishConfirm && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.45)",
+            zIndex: 2000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+          }}
+          onClick={() => setShowFinishConfirm(false)}
+        >
+          <div
+            style={{
+              background: "white",
+              borderRadius: 14,
+              padding: "18px 16px",
+              maxWidth: 420,
+              width: "100%",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: "0 0 8px 0" }}>Prekid snimanja</h3>
+            <p style={{ margin: "0 0 14px 0", color: "#4a5568" }}>
+              Da li ste sigurni da želite da završite snimanje rute?
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={() => setShowFinishConfirm(false)}
+                style={{
+                  background: "rgba(15, 23, 42, 0.08)",
+                  border: "1px solid rgba(15, 23, 42, 0.15)",
+                  padding: "10px 12px",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                Nastavi snimanje
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setShowFinishConfirm(false);
+                  await finalizeRoute();
+                  stopTracking();
+                }}
+                style={{
+                  background: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  padding: "10px 12px",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  fontWeight: 700,
+                }}
+              >
+                Završi i sačuvaj
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <GoogleMap
         mapContainerStyle={{ height: "100vh", width: "100%" }}

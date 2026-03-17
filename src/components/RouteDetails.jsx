@@ -27,7 +27,6 @@ export const RouteDetails = () => {
   const [route, setRoute] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showTracker, setShowTracker] = useState(false);
   const [routePoints, setRoutePoints] = useState([]);
   const [currentUserID, setCurrentUserID] = useState(null);
   const { id } = useParams();
@@ -128,24 +127,16 @@ export const RouteDetails = () => {
     lng: Number(route.location_longitude)
   };
 
-  const handleStartTracking = () => {
-    setShowTracker(true);
+  const handleStartTracking = async () => {
+    try {
+      await authenticatedFetch(`/routes/${id}/start_tracking`, { method: 'POST' });
+      setRoute((prev) => (prev ? { ...prev, status: 'tracking' } : prev));
+      navigate(`/track-new-route/${id}`);
+    } catch (e) {
+      console.error('Greška pri pokretanju snimanja rute:', e);
+      alert(e.message || 'Nije moguće pokrenuti snimanje rute.');
+    }
   };
-
-  const handleStopTracking = () => {
-    setShowTracker(false);
-  };
-
-  // If tracker is shown, render only the tracker
-  if (showTracker) {
-    return (
-      <RouteTracker
-        routeId={id}
-        onTrackingStart={() => console.log('Tracking started for route:', id)}
-        onTrackingStop={handleStopTracking}
-      />
-    );
-  }
 
   return (
     <div className="route-details-container">
@@ -189,14 +180,14 @@ export const RouteDetails = () => {
         <h1 className="route-title">{route.title}</h1>
         <div className="route-meta">
           <span className="route-duration">
-            Duration: {formatDuration(route.duration)}
+            Trajanje: {formatDuration(route.duration)}
             {route.calculated_from_points && (
               <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 GPS</small>
             )}
           </span>
-          <span className="route-difficulty">Difficulty: {route.difficulty}</span>
+          <span className="route-difficulty">Težina: {route.difficulty}</span>
           <span className="route-distance">
-            Distance: {route.distance}km
+            Dužina: {route.distance}km
             {route.calculated_from_points && (
               <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 GPS</small>
             )}
@@ -221,7 +212,7 @@ export const RouteDetails = () => {
                     fontWeight: 'bold'
                   }}
                 >
-                  🗺️ Start Route Tracking
+                  🗺️ {route.status === 'tracking' ? 'Nastavi snimanje rute' : 'Započni snimanje rute'}
                 </button>
                 <button 
                   onClick={() => navigate(`/routes/${id}/edit`)}
@@ -236,7 +227,7 @@ export const RouteDetails = () => {
                     fontWeight: 'bold'
                   }}
                 >
-                  ✏️ Edit Route
+                  ✏️ Izmeni rutu
                 </button>
               </>
             ) : (
@@ -249,7 +240,7 @@ export const RouteDetails = () => {
 
       <div className="route-content">
         <div className="route-description">
-          <h2>Description</h2>
+          <h2>Opis</h2>
           <p>{route.description}</p>
         </div>
 
@@ -271,7 +262,7 @@ export const RouteDetails = () => {
         )}
 
         <div className="route-map">
-          <h3>Map</h3>
+          <h3>Mapa</h3>
           {isValidCoordinates && config.googleMapsApiKey ? (
             <GoogleMap
               mapContainerStyle={containerStyle}
