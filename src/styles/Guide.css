@@ -2,7 +2,7 @@
 .guide-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8faf9 0%, #e8f5e8 100%);
-  padding: 100px 20px 50px;
+  padding: var(--app-page-content-top, calc(100px + env(safe-area-inset-top, 0px))) 20px 50px;
   position: relative;
 }
 
@@ -204,7 +204,7 @@ body:has(.guide-container)::before {
 /* Responsive Design */
 @media (max-width: 1024px) {
   .guide-container {
-    padding: 80px 20px 40px;
+    padding: var(--app-page-content-top, calc(80px + env(safe-area-inset-top, 0px))) 20px 40px;
   }
   
   .guide-section {
@@ -244,7 +244,7 @@ body:has(.guide-container)::before {
   }
   
   .guide-container {
-    padding: 70px 15px 30px;
+    padding: var(--app-page-content-top, calc(70px + env(safe-area-inset-top, 0px))) 15px 30px;
     margin-left: calc(-50vw + 50%) !important;
     margin-right: calc(-50vw + 50%) !important;
     width: 100vw !important;
@@ -315,7 +315,7 @@ body:has(.guide-container)::before {
 
 @media (max-width: 480px) {
   .guide-container {
-    padding: 60px 10px 20px;
+    padding: var(--app-page-content-top, calc(60px + env(safe-area-inset-top, 0px))) 10px 20px;
   }
   
   .guide-header {

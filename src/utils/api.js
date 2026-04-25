@@ -1,5 +1,6 @@
 import { config } from '../config';
 import { handleSessionExpired } from './authHandler';
+import { explainUnreachableApiError } from './fetchErrors';
 
 const getAuthToken = () => localStorage.getItem('authToken');
 
@@ -71,6 +72,8 @@ export const authenticatedFetch = async (url, options = {}) => {
     }
   } catch (error) {
     console.error('Error in authenticatedFetch:', error);
+    const hint = explainUnreachableApiError(error, config.apiUrl);
+    if (hint) throw new Error(hint);
     throw error;
   }
 };

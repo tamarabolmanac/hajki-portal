@@ -1,7 +1,7 @@
 /* Nearby Routes Styles */
 .nearby-routes-container {
   padding: 2rem 1rem;
-  padding-top: 120px; /* Space for fixed navbar */
+  padding-top: var(--app-page-content-top, calc(120px + env(safe-area-inset-top, 0px)));
   max-width: 1200px;
   margin: 0 auto;
   min-height: 100vh;
@@ -271,6 +271,28 @@
   margin-top: 2rem;
 }
 
+.nearby-peaks-map-wrapper {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
+}
+
+.nearby-peaks-map {
+  width: 100%;
+  height: 60vh;
+  min-height: 360px;
+  border-radius: 18px;
+}
+
+.peak-info-window {
+  min-width: 160px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
 .routes-count {
   background: rgba(78, 205, 196, 0.15);
   backdrop-filter: blur(10px);
@@ -427,7 +449,7 @@
 /* Tablet Responsive */
 @media (max-width: 991px) {
   .nearby-routes-container {
-    padding-top: 110px; /* Adjust for smaller navbar */
+    padding-top: var(--app-page-content-top, calc(110px + env(safe-area-inset-top, 0px)));
   }
 }
 
@@ -435,7 +457,7 @@
 @media (max-width: 768px) {
   .nearby-routes-container {
     padding: 1rem 0.5rem;
-    padding-top: 100px; /* Adjust for mobile navbar */
+    padding-top: var(--app-page-content-top, calc(100px + env(safe-area-inset-top, 0px)));
   }
   
   .filters-section {
@@ -454,7 +476,7 @@
 
 @media (max-width: 480px) {
   .nearby-routes-container {
-    padding-top: 90px; /* Adjust for extra small screens */
+    padding-top: var(--app-page-content-top, calc(90px + env(safe-area-inset-top, 0px)));
   }
 
   .location-info {

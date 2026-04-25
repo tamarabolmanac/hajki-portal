@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { config } from '../config';
+import { explainUnreachableApiError } from '../utils/fetchErrors';
 import '../styles/EmailConfirmation.css';
 
 export const EmailConfirmation = () => {
@@ -41,7 +42,9 @@ export const EmailConfirmation = () => {
           setMessage(data.message || 'Greška pri potvrdi email-a. Link je možda istekao.');
         }
       } catch (error) {
-        setMessage('Došlo je do greške. Pokušajte ponovo.');
+        setMessage(
+          explainUnreachableApiError(error, config.apiUrl) || 'Došlo je do greške. Pokušajte ponovo.'
+        );
       } finally {
         setIsLoading(false);
       }

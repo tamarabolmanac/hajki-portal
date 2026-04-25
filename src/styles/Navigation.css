@@ -11,46 +11,51 @@
   border: 0 !important;
 }
 
-/* Navigation Styles */
+/* Navigation Styles — full-width inner row: logo levo, meni desno */
 .navbar {
-  background: linear-gradient(135deg, rgba(17, 153, 142, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  background: rgba(255, 255, 255, 0.94);
   border: none;
   margin-bottom: 0;
-  box-shadow: 0 4px 20px rgba(17, 153, 142, 0.3);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(56, 239, 125, 0.3);
+  box-shadow: 0 1px 0 rgba(17, 153, 142, 0.08), 0 8px 32px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(17, 153, 142, 0.12);
   position: fixed;
-  top: 0; /* Stick to top edge */
+  top: 0;
   right: 0;
   left: 0;
   z-index: 1030;
-  min-height: 70px; /* Increased height */
-  padding: 5px 0;
+  min-height: 64px;
+  padding-top: calc(8px + env(safe-area-inset-top, 0px));
+  padding-bottom: 8px;
+  padding-left: 0;
+  padding-right: 0;
   display: flex;
   align-items: center;
-  border-radius: 0; /* Flush to screen edges */
+  border-radius: 0;
 }
 
-.navbar .container {
+.navbar-inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0 15px;
-}
-
-.navbar-header {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0; /* Prevent the logo container from shrinking */
-  height: 100%; /* Take full navbar height */
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  gap: 12px;
 }
 
 .navbar-brand {
   padding: 0;
+  margin: 0;
   display: flex;
-  align-items: center; /* Center logo vertically */
-  height: 100%;
+  align-items: center;
+  flex: 0 0 auto;
+  height: auto;
 }
 
 .logo-navbar {
@@ -58,32 +63,35 @@
   width: auto; /* Let the width adjust automatically to maintain aspect ratio */
 }
 
-/* Mobile menu button - hidden on desktop */
+/* Mobile menu — u istom redu kao logo, poravnato po sredini visine */
 .navbar-toggle {
   display: none;
-  position: absolute !important; /* Position absolutely to place it exactly where we want */
-  right: 15px !important; /* Align with navbar right edge */
-  top: 50% !important; /* Center vertically */
-  transform: translateY(-50%) !important; /* Perfect vertical centering */
-  margin: 0 !important; /* Remove any default margins */
-  background: transparent;
-  border: 2px solid #C6D870;
-  border-radius: 8px;
+  position: static;
+  margin: 0;
+  flex: 0 0 auto;
+  align-self: center;
+  background: rgba(17, 153, 142, 0.06);
+  border: 1px solid rgba(17, 153, 142, 0.25);
+  border-radius: 10px;
   padding: 8px 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 1031; /* Above navbar */
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  z-index: 1031;
 }
 .navbar-toggle:focus {
-  background-color: rgba(198, 216, 112, 0.1);
-  border-color: #8FA31E;
+  background-color: rgba(17, 153, 142, 0.12);
+  border-color: #11998e;
+  outline: none;
+}
+.navbar-toggle:focus-visible {
+  box-shadow: 0 0 0 3px rgba(17, 153, 142, 0.25);
 }
 
 .navbar-toggle .icon-bar {
   display: block;
   width: 22px;
   height: 3px;
-  background-color: #EFF5D2;
+  background-color: #0f766e;
   border-radius: 2px;
   margin: 4px 0;
   transition: all 0.3s ease;
@@ -144,28 +152,27 @@
 
 .navbar-nav > li > a,
 .navbar-nav > li > .page-scroll {
-  padding: 0.75rem 1rem;
-  color: rgba(17, 153, 142, 0.9); /* Teal color for text */
+  padding: 0.65rem 0.9rem;
+  color: #134e4a;
   text-decoration: none;
   font-weight: 600;
-  border-radius: 6px;
-  transition: all 0.3s ease;
+  border-radius: 10px;
+  transition: background 0.2s ease, color 0.2s ease;
   display: block;
 }
 
 .navbar-nav > li > a:hover,
 .navbar-nav > li > .page-scroll:hover {
-  color: #11998e; /* Darker teal on hover */
-  background-color: rgba(56, 239, 125, 0.15);
+  color: #0f766e;
+  background-color: rgba(17, 153, 142, 0.1);
   text-decoration: none;
-  transform: translateY(-1px);
 }
 
 /* Active/selected menu item */
 .navbar-nav > li > a.active,
 .navbar-nav > li > .page-scroll.active {
-  color: #11998e;
-  background-color: rgba(56, 239, 125, 0.2);
+  color: #0d9488;
+  background-color: rgba(17, 153, 142, 0.14);
   font-weight: 700;
 }
 
@@ -179,19 +186,26 @@
   box-shadow: 0 2px 8px rgba(17, 153, 142, 0.3);
 }
 
-/* Spacer for fixed navbar */
+/* Spacer for fixed navbar (includes status bar / notch inset) */
 .nav-spacer {
-  height: 70px; /* Match fixed navbar height */
+  height: calc(70px + env(safe-area-inset-top, 0px));
 }
 
 /* Desktop - ensure menu always visible and properly styled */
 @media (min-width: 992px) {
+  .navbar-inner {
+    flex-wrap: nowrap;
+  }
+
   .navbar-toggle {
     display: none !important;
   }
 
   .navbar-collapse {
-    display: block !important;
+    display: flex !important;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    align-items: center;
     max-height: none !important;
     overflow: visible !important;
     position: static !important;
@@ -235,7 +249,7 @@
   .navbar-nav > li > a,
   .navbar-nav > li > .page-scroll {
     padding: 0.75rem 1rem !important;
-    color: rgba(17, 153, 142, 0.9) !important;
+    color: #134e4a !important;
     text-shadow: none !important;
   }
 
@@ -248,31 +262,40 @@
 /* Mobile-only responsive adjustments */
 @media (max-width: 991px) {
   .navbar {
-    top: 0; /* No gap on tablets */
+    top: 0;
     right: 0;
     left: 0;
+    min-height: 56px;
   }
 
   .nav-spacer {
-    height: 80px; /* Match mobile navbar height + spacing */
+    height: calc(80px + env(safe-area-inset-top, 0px));
   }
 
-  .navbar-header {
-    height: 100% !important;
+  .navbar-inner {
+    flex-wrap: nowrap;
+    position: relative;
+    align-items: center;
   }
 
   .navbar-brand {
-    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0;
+    margin-right: auto;
   }
 
   .navbar-toggle {
-    display: block !important;
-    right: 10px !important; /* Adjust for mobile navbar margins */
-    transition: all 0.3s ease !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s ease, background 0.2s ease !important;
   }
 
   .navbar-toggle:hover {
-    transform: translateY(-50%) scale(1.05) !important; /* Maintain centering while scaling */
+    transform: scale(1.04) !important;
   }
 
   .navbar-collapse {
@@ -406,19 +429,12 @@
     right: 0;
     left: 0;
     min-height: 55px !important;
-    padding: 3px 0 !important;
+    padding-top: calc(3px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 3px !important;
   }
 
   .nav-spacer {
-    height: 70px; /* Match smaller mobile navbar height + spacing */
-  }
-
-  .navbar-header {
-    height: 100% !important;
-  }
-
-  .navbar-brand {
-    height: 100% !important;
+    height: calc(70px + env(safe-area-inset-top, 0px));
   }
 
   .logo-navbar {
@@ -427,7 +443,6 @@
   }
 
   .navbar-toggle {
-    right: 8px !important; /* Adjust for tablet navbar margins */
     padding: 6px 8px !important;
   }
 
@@ -443,7 +458,7 @@
   }
 
   .navbar-collapse {
-    max-height: calc(100vh - 55px) !important;
+    max-height: calc(100vh - 55px - env(safe-area-inset-top, 0px)) !important;
   }
 }
 
@@ -453,23 +468,17 @@
     right: 0;
     left: 0;
     min-height: 50px !important;
-    padding: 2px 0 !important;
+    padding-top: calc(2px + env(safe-area-inset-top, 0px)) !important;
+    padding-bottom: 2px !important;
   }
 
   .nav-spacer {
-    height: 60px; /* Match smallest mobile navbar height + spacing */
+    height: calc(60px + env(safe-area-inset-top, 0px));
   }
 
-  .navbar .container {
-    padding: 0 10px !important;
-  }
-
-  .navbar-header {
-    height: 100% !important;
-  }
-
-  .navbar-brand {
-    height: 100% !important;
+  .navbar-inner {
+    padding-left: max(12px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(12px, env(safe-area-inset-right, 0px)) !important;
   }
 
   .logo-navbar {
@@ -478,7 +487,6 @@
   }
 
   .navbar-toggle {
-    right: 5px !important; /* Adjust for phone navbar margins */
     padding: 4px 6px !important;
   }
 
@@ -504,11 +512,11 @@
   }
 
   .navbar-collapse {
-    max-height: calc(100vh - 50px) !important;
+    max-height: calc(100vh - 50px - env(safe-area-inset-top, 0px)) !important;
   }
 
   .navbar-collapse.in {
-    max-height: 450px !important;
+    max-height: min(450px, calc(100vh - 50px - env(safe-area-inset-top, 0px))) !important;
   }
 
   .username-badge {
@@ -526,19 +534,12 @@
   }
 
   .nav-spacer {
-    height: 55px; /* Match extra small navbar height + spacing */
+    height: calc(55px + env(safe-area-inset-top, 0px));
   }
 
-  .navbar .container {
-    padding: 0 8px !important;
-  }
-
-  .navbar-header {
-    height: 100% !important;
-  }
-
-  .navbar-brand {
-    height: 100% !important;
+  .navbar-inner {
+    padding-left: max(10px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(10px, env(safe-area-inset-right, 0px)) !important;
   }
 
   .logo-navbar {
@@ -547,7 +548,6 @@
   }
 
   .navbar-toggle {
-    right: 3px !important; /* Adjust for extra small navbar margins */
     padding: 3px 5px !important;
   }
 
@@ -561,4 +561,20 @@
     padding: 3px 8px !important;
     font-size: 12px !important;
   }
+}
+
+/* Leave-tracking confirm dialog: keep below status bar / notches on mobile */
+.nav-confirm-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  padding-right: calc(16px + env(safe-area-inset-right, 0px));
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(16px + env(safe-area-inset-left, 0px));
 }

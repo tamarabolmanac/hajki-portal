@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem;
-  padding-top: 120px; /* Space for fixed navbar */
+  padding-top: var(--app-page-content-top, calc(120px + env(safe-area-inset-top, 0px)));
 }
 
 .route-header {
@@ -167,7 +167,7 @@
 /* Tablet Responsive */
 @media (max-width: 991px) {
   .route-details-container {
-    padding-top: 110px; /* Adjust for smaller navbar */
+    padding-top: var(--app-page-content-top, calc(110px + env(safe-area-inset-top, 0px)));
   }
 }
 
@@ -175,7 +175,7 @@
 @media (max-width: 768px) {
   .route-details-container {
     padding: 1rem;
-    padding-top: 100px; /* Adjust for mobile navbar */
+    padding-top: var(--app-page-content-top, calc(100px + env(safe-area-inset-top, 0px)));
   }
 
   .route-title {
@@ -194,6 +194,6 @@
 
 @media (max-width: 480px) {
   .route-details-container {
-    padding-top: 90px; /* Adjust for extra small screens */
+    padding-top: var(--app-page-content-top, calc(90px + env(safe-area-inset-top, 0px)));
   }
 }

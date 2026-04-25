@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
 import { authenticatedFetch } from '../utils/api';
 import { BackgroundImage } from './BackgroundImage';
 import '../styles/NearbyRoutes.css';
@@ -12,6 +13,9 @@ export const NearbyRoutes = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [radius, setRadius] = useState(10); // km radius
+  const [nearbyMode, setNearbyMode] = useState('hiking_paths');
+  const [peaks, setPeaks] = useState([]);
+  const [selectedPeak, setSelectedPeak] = useState(null);
 
   // Get user's current location
   useEffect(() => {
@@ -51,15 +55,20 @@ export const NearbyRoutes = () => {
 
   // Fetch nearby routes when user location is available
   useEffect(() => {
-    if (userLocation) {
+    if (!userLocation) return;
+    if (nearbyMode === 'hiking_paths') {
       fetchNearbyRoutes();
+      return;
     }
-  }, [userLocation, radius]);
+    fetchNearbyPeaks();
+  }, [userLocation, radius, nearbyMode]);
 
   const fetchNearbyRoutes = async () => {
     try {
       setLoading(true);
       setError(null);
+      setSelectedPeak(null);
+      setPeaks([]);
       const response = await authenticatedFetch(
         `/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radius=${radius}`
       );
@@ -70,6 +79,44 @@ export const NearbyRoutes = () => {
     } catch (err) {
       setError('Greška pri učitavanju ruta u blizini.');
       console.error('Error fetching nearby routes:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchNearbyPeaks = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setRoutes([]);
+      setSelectedPeak(null);
+
+      const response = await authenticatedFetch('/nearby/overpass', {
+        method: 'POST',
+        body: JSON.stringify({
+          lat: userLocation.lat,
+          lon: userLocation.lng,
+          radius,
+          mode: 'peaks',
+          country: 'Serbia',
+        }),
+      });
+
+      console.log('[Nearby/Planinski vrhovi] Overpass response:', response);
+      const elements = response?.data?.elements || [];
+      const parsedPeaks = elements
+        .filter((el) => el?.type === 'node' && typeof el?.lat === 'number' && typeof el?.lon === 'number')
+        .map((el) => ({
+          id: el.id,
+          lat: el.lat,
+          lng: el.lon,
+          name: el?.tags?.name || el?.tags?.["name:sr"] || el?.tags?.int_name || "Planinski vrh",
+          elevation: el?.tags?.ele || null,
+        }));
+      setPeaks(parsedPeaks);
+    } catch (err) {
+      setError('Greška pri učitavanju planinskih vrhova u blizini.');
+      console.error('Error fetching nearby peaks:', err);
     } finally {
       setLoading(false);
     }
@@ -209,6 +256,24 @@ export const NearbyRoutes = () => {
       </div>
 
       <div className="filters-section">
+        <div className="radius-filter" style={{ marginBottom: '0.75rem' }}>
+          <label>Šta želite da pretražite:</label>
+          <div className="radius-buttons">
+            <button
+              className={`radius-btn ${nearbyMode === 'peaks' ? 'active' : ''}`}
+              onClick={() => setNearbyMode('peaks')}
+            >
+              Planinski vrhovi
+            </button>
+            <button
+              className={`radius-btn ${nearbyMode === 'hiking_paths' ? 'active' : ''}`}
+              onClick={() => setNearbyMode('hiking_paths')}
+            >
+              Pešačke staze
+            </button>
+          </div>
+        </div>
+
         <div className="radius-filter">
           <label>Radius pretrage:</label>
           <div className="radius-buttons">
@@ -233,7 +298,42 @@ export const NearbyRoutes = () => {
       )}
 
       <div className="routes-section">
-        {routes.length === 0 ? (
+        {nearbyMode === 'peaks' ? (
+          <>
+            <div className="routes-count">
+              Pronađeno {peaks.length} planinskih vrhova u radijusu od {radius} km
+            </div>
+            <div className="nearby-peaks-map-wrapper">
+              <GoogleMap
+                mapContainerClassName="nearby-peaks-map"
+                center={selectedPeak ? { lat: selectedPeak.lat, lng: selectedPeak.lng } : userLocation}
+                zoom={11}
+              >
+                {peaks.map((peak) => (
+                  <Marker
+                    key={peak.id}
+                    position={{ lat: peak.lat, lng: peak.lng }}
+                    onClick={() => setSelectedPeak(peak)}
+                  />
+                ))}
+                {selectedPeak && (
+                  <InfoWindow
+                    position={{ lat: selectedPeak.lat, lng: selectedPeak.lng }}
+                    onCloseClick={() => setSelectedPeak(null)}
+                  >
+                    <div className="peak-info-window">
+                      <strong>{selectedPeak.name}</strong>
+                      {selectedPeak.elevation && <div>Nadmorska visina: {selectedPeak.elevation} m</div>}
+                      <div>
+                        {selectedPeak.lat.toFixed(5)}, {selectedPeak.lng.toFixed(5)}
+                      </div>
+                    </div>
+                  </InfoWindow>
+                )}
+              </GoogleMap>
+            </div>
+          </>
+        ) : routes.length === 0 ? (
           <div className="no-routes">
             <div className="no-routes-icon">🗺️</div>
             <h3>Nema ruta u blizini</h3>

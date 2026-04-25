@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { config } from '../config';
+import { explainUnreachableApiError } from '../utils/fetchErrors';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Login.css';
 import { Link } from 'react-router-dom';
@@ -34,7 +35,7 @@ export const Login = () => {
       // Redirect to home page
       navigate('/');
     } catch (error) {
-      setMessage(error.message);
+      setMessage(explainUnreachableApiError(error, config.apiUrl) || error.message);
     }
   };
 

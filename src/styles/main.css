@@ -14,7 +14,7 @@ body {
 }
 
 .main-content {
-  margin-top: 90px; /* Increased margin to account for header height */
+  margin-top: var(--app-nav-clearance, calc(92px + env(safe-area-inset-top, 0px)));
   flex: 1;
   padding: 0 1rem;
   position: relative;
@@ -23,7 +23,7 @@ body {
 
 @media screen and (min-width: 768px) {
   .main-content {
-    margin-top: 90px; /* Consistent margin for all screen sizes */
+    margin-top: var(--app-nav-clearance, calc(92px + env(safe-area-inset-top, 0px)));
     padding: 0 2rem;
   }
 }

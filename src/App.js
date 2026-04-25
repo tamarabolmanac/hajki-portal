@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { Navigation } from "./components/navigation";
 import { HikeRoutes } from "./components/HikeRoutes";
@@ -53,19 +53,23 @@ const AppContent = () => {
     const { id } = useParams();
     const nav = useNavigate();
 
-    const handleStop = async () => {
+    const handleStop = useCallback(() => {
       nav(`/route/${id}`);
-    };
+    }, [nav, id]);
+
+    const onTrackingStart = useCallback(() => {
+      console.log("Started tracking route", id);
+    }, [id]);
 
     const trackingStartedKey = `tracking:route:${id}:started`;
     const shouldAutoStart = localStorage.getItem(trackingStartedKey) === "1";
 
     return (
-      <div className="content-container">
+      <div className="content-container track-route-page">
         <RouteTracker
           routeId={id}
           autoStart={shouldAutoStart}
-          onTrackingStart={() => console.log("Started tracking route", id)}
+          onTrackingStart={onTrackingStart}
           onTrackingStop={handleStop}
         />
       </div>

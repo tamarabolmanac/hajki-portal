@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { BackgroundImage } from "./BackgroundImage";
 import { config } from '../config';
+import { explainUnreachableApiError } from '../utils/fetchErrors';
 import '../styles/LoginPage.css';
 import GoogleLoginButton from "./GoogleLoginButton";
 import { FaEnvelope, FaLock, FaArrowRight } from 'react-icons/fa';
@@ -14,8 +15,8 @@ const LoginPage = () => {
   const navigate = useNavigate();
   
   const handleGoogleLogin = (userData) => {
-    // setUser(userData);
-    navigate('/dashboard');
+    // Full reload ensures navbar/auth-dependent UI reads fresh localStorage token.
+    window.location.assign('/');
   };
 
   const handleLogin = async (e) => {
@@ -74,7 +75,9 @@ const LoginPage = () => {
       window.location.href = '/';
     } catch (error) {
       console.error('Login error:', error);
-      setErrorMessage(error.message);
+      setErrorMessage(
+        explainUnreachableApiError(error, config.apiUrl) || error.message || 'Greška pri prijavljivanju.'
+      );
     } finally {
       setIsLoading(false);
     }

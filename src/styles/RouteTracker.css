@@ -1,0 +1,42 @@
+/* Puna visina ispod fiksiranog navbar-a (usklađeno sa GlobalStyles --app-nav-clearance) */
+.route-tracker {
+  position: relative;
+  width: 100%;
+  /* Bez ugnježdenog calc() u var() — postcss-calc u produkcijskom build-u ga ne parsira */
+  height: calc(100vh - var(--app-nav-clearance, 92px));
+  min-height: 280px;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Na ekranu za praćenje mapa ide ivica do ivice (povlačenje preko main-content paddinga) */
+.track-route-page {
+  margin-left: -1rem;
+  margin-right: -1rem;
+  width: calc(100% + 2rem);
+}
+
+@media screen and (min-width: 768px) {
+  .track-route-page {
+    margin-left: -2rem;
+    margin-right: -2rem;
+    width: calc(100% + 4rem);
+  }
+}
+
+.route-tracker__panel {
+  position: absolute;
+  top: 12px;
+  left: max(12px, env(safe-area-inset-left, 0px));
+  z-index: 1000;
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: min(340px, calc(100vw - 24px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
+}
+
+.route-tracker__map {
+  height: 100%;
+  width: 100%;
+}

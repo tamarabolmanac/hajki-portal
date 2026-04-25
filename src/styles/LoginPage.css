@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  padding-top: 8rem; /* Space below fixed navbar (~70px + comfortable gap) */
+  padding-top: calc(var(--app-page-content-top, 120px) + 2.5rem);
   padding-left: max(1rem, env(safe-area-inset-left));
   padding-right: max(1rem, env(safe-area-inset-right));
   margin: 0;
@@ -231,7 +231,49 @@
   z-index: 1;
 }
 
-/* Google login button container */
+/* Visible Google CTA for WebView / narrow screens (no GIS iframe) */
+.google-login-fallback-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+  min-height: 44px;
+  padding: 10px 16px;
+  box-sizing: border-box;
+  font-family: "Plus Jakarta Sans", "Inter", Roboto, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f1f1f;
+  background: #fff;
+  border: 1px solid #747775;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.google-login-fallback-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.google-login-fallback-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.google-login-fallback-btn__icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.google-login-fallback-btn__text {
+  line-height: 1.2;
+}
+
+/* Google login button container (isolation helps iframe paint on some mobile GPUs) */
 .google-login-container {
   margin-bottom: 1.5rem;
   display: flex;
@@ -241,6 +283,8 @@
   overflow: visible;
   position: relative;
   min-height: 50px;
+  isolation: isolate;
+  transform: translateZ(0);
 }
 
 /* Style for the Google login button */
@@ -265,10 +309,11 @@
   z-index: 10 !important;
 }
 
-/* Override Google button styles */
+/* Override Google button styles — width follows inline from JS on small screens */
 .google-login-container iframe {
   max-width: 100% !important;
-  width: 300px !important;
+  width: 100% !important;
+  min-width: 0 !important;
   margin: 0 auto !important;
   position: relative !important;
   z-index: 10 !important;
@@ -328,10 +373,39 @@
   font-size: 1.1rem;
 }
 
+/*
+ * Mobile / narrow viewports:
+ * - flex-start so the full card (including Google) is reachable by scroll; centered flex often hides the bottom.
+ * - disable backdrop-filter: Google Sign-In iframe often does not render inside blurred parents (iOS WebKit, some Android WebViews).
+ */
+@media (max-width: 768px) {
+  .login-page {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: calc(var(--app-nav-clearance, 80px) + 0.5rem);
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+    min-height: 100dvh;
+    min-height: 100vh;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .login-container {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  .google-login-container {
+    min-height: 44px;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .login-page {
     padding: 1rem;
+    padding-top: calc(var(--app-nav-clearance, 80px) + 0.75rem);
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
     padding-left: max(1rem, env(safe-area-inset-left));
     padding-right: max(1rem, env(safe-area-inset-right));
   }

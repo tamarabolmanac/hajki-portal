@@ -1,10 +1,19 @@
-import { registerPlugin } from '@capacitor/core';
-const HajkiTracker = registerPlugin('HajkiTracker');
+import { registerPlugin } from "@capacitor/core";
 
-export const startNativeTracking = async () => {
-  await HajkiTracker.startTracking();
-};
+const HajkiTracker = registerPlugin("HajkiTracker");
 
-export const stopNativeTracking = async () => {
+/**
+ * Android foreground servis — šalje tačke na apiBaseUrl/routes/track_point sa Bearer tokenom.
+ * @param {{ routeId?: string, apiBaseUrl: string, authToken?: string }} opts
+ */
+export async function startNativeTracking(opts) {
+  await HajkiTracker.startTracking({
+    routeId: opts.routeId != null ? String(opts.routeId) : "",
+    apiBaseUrl: (opts.apiBaseUrl || "").replace(/\/$/, ""),
+    authToken: opts.authToken || "",
+  });
+}
+
+export async function stopNativeTracking() {
   await HajkiTracker.stopTracking();
-};
+}

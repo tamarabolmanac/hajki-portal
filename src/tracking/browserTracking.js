@@ -51,11 +51,15 @@ export async function startBrowserTracking(routeId, onPointSaved, onError, onGPS
             }),
           });
 
-          if (response?.status === 200) {
+          const ok =
+            response &&
+            (response.status === 200 ||
+              (response.point != null && response.route_id != null));
+          if (ok) {
             lastSavedTime = currentTime;
             console.log('✅ Point saved to backend successfully');
             onPointSaved && onPointSaved(newPoint);
-            if (response.route_id) {
+            if (response.route_id != null) {
               console.log('📋 Route ID:', response.route_id);
               currentRouteId = response.route_id;
             }

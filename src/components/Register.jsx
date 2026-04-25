@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { config } from '../config';
+import { explainUnreachableApiError } from '../utils/fetchErrors';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Register.css';
 
@@ -131,7 +132,11 @@ export const Register = () => {
         }
       }
     } catch (error) {
-      if (error.message.includes('JSON')) {
+      const unreachable = explainUnreachableApiError(error, config.apiUrl);
+      if (unreachable) {
+        setMessage(unreachable);
+        setMessageType('error');
+      } else if (error.message.includes('JSON')) {
         setMessage('Registracija je možda uspešna, ali došlo je do greške u komunikaciji. Pokušajte da se prijavite.');
         setMessageType('error');
       } else {

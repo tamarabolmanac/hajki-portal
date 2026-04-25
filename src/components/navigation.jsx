@@ -106,25 +106,23 @@ export const Navigation = (props) => {
 
   return (
     <nav id="menu" className="navbar navbar-default navbar-fixed-top">
-      <div className="container">
-        <div className="navbar-header">
-          <Link className="navbar-brand" to="/" onClick={handleHomeClick}>
-            <img className="logo-navbar" src="/img/small-logo.png" alt="Hajki Logo" />
-          </Link>
-          <button
-            type="button"
-            className={`navbar-toggle ${isMenuOpen ? 'active' : ''}`}
-            onClick={toggleMenu}
-            ref={buttonRef}
-            aria-expanded={isMenuOpen}
-            aria-controls="bs-example-navbar-collapse-1"
-          >
-            <span className="sr-only">Toggle navigation</span>
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-          </button>
-        </div>
+      <div className="navbar-inner">
+        <Link className="navbar-brand" to="/" onClick={handleHomeClick}>
+          <img className="logo-navbar" src="/img/small-logo.png" alt="Hajki Logo" />
+        </Link>
+        <button
+          type="button"
+          className={`navbar-toggle ${isMenuOpen ? 'active' : ''}`}
+          onClick={toggleMenu}
+          ref={buttonRef}
+          aria-expanded={isMenuOpen}
+          aria-controls="bs-example-navbar-collapse-1"
+        >
+          <span className="sr-only">Toggle navigation</span>
+          <span className="icon-bar"></span>
+          <span className="icon-bar"></span>
+          <span className="icon-bar"></span>
+        </button>
 
         <div
           className={`collapse navbar-collapse ${isMenuOpen ? 'in' : ''}`}
@@ -200,16 +198,7 @@ export const Navigation = (props) => {
 
       {confirmLeave && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.45)',
-            zIndex: 4000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 16,
-          }}
+          className="nav-confirm-modal-backdrop"
           onClick={() => setConfirmLeave(false)}
         >
           <div

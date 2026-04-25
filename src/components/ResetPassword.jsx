@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { config } from '../config';
+import { explainUnreachableApiError } from '../utils/fetchErrors';
 import '../styles/LoginPage.css';
 
 export const ResetPassword = () => {
@@ -63,7 +64,7 @@ export const ResetPassword = () => {
       }, 2000);
       
     } catch (error) {
-      setMessage(error.message);
+      setMessage(explainUnreachableApiError(error, config.apiUrl) || error.message);
     } finally {
       setIsLoading(false);
     }
