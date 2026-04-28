@@ -91,7 +91,7 @@ export const Guide = () => {
           <div className="step-number">5</div>
           <div className="step-content">
             <h2>Uredi svoj profil</h2>
-            <p>Personalizuj svoj nalog i pokaži druge planinare svoje iskustvo.</p>
+            <p>Personalizuj svoj nalog i pokaži drugim planinarima svoje iskustvo.</p>
             <div className="step-details">
               <h3>Opcije profila:</h3>
               <ul>
@@ -139,27 +139,6 @@ export const Guide = () => {
           </div>
         </div>
 
-        <div className="guide-tips">
-          <h2>💡 Korisni saveti</h2>
-          <div className="tips-grid">
-            <div className="tip-card">
-              <h3>📱 Mobilna aplikacija</h3>
-              <p>Preuzmi Hajki aplikaciju za Android/iOS za lakše praćenje na terenu.</p>
-            </div>
-            <div className="tip-card">
-              <h3>🔋 Baterija</h3>
-              <p>Za duže praćenje, isključi druge aplikacije i optimizuj potrošnju baterije.</p>
-            </div>
-            <div className="tip-card">
-              <h3>🌐 Internet</h3>
-              <p>Aplikacija radi offline, ali za sinhronizaciju potreban ti je internet.</p>
-            </div>
-            <div className="tip-card">
-              <h3>📍 GPS preciznost</h3>
-              <p>U otvorenim prostorima GPS je precizniji. U šumi može biti manje tačan.</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
