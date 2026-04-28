@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
 import { authenticatedFetch } from '../utils/api';
 import { BackgroundImage } from './BackgroundImage';
+import AppLoader from './AppLoader';
 import '../styles/NearbyRoutes.css';
 import '../styles/RoutesList.css';
 
@@ -16,6 +17,9 @@ export const NearbyRoutes = () => {
   const [nearbyMode, setNearbyMode] = useState('hiking_paths');
   const [peaks, setPeaks] = useState([]);
   const [selectedPeak, setSelectedPeak] = useState(null);
+  const [hikingRoutePins, setHikingRoutePins] = useState([]);
+  const [selectedHikingRoute, setSelectedHikingRoute] = useState(null);
+  const [hikingElementsCount, setHikingElementsCount] = useState(0);
 
   // Get user's current location
   useEffect(() => {
@@ -60,7 +64,11 @@ export const NearbyRoutes = () => {
       fetchNearbyRoutes();
       return;
     }
-    fetchNearbyPeaks();
+    if (nearbyMode === 'peaks') {
+      fetchNearbyPeaks();
+      return;
+    }
+    fetchNearbyHikingRoutes();
   }, [userLocation, radius, nearbyMode]);
 
   const fetchNearbyRoutes = async () => {
@@ -69,6 +77,9 @@ export const NearbyRoutes = () => {
       setError(null);
       setSelectedPeak(null);
       setPeaks([]);
+      setHikingRoutePins([]);
+      setSelectedHikingRoute(null);
+      setHikingElementsCount(0);
       const response = await authenticatedFetch(
         `/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radius=${radius}`
       );
@@ -90,6 +101,9 @@ export const NearbyRoutes = () => {
       setError(null);
       setRoutes([]);
       setSelectedPeak(null);
+      setHikingRoutePins([]);
+      setSelectedHikingRoute(null);
+      setHikingElementsCount(0);
 
       const response = await authenticatedFetch('/nearby/overpass', {
         method: 'POST',
@@ -117,6 +131,58 @@ export const NearbyRoutes = () => {
     } catch (err) {
       setError('Greška pri učitavanju planinskih vrhova u blizini.');
       console.error('Error fetching nearby peaks:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchNearbyHikingRoutes = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setRoutes([]);
+      setPeaks([]);
+      setSelectedPeak(null);
+      setSelectedHikingRoute(null);
+
+      const response = await authenticatedFetch('/nearby/overpass', {
+        method: 'POST',
+        body: JSON.stringify({
+          lat: userLocation.lat,
+          lon: userLocation.lng,
+          radius,
+          mode: 'hiking_routes',
+          country: 'Serbia',
+        }),
+      });
+
+      const elements = response?.data?.elements || [];
+      const pins = elements
+        .filter(
+          (el) =>
+            el?.type === 'relation' &&
+            el?.center &&
+            typeof el.center.lat === 'number' &&
+            typeof el.center.lon === 'number'
+        )
+        .map((el) => ({
+          id: el.id,
+          lat: el.center.lat,
+          lng: el.center.lon,
+          name:
+            el?.tags?.name ||
+            el?.tags?.['name:sr'] ||
+            el?.tags?.int_name ||
+            'Planinarska staza',
+          ref: el?.tags?.ref || null,
+        }));
+      setHikingRoutePins(pins);
+      setHikingElementsCount(pins.length);
+    } catch (err) {
+      setHikingRoutePins([]);
+      setHikingElementsCount(0);
+      setError('Greška pri učitavanju planinarskih staza u blizini.');
+      console.error('Error fetching nearby hiking routes:', err);
     } finally {
       setLoading(false);
     }
@@ -167,70 +233,12 @@ export const NearbyRoutes = () => {
           <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
           <div className="routes-overlay" />
         </div>
-      <div className="nearby-routes-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="loading-container" style={{
-        minHeight: '60vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'rgba(255, 255, 255, 0.08)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        margin: '2rem auto',
-        maxWidth: '1200px',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
-      }}>
-        <div style={{
-          textAlign: 'center',
-          padding: '3rem 2rem',
-          maxWidth: '500px',
-          width: '100%'
-        }}>
-          <div style={{
-            position: 'relative',
-            width: '150px',
-            height: '150px',
-            margin: '0 auto 1.5rem',
-            borderRadius: '50%',
-            background: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden'
-          }}>
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              style={{
-                width: '90%',
-                height: '90%',
-                objectFit: 'contain',
-                transform: 'scale(1)',
-                outline: 'none',
-                border: 'none',
-                boxShadow: 'none'
-              }}
-            >
-              <source src="/animation/beaver.mp4" type="video/mp4" />
-            </video>
-          </div>
-
-          <h2 style={{
-            color: '#ffffff',
-            fontSize: '1.5rem',
-            fontWeight: '700',
-            marginBottom: '0.5rem',
-            background: 'linear-gradient(90deg, #556B2F, #8FA31E)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            Učitavanje...
-          </h2>
+        <div className="nearby-routes-container">
+          <AppLoader
+            title="Učitavanje..."
+            subtitle="Prikupljamo rezultate u blizini vaše lokacije."
+          />
         </div>
-      </div>
-      </div>
       </div>
     );
 }
@@ -332,6 +340,52 @@ export const NearbyRoutes = () => {
                 )}
               </GoogleMap>
             </div>
+          </>
+        ) : nearbyMode === 'hiking_routes' ? (
+          <>
+            <div className="routes-count">
+              Pronađeno {hikingElementsCount} planinarskih staza (OSM relacije sa imenom) u radijusu od{' '}
+              {radius} km
+            </div>
+            <div className="nearby-peaks-map-wrapper">
+              <GoogleMap
+                mapContainerClassName="nearby-peaks-map"
+                center={
+                  selectedHikingRoute
+                    ? { lat: selectedHikingRoute.lat, lng: selectedHikingRoute.lng }
+                    : userLocation
+                }
+                zoom={11}
+              >
+                {hikingRoutePins.map((routePin) => (
+                  <Marker
+                    key={`hike-rel-${routePin.id}`}
+                    position={{ lat: routePin.lat, lng: routePin.lng }}
+                    onClick={() => setSelectedHikingRoute(routePin)}
+                  />
+                ))}
+                {selectedHikingRoute && (
+                  <InfoWindow
+                    position={{ lat: selectedHikingRoute.lat, lng: selectedHikingRoute.lng }}
+                    onCloseClick={() => setSelectedHikingRoute(null)}
+                  >
+                    <div className="peak-info-window">
+                      <strong>{selectedHikingRoute.name}</strong>
+                      {selectedHikingRoute.ref && <div>Oznaka: {selectedHikingRoute.ref}</div>}
+                      <div>
+                        {selectedHikingRoute.lat.toFixed(5)}, {selectedHikingRoute.lng.toFixed(5)}
+                      </div>
+                    </div>
+                  </InfoWindow>
+                )}
+              </GoogleMap>
+            </div>
+            {hikingRoutePins.length === 0 && !loading && (
+              <p className="nearby-hiking-routes-hint" style={{ marginTop: '1rem', textAlign: 'center' }}>
+                Nema imenovanih planinarskih ruta (relation + name) sa poznatom tačkom u ovom radijusu.
+                Pokušajte veći radius ili drugu lokaciju.
+              </p>
+            )}
           </>
         ) : routes.length === 0 ? (
           <div className="no-routes">

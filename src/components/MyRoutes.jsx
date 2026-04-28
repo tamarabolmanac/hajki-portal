@@ -5,6 +5,7 @@ import { authenticatedFetch } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
 import { config } from '../config';
 import { BackgroundImage } from './BackgroundImage';
+import AppLoader from './AppLoader';
 import '../styles/MyRoutes.css';
 import '../styles/RoutesList.css';
 
@@ -105,70 +106,9 @@ export const MyRoutes = () => {
           <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
           <div className="routes-overlay" />
         </div>
-      <div className="page-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div className="loading-container" style={{
-        minHeight: '60vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'rgba(255, 255, 255, 0.08)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        margin: '2rem auto',
-        maxWidth: '1200px',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
-      }}>
-        <div style={{
-          textAlign: 'center',
-          padding: '3rem 2rem',
-          maxWidth: '500px',
-          width: '100%'
-        }}>
-          <div style={{
-            position: 'relative',
-            width: '150px',
-            height: '150px',
-            margin: '0 auto 1.5rem',
-            borderRadius: '50%',
-            background: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden'
-          }}>
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              style={{
-                width: '90%',
-                height: '90%',
-                objectFit: 'contain',
-                transform: 'scale(1)',
-                outline: 'none',
-                border: 'none',
-                boxShadow: 'none'
-              }}
-            >
-              <source src="/animation/beaver.mp4" type="video/mp4" />
-            </video>
-          </div>
-
-          <h2 style={{
-            color: '#ffffff',
-            fontSize: '1.5rem',
-            fontWeight: '700',
-            marginBottom: '0.5rem',
-            background: 'linear-gradient(90deg, #556B2F, #8FA31E)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            Učitavanje ruta...
-          </h2>
+        <div className="page-container">
+          <AppLoader title="Učitavanje ruta..." subtitle="Prikupljamo vaše sačuvane rute." />
         </div>
-      </div>
-      </div>
       </div>
     );
   }

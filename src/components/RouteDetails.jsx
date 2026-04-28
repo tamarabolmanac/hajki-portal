@@ -6,6 +6,7 @@ import { getCurrentUser, getCurrentUserID } from '../utils/authHandler';
 import { config } from '../config';
 import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
 import RouteTracker from './RouteTracker';
+import AppLoader from './AppLoader';
 
 // Placeholder dok se mapa učitava
 const MapPlaceholder = () => {
@@ -95,23 +96,8 @@ export const RouteDetails = () => {
 
   if (loading || !route) {
     return (
-      <div className="loading-container" style={{ textAlign: "center" }}>
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{ width: "100px", height: "100px" }}
-        >
-          <source src="/animation/beaver.mp4" type="video/mp4" />
-        </video>
-
-        <p
-          className="loading-text-modern"
-          style={{ marginTop: "0.5rem", fontSize: "1.1rem", fontWeight: "500"}}
-        >
-          Učitavanje detalja rute...
-        </p>
+      <div className="loading-container" style={{ padding: '2rem 1rem' }}>
+        <AppLoader title="Učitavanje detalja rute..." compact />
       </div>
     );
   }
