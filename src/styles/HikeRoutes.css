@@ -159,6 +159,46 @@
   background: rgba(248, 249, 250, 0.8);
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.route-like-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: none;
+  background: transparent;
+  color: #556B2F;
+  border-radius: 12px;
+  padding: 0.35rem 0.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.route-like-button:hover {
+  transform: translateY(-1px);
+  background: rgba(239, 245, 210, 0.7);
+}
+
+.route-like-button.liked {
+  color: #8FA31E;
+}
+
+.route-like-heart {
+  color: #8FA31E;
+  font-size: 1.45rem;
+  line-height: 1;
+  text-shadow: 0 2px 8px rgba(143, 163, 30, 0.18);
+}
+
+.route-like-count {
+  color: #556B2F;
+  font-size: 0.95rem;
 }
 
 .view-route-btn {

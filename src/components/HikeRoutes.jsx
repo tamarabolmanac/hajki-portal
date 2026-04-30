@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { config } from '../config';
 import { authenticatedFetch } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
 import { BackgroundImage } from './BackgroundImage';
@@ -33,6 +32,7 @@ export const HikeRoutes = (props) => {
   const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFollowingOnly, setShowFollowingOnly] = useState(false);
+  const [likeError, setLikeError] = useState(null);
 
   // Check authentication status
   useEffect(() => {
@@ -81,6 +81,55 @@ export const HikeRoutes = (props) => {
 
     fetchRoutes();
   }, [showFollowingOnly]);
+
+  const handleToggleLike = async (routeId, currentlyLiked) => {
+    if (!userIsAuthenticated) {
+      setLikeError('Uloguj se da bi lajkovala rute.');
+      return;
+    }
+
+    setLikeError(null);
+
+    const optimisticLiked = !currentlyLiked;
+    const delta = optimisticLiked ? 1 : -1;
+
+    setData((currentData) => currentData?.map((route) => {
+      if (route.id !== routeId) return route;
+
+      return {
+        ...route,
+        liked_by_current_user: optimisticLiked,
+        likes_count: Math.max((route.likes_count || 0) + delta, 0)
+      };
+    }));
+
+    try {
+      const responseData = await authenticatedFetch(`/routes/${routeId}/like`, {
+        method: currentlyLiked ? 'DELETE' : 'POST'
+      });
+
+      setData((currentData) => currentData?.map((route) => (
+        route.id === routeId
+          ? {
+              ...route,
+              liked_by_current_user: responseData.data.liked_by_current_user,
+              likes_count: responseData.data.likes_count
+            }
+          : route
+      )));
+    } catch (error) {
+      setData((currentData) => currentData?.map((route) => {
+        if (route.id !== routeId) return route;
+
+        return {
+          ...route,
+          liked_by_current_user: currentlyLiked,
+          likes_count: Math.max((route.likes_count || 0) - delta, 0)
+        };
+      }));
+      setLikeError(error.message);
+    }
+  };
 
   if (error) {
     return (
@@ -186,6 +235,11 @@ export const HikeRoutes = (props) => {
               Pronađeno ruta: {filteredRoutes.length}
             </p>
           )}
+          {likeError && (
+            <p style={{ marginTop: '0.5rem', color: '#ffb4b4', fontSize: '0.9rem' }}>
+              {likeError}
+            </p>
+          )}
         </div>
 
         <div className="hike-cards-container">
@@ -256,6 +310,16 @@ export const HikeRoutes = (props) => {
                 </div>
               </div>
               <div className="hike-card-footer">
+                <button
+                  type="button"
+                  className={`route-like-button ${hike.liked_by_current_user ? 'liked' : ''}`}
+                  onClick={() => handleToggleLike(hike.id, hike.liked_by_current_user)}
+                  aria-pressed={!!hike.liked_by_current_user}
+                  aria-label={hike.liked_by_current_user ? 'Ukloni lajk sa rute' : 'Lajkuj rutu'}
+                >
+                  <span className="route-like-heart" aria-hidden="true">♥</span>
+                  <span className="route-like-count">{hike.likes_count || 0}</span>
+                </button>
                 <Link to={`/route/${hike.id}`} className="btn-primary-modern" style={{ borderRadius: '8px' }}>
                   Pogledaj detalje
                 </Link>
