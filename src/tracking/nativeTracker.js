@@ -17,3 +17,11 @@ export async function startNativeTracking(opts) {
 export async function stopNativeTracking() {
   await HajkiTracker.stopTracking();
 }
+
+export async function addNativeLocationListener(callback) {
+  return HajkiTracker.addListener("locationUpdate", callback);
+}
+
+export async function addNativeRouteIdListener(callback) {
+  return HajkiTracker.addListener("routeIdUpdate", callback);
+}

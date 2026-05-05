@@ -124,8 +124,8 @@ export const EditRoute = () => {
         });
       }
 
-      const response = await authenticatedFetch(`/routes/${id}`, {
-        method: 'PUT',
+      const response = await authenticatedFetch(`/routes/${id}/update`, {
+        method: 'POST',
         body: formDataToSend,
         // Don't set Content-Type header, let browser set it for FormData
         headers: {
@@ -306,7 +306,7 @@ export const EditRoute = () => {
               <div className="images-grid">
                 {existingImages.map((imageUrl, index) => (
                   <div key={index} className="image-preview">
-                    <img src={imageUrl} alt={`Route image ${index + 1}`} />
+                    <img src={imageUrl} alt={`Ruta ${index + 1}`} />
                     <button
                       type="button"
                       className="remove-image-btn"
@@ -340,7 +340,7 @@ export const EditRoute = () => {
                     <div key={index} className="image-preview">
                       <img 
                         src={URL.createObjectURL(file)} 
-                        alt={`New image ${index + 1}`} 
+                        alt={`Nova ruta ${index + 1}`} 
                       />
                       <button
                         type="button"

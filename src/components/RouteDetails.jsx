@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import '../styles/RouteDetails.css';
 import { authenticatedFetch } from '../utils/api';
-import { getCurrentUser, getCurrentUserID } from '../utils/authHandler';
+import { getCurrentUserID } from '../utils/authHandler';
 import { config } from '../config';
 import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
-import RouteTracker from './RouteTracker';
 import AppLoader from './AppLoader';
 
 // Placeholder dok se mapa učitava
@@ -96,9 +95,7 @@ export const RouteDetails = () => {
 
   if (loading || !route) {
     return (
-      <div className="loading-container" style={{ padding: '2rem 1rem' }}>
-        <AppLoader title="Učitavanje detalja rute..." compact />
-      </div>
+      <AppLoader title="Učitavanje detalja rute..." compact />
     );
   }
 
@@ -239,7 +236,7 @@ export const RouteDetails = () => {
                   const filename = imageUrl.split('/').pop().split('?')[0];
                   const cdnUrl = `https://cdn.hajki.com/${filename}`;
 
-                  return <img key={index} src={cdnUrl} alt={`Route image ${index + 1}`} />;
+                  return <img key={index} src={cdnUrl} alt={`Ruta ${index + 1}`} />;
             
                 })
               }

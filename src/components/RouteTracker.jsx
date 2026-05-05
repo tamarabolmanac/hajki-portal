@@ -3,7 +3,12 @@ import { Capacitor } from "@capacitor/core";
 import { GoogleMap, Polyline, Marker } from "@react-google-maps/api";
 import { authenticatedFetch } from "../utils/api";
 import { config } from "../config";
-import { startNativeTracking, stopNativeTracking } from "../tracking/nativeTracker";
+import {
+  addNativeLocationListener,
+  addNativeRouteIdListener,
+  startNativeTracking,
+  stopNativeTracking
+} from "../tracking/nativeTracker";
 import "../styles/RouteTracker.css";
 
 /** Uspešan track_point: Rails šalje { status: 200, route_id, point, ... } u JSON telu. */
@@ -23,6 +28,8 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
   const routeRef = useRef([]);
   const watchIdRef = useRef(null);
   const flushIntervalRef = useRef(null);
+  const nativeLocationListenerRef = useRef(null);
+  const nativeRouteIdListenerRef = useRef(null);
   /** Poslednji indeks tačke uspešno sačuvan na serveru (-1 = ništa) */
   const lastSyncedIndexRef = useRef(-1);
   const lastFlushAtRef = useRef(null);
@@ -33,6 +40,20 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
   const nativeBackgroundRef = useRef(false);
 
   const startedKey = routeId ? `tracking:route:${routeId}:started` : null;
+
+  const appendRenderedPoint = useCallback((point) => {
+    const renderedPoint = {
+      lat: Number(point.lat),
+      lng: Number(point.lng),
+      accuracy: point.accuracy,
+      timestamp: point.timestamp || new Date().toISOString(),
+    };
+
+    if (!Number.isFinite(renderedPoint.lat) || !Number.isFinite(renderedPoint.lng)) return;
+
+    routeRef.current.push(renderedPoint);
+    setRouteToRender([...routeRef.current]);
+  }, []);
 
   /** Šalje sve tačke posle lastSyncedIndexRef (redom). force: ignoriše 5s throttle i čeka mutex. */
   const performFlush = useCallback(async (force) => {
@@ -96,6 +117,14 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
       clearInterval(flushIntervalRef.current);
       flushIntervalRef.current = null;
     }
+    if (nativeLocationListenerRef.current) {
+      await nativeLocationListenerRef.current.remove();
+      nativeLocationListenerRef.current = null;
+    }
+    if (nativeRouteIdListenerRef.current) {
+      await nativeRouteIdListenerRef.current.remove();
+      nativeRouteIdListenerRef.current = null;
+    }
     if (nativeBackgroundRef.current) {
       try {
         await stopNativeTracking();
@@ -139,6 +168,16 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
           authToken: localStorage.getItem("authToken") || "",
         });
         nativeBackgroundRef.current = true;
+        nativeLocationListenerRef.current = await addNativeLocationListener((point) => {
+          if (!isTrackingRef.current) return;
+          appendRenderedPoint(point);
+        });
+        nativeRouteIdListenerRef.current = await addNativeRouteIdListener((data) => {
+          if (data?.routeId) {
+            currentRouteIdRef.current = data.routeId;
+            localStorage.setItem("tracking:active_route_id", String(data.routeId));
+          }
+        });
       } catch (e) {
         console.error("startNativeTracking:", e);
         setError(
@@ -170,10 +209,11 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
           accuracy,
           timestamp: new Date().toISOString(),
         };
-        routeRef.current.push(newPoint);
-        setRouteToRender([...routeRef.current]);
+        appendRenderedPoint(newPoint);
 
-        if (!nativeBackgroundRef.current) void performFlush(false);
+        if (!nativeBackgroundRef.current) {
+          void performFlush(false);
+        }
       },
       (err) => {
         console.error("Geolocation error:", err);
@@ -184,7 +224,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     );
 
     watchIdRef.current = id;
-  }, [routeId, startedKey, onTrackingStart, stopTracking, performFlush]);
+  }, [routeId, startedKey, onTrackingStart, stopTracking, performFlush, appendRenderedPoint]);
 
   const finalizeRoute = async () => {
     const rid = currentRouteIdRef.current;
@@ -231,6 +271,14 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     return () => {
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+      if (nativeLocationListenerRef.current) {
+        void nativeLocationListenerRef.current.remove();
+        nativeLocationListenerRef.current = null;
+      }
+      if (nativeRouteIdListenerRef.current) {
+        void nativeRouteIdListenerRef.current.remove();
+        nativeRouteIdListenerRef.current = null;
       }
       if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === "android") {
         void stopNativeTracking();

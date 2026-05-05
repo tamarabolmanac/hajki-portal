@@ -22,3 +22,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .env
+
+# Android local/build artifacts
+/android/.idea/
+/android/app/build.gradle.signing
+*.apk
+*.aab
+
+# Local helper/backend artifacts
+/backend/node_modules/
+/backend/users.db
+/assets/
