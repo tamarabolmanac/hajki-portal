@@ -26,13 +26,16 @@ const RouteThumbnail = ({ src, alt, isPriority }) => {
 };
 
 export const HikeRoutes = (props) => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showFollowingOnly, setShowFollowingOnly] = useState(false);
   const [likeError, setLikeError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Check authentication status
   useEffect(() => {
@@ -63,15 +66,16 @@ export const HikeRoutes = (props) => {
 
   useEffect(() => {
     const fetchRoutes = async () => {
+      setLoading(true);
+      setData([]);
+      setPage(1);
       try {
-        const params = new URLSearchParams();
-        if (showFollowingOnly) {
-          params.set('scope', 'following');
-        }
+        const params = new URLSearchParams({ page: 1, per_page: 20 });
+        if (showFollowingOnly) params.set('scope', 'following');
 
-        const url = `/routes${params.toString() ? `?${params.toString()}` : ''}`;
-        const responseData = await authenticatedFetch(url);
-        setData(responseData.data);
+        const responseData = await authenticatedFetch(`/routes?${params.toString()}`);
+        setData(responseData.data || []);
+        setTotalPages(responseData.meta?.total_pages || 1);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -81,6 +85,24 @@ export const HikeRoutes = (props) => {
 
     fetchRoutes();
   }, [showFollowingOnly]);
+
+  const handleLoadMore = async () => {
+    const nextPage = page + 1;
+    setLoadingMore(true);
+    try {
+      const params = new URLSearchParams({ page: nextPage, per_page: 20 });
+      if (showFollowingOnly) params.set('scope', 'following');
+
+      const responseData = await authenticatedFetch(`/routes?${params.toString()}`);
+      setData((prev) => [...prev, ...(responseData.data || [])]);
+      setTotalPages(responseData.meta?.total_pages || totalPages);
+      setPage(nextPage);
+    } catch (error) {
+      setLikeError(error.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const handleToggleLike = async (routeId, currentlyLiked) => {
     if (!userIsAuthenticated) {
@@ -344,6 +366,20 @@ export const HikeRoutes = (props) => {
             </div>
           )}
         </div>
+
+        {page < totalPages && (
+          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+            <button
+              type="button"
+              className="btn-secondary-modern"
+              style={{ borderRadius: '999px', padding: '0.75rem 2rem', fontSize: '1rem' }}
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+            >
+              {loadingMore ? 'Učitavanje...' : 'Učitaj još ruta'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
     </div>
