@@ -4,6 +4,13 @@ import { config } from '../config';
 import { BackgroundImage } from './BackgroundImage';
 import '../styles/RoutesList.css';
 
+const formatDuration = (minutes) => {
+  if (!minutes) return '0h 0min';
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return h > 0 ? `${h}h ${m}min` : `${m}min`;
+};
+
 export const UserProfile = () => {
   const { id } = useParams();
   const [user, setUser] = useState(null);
@@ -113,63 +120,66 @@ export const UserProfile = () => {
           <h1>Profil planinara</h1>
         </div>
 
-        <div className="glass-card">
-          <div className="hike-card" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-            <div
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: '50%',
-                overflow: 'hidden',
-                background: '#e2e8f0',
-                flexShrink: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 600,
-                color: '#4a5568',
-                fontSize: '2rem',
-              }}
-            >
-              {user.avatar_url ? (
-                <img
-                  src={user.avatar_url}
-                  alt={user.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              ) : (
-                (user.name || '?').trim().charAt(0).toUpperCase()
-              )}
-            </div>
-            <div style={{ flex: 1, minWidth: 200 }}>
-              <h2 className="hike-title" style={{ marginBottom: '0.5rem' }}>
-                {user.name}
-                {user.is_me && (
-                  <span style={{ marginLeft: 8, fontSize: 14, color: '#718096', fontWeight: 400 }}>(ti)</span>
-                )}
-              </h2>
-              <p className="hike-description" style={{ marginBottom: '0.25rem', fontSize: '0.95rem' }}>
-                <strong>Grad:</strong>{' '}
-                {user.city && user.city !== 'Unknown' ? user.city : 'Nije uneto'}
-              </p>
-              <p className="hike-description" style={{ marginBottom: 0, fontSize: '0.95rem' }}>
-                <strong>Država:</strong>{' '}
-                {user.country && user.country !== 'Unknown' ? user.country : 'Nije uneto'}
-              </p>
-            </div>
-            {!user.is_me && user.is_following !== undefined && (
-              <div>
-                <button
-                  type="button"
-                  className={user.is_following ? 'btn-unfollow' : 'btn-primary-modern'}
-                  style={{ borderRadius: 8, padding: '0.75rem 1.5rem' }}
-                  onClick={toggleFollow}
-                >
-                  {user.is_following ? 'Otprati' : 'Prati'}
-                </button>
-              </div>
-            )}
+        <div className="glass-card" style={{ textAlign: 'center', padding: '2rem' }}>
+          {/* Avatar */}
+          <div style={{
+            width: 100, height: 100, borderRadius: '50%', overflow: 'hidden',
+            background: 'linear-gradient(135deg, #11998e, #38ef7d)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '2.2rem', fontWeight: 700, color: 'white',
+            border: '3px solid rgba(255,255,255,0.3)',
+            boxShadow: '0 8px 32px rgba(17,153,142,0.4)',
+            margin: '0 auto 1rem'
+          }}>
+            {user.avatar_url
+              ? <img src={user.avatar_url} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : (user.name || '?').trim().charAt(0).toUpperCase()}
           </div>
+
+          <h2 style={{
+            margin: '0 0 0.25rem', fontSize: '1.6rem', fontWeight: 800,
+            background: 'linear-gradient(135deg, #ffffff, #f0fdf4)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
+          }}>
+            {user.name}
+            {user.is_me && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', fontWeight: 400, WebkitTextFillColor: 'rgba(255,255,255,0.5)' }}> (ti)</span>}
+          </h2>
+
+          {(user.city || user.country) && (
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', margin: '0 0 1.25rem' }}>
+              📍 {[user.city, user.country].filter(v => v && v !== 'Unknown').join(', ') || 'Nije uneto'}
+            </p>
+          )}
+
+          {/* Stats */}
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+            {[
+              { icon: '🥾', value: `${(user.total_distance || 0).toFixed(1)} km`, label: 'Prepešačeno' },
+              { icon: '⏱️', value: formatDuration(user.total_duration || 0), label: 'Vreme u prirodi' },
+              { icon: '🗺️', value: user.routes_count || 0, label: 'Ruta' },
+            ].map(({ icon, value, label }) => (
+              <div key={label} style={{
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 14, padding: '0.65rem 1rem', minWidth: 90, flex: '1 1 90px'
+              }}>
+                <div style={{ fontSize: '1.2rem', marginBottom: 2 }}>{icon}</div>
+                <div style={{ fontWeight: 700, fontSize: '1rem', color: '#38ef7d' }}>{value}</div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{label}</div>
+              </div>
+            ))}
+          </div>
+
+          {!user.is_me && user.is_following !== undefined && (
+            <button
+              type="button"
+              className={user.is_following ? 'btn-unfollow' : 'btn-primary-modern'}
+              style={{ borderRadius: 10, padding: '0.65rem 1.5rem' }}
+              onClick={toggleFollow}
+            >
+              {user.is_following ? 'Otprati' : 'Prati'}
+            </button>
+          )}
         </div>
 
         {/* Rute ovog korisnika */}
