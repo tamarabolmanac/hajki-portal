@@ -13,6 +13,9 @@ export const Navigation = (props) => {
   const [activeLink, setActiveLink] = useState(location.pathname); // State for active link
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [pendingPath, setPendingPath] = useState(null);
+  const [isRoutesOpen, setIsRoutesOpen] = useState(false);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isNalogOpen, setIsNalogOpen] = useState(false);
   
   
   const menuRef = useRef(null);
@@ -65,6 +68,9 @@ export const Navigation = (props) => {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+    setIsRoutesOpen(false);
+    setIsInfoOpen(false);
+    setIsNalogOpen(false);
   };
 
   const handleLinkClick = (path, e) => {
@@ -130,66 +136,113 @@ export const Navigation = (props) => {
           ref={menuRef}
         >
           <ul className="nav navbar-nav navbar-right">
-            <li>
-              <Link to="/routes" className={`page-scroll ${activeLink === '/routes' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/routes', e)}>
-                Pretraži rute
-              </Link>
+
+            {/* Rute dropdown */}
+            <li className={`nav-dropdown ${isRoutesOpen ? 'open' : ''}`}>
+              <button
+                className={`page-scroll nav-dropdown-toggle ${['/routes', '/my_routes', '/nearby'].includes(activeLink) ? 'active' : ''}`}
+                onClick={() => { setIsRoutesOpen(prev => !prev); setIsInfoOpen(false); setIsNalogOpen(false); }}
+              >
+                Rute <span className="nav-dropdown-arrow">{isRoutesOpen ? '▲' : '▼'}</span>
+              </button>
+              <ul className="nav-dropdown-menu">
+                <li>
+                  <Link to="/routes" className={`page-scroll ${activeLink === '/routes' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/routes', e)}>
+                    Pretraži rute
+                  </Link>
+                </li>
+                {isLoggedIn && (
+                  <>
+                    <li>
+                      <Link to="/my_routes" className={`page-scroll ${activeLink === '/my_routes' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/my_routes', e)}>
+                        Moje rute
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/nearby" className={`page-scroll ${activeLink === '/nearby' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/nearby', e)}>
+                        Blizu mene
+                      </Link>
+                    </li>
+                  </>
+                )}
+              </ul>
             </li>
+
+            {/* Kviz — samo za ulogovane */}
             {isLoggedIn && (
-              <>
-                <li>
-                  <Link to="/my_routes" className={`page-scroll ${activeLink === '/my_routes' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/my_routes', e)}>
-                    Moje rute
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/nearby" className={`page-scroll ${activeLink === '/nearby' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/nearby', e)}>
-                    Blizu mene
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/prirodnjacki-kviz" className={`page-scroll ${activeLink === '/prirodnjacki-kviz' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/prirodnjacki-kviz', e)}>
-                    Prirodnjacki kviz
-                  </Link>
-                </li>
-              </>
+              <li>
+                <Link to="/prirodnjacki-kviz" className={`page-scroll ${activeLink === '/prirodnjacki-kviz' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/prirodnjacki-kviz', e)}>
+                  Kviz
+                </Link>
+              </li>
             )}
-            <li>
-              <Link to="/contact" className={`page-scroll ${activeLink === '/contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/contact', e)}>
-                Kontakt
-              </Link>
+
+            {/* Info dropdown */}
+            <li className={`nav-dropdown ${isInfoOpen ? 'open' : ''}`}>
+              <button
+                className={`page-scroll nav-dropdown-toggle ${['/contact', '/about'].includes(activeLink) ? 'active' : ''}`}
+                onClick={() => { setIsInfoOpen(prev => !prev); setIsRoutesOpen(false); setIsNalogOpen(false); }}
+              >
+                Info <span className="nav-dropdown-arrow">{isInfoOpen ? '▲' : '▼'}</span>
+              </button>
+              <ul className="nav-dropdown-menu">
+                <li>
+                  <Link to="/about" className={`page-scroll ${activeLink === '/about' ? 'active' : ''}`} onClick={handleAboutClick}>
+                    O nama
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" className={`page-scroll ${activeLink === '/contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/contact', e)}>
+                    Kontakt
+                  </Link>
+                </li>
+              </ul>
             </li>
-            <li>
-              <Link to="/about" className={`page-scroll ${activeLink === '/about' ? 'active' : ''}`} onClick={handleAboutClick}>
-                O nama
-              </Link>
-            </li>
+
+            {/* Nalog dropdown */}
             {isLoggedIn ? (
-              <>
-                <li>
-                  <Link to="/profile" className={`page-scroll ${activeLink === '/profile' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/profile', e)}>
-                    Moj profil
-                  </Link>
-                </li>
-                <li>
-                  <a href="#" className="page-scroll" onClick={handleLogout} style={{ color: '#ff4444' }}>
-                    Odjavi se
-                  </a>
-                </li>
-              </>
+              <li className={`nav-dropdown ${isNalogOpen ? 'open' : ''}`}>
+                <button
+                  className={`page-scroll nav-dropdown-toggle ${['/profile'].includes(activeLink) ? 'active' : ''}`}
+                  onClick={() => { setIsNalogOpen(prev => !prev); setIsRoutesOpen(false); setIsInfoOpen(false); }}
+                >
+                  <span className="nav-user-name">{user?.name?.split(' ')[0] || 'Nalog'}</span>
+                  <span className="nav-dropdown-arrow">{isNalogOpen ? '▲' : '▼'}</span>
+                </button>
+                <ul className="nav-dropdown-menu nav-dropdown-menu--nalog">
+                  <li>
+                    <Link to="/profile" className={`page-scroll ${activeLink === '/profile' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/profile', e)}>
+                      Moj profil
+                    </Link>
+                  </li>
+                  <li>
+                    <a href="#" className="page-scroll nav-logout" onClick={handleLogout}>
+                      Odjavi se
+                    </a>
+                  </li>
+                </ul>
+              </li>
             ) : (
-              <>
-                <li>
-                  <Link to="/login" className={`page-scroll ${activeLink === '/login' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/login', e)}>
-                    Prijava
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/register" className={`page-scroll ${activeLink === '/register' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/register', e)}>
-                    Registracija
-                  </Link>
-                </li>
-              </>
+              <li className={`nav-dropdown ${isNalogOpen ? 'open' : ''}`}>
+                <button
+                  className={`page-scroll nav-dropdown-toggle ${['/login', '/register'].includes(activeLink) ? 'active' : ''}`}
+                  onClick={() => { setIsNalogOpen(prev => !prev); setIsRoutesOpen(false); setIsInfoOpen(false); }}
+                >
+                  Nalog <span className="nav-dropdown-arrow">{isNalogOpen ? '▲' : '▼'}</span>
+                </button>
+                <ul className="nav-dropdown-menu">
+                  <li>
+                    <Link to="/login" className={`page-scroll ${activeLink === '/login' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/login', e)}>
+                      Prijava
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/register" className={`page-scroll ${activeLink === '/register' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/register', e)}>
+                      Registracija
+                    </Link>
+                  </li>
+                </ul>
+              </li>
             )}
             
           </ul>
