@@ -163,6 +163,11 @@ export const Navigation = (props) => {
                         Blizu mene
                       </Link>
                     </li>
+                    <li>
+                      <Link to="/preporuka" className={`page-scroll ${activeLink === '/preporuka' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/preporuka', e)}>
+                        Preporuka za šetnju
+                      </Link>
+                    </li>
                   </>
                 )}
               </ul>

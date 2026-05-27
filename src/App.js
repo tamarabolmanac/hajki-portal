@@ -34,6 +34,7 @@ import "./App.css";
 import "./styles/main.css";
 import { config } from './config';
 import QuizLobby from "./components/QuizLobby";
+import RouteRecommendation from "./components/RouteRecommendation";
 import QuizRoom from "./components/QuizRoom";
 import { authenticatedFetch } from "./utils/api";
 
@@ -267,6 +268,11 @@ const AppContent = () => {
               }
             />
             <Route path="/routes/:id" element={<RouteDetails />} />
+            <Route path="/preporuka" element={
+              <PrivateRoute>
+                <RouteRecommendation />
+              </PrivateRoute>
+            } />
             <Route path="/about" element={
               <div className="content-container">
                 <About data={landingPageData.About} />
