@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { authenticatedFetch } from '../utils/api';
+import { config } from '../config';
 import './RouteRecommendation.css';
 
 const TAGS = [
@@ -15,10 +16,69 @@ const RouteRecommendation = () => {
   const [destinations, setDestinations] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [locatingFor, setLocatingFor] = useState(null);
+  const [activeMap, setActiveMap] = useState(null); // { index, url }
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const debounceRef = useRef(null);
 
   const toggleTag = (tag) => {
     setSelectedTags(prev =>
       prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const handleLocationChange = (value) => {
+    setLocation(value);
+    setLocationSuggestions([]);
+    clearTimeout(debounceRef.current);
+    if (value.trim().length < 2) return;
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=5&countrycodes=rs`
+        );
+        const data = await res.json();
+        setLocationSuggestions(data.map(r => r.display_name));
+      } catch {
+        setLocationSuggestions([]);
+      }
+    }, 350);
+  };
+
+  const handleSelectSuggestion = (suggestion) => {
+    setLocation(suggestion);
+    setLocationSuggestions([]);
+  };
+
+  const handleOpenMap = (dest, index) => {
+    // Ako je ista karta već otvorena — zatvori je
+    if (activeMap?.index === index) {
+      setActiveMap(null);
+      return;
+    }
+
+    const apiKey = config.googleMapsApiKey;
+    setLocatingFor(index);
+
+    const showMap = (originLat, originLon) => {
+      let url;
+      if (originLat && originLon) {
+        url = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${originLat},${originLon}&destination=${dest.lat},${dest.lon}&mode=walking&language=sr`;
+      } else {
+        url = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${dest.lat},${dest.lon}&language=sr`;
+      }
+      setActiveMap({ index, url });
+      setLocatingFor(null);
+    };
+
+    if (!navigator.geolocation) {
+      showMap(null, null);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => showMap(pos.coords.latitude, pos.coords.longitude),
+      () => showMap(null, null)
     );
   };
 
@@ -111,13 +171,25 @@ const RouteRecommendation = () => {
           {/* Location */}
           <div className="rec-field">
             <label className="rec-label">Blizu lokacije</label>
-            <input
-              type="text"
-              className="rec-input"
-              placeholder="npr. Novi Sad, Zlatibor, Niš..."
-              value={location}
-              onChange={e => setLocation(e.target.value)}
-            />
+            <div className="rec-location-wrap">
+              <input
+                type="text"
+                className="rec-input"
+                placeholder="npr. Novi Sad, Zlatibor, Niš..."
+                value={location}
+                onChange={e => handleLocationChange(e.target.value)}
+                autoComplete="off"
+              />
+              {locationSuggestions.length > 0 && (
+                <ul className="rec-suggestions">
+                  {locationSuggestions.map((s, i) => (
+                    <li key={i} className="rec-suggestion-item" onClick={() => handleSelectSuggestion(s)}>
+                      📍 {s}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           <button type="submit" className="btn-primary-modern rec-submit" disabled={loading}>
@@ -154,6 +226,32 @@ const RouteRecommendation = () => {
                   <p className="rec-card-why">
                     <span className="rec-card-why-label">Zašto odgovara:</span> {dest.why}
                   </p>
+                )}
+                {dest.lat && dest.lon && (
+                  <>
+                    <button
+                      className={`rec-card-map-btn ${activeMap?.index === i ? 'rec-card-map-btn--active' : ''}`}
+                      onClick={() => handleOpenMap(dest, i)}
+                      disabled={locatingFor === i}
+                    >
+                      {locatingFor === i
+                        ? '📍 Tražim lokaciju...'
+                        : activeMap?.index === i
+                          ? '✕ Zatvori mapu'
+                          : '🗺️ Vidi na mapi'}
+                    </button>
+                    {activeMap?.index === i && (
+                      <div className="rec-card-map">
+                        <iframe
+                          title={`Mapa — ${dest.name}`}
+                          src={activeMap.url}
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                        />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             ))}
