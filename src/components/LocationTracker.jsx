@@ -73,9 +73,9 @@ const LocationTracker = () => {
       <div className="location-info">
         {currentLocation && (
           <>
-            <p>Trenutna lokacija:</p>
-            <p>Latitude: {currentLocation.lat.toFixed(6)}</p>
-            <p>Longitude: {currentLocation.lng.toFixed(6)}</p>
+            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', margin: '0 0 4px' }}>Trenutna lokacija:</p>
+            <p style={{ color: '#ffffff', fontWeight: 600, margin: '0 0 2px' }}>Latitude: {currentLocation.lat.toFixed(6)}</p>
+            <p style={{ color: '#ffffff', fontWeight: 600, margin: 0 }}>Longitude: {currentLocation.lng.toFixed(6)}</p>
           </>
         )}
       </div>

@@ -140,7 +140,7 @@ export const Navigation = (props) => {
             {/* Rute dropdown */}
             <li className={`nav-dropdown ${isRoutesOpen ? 'open' : ''}`}>
               <button
-                className={`page-scroll nav-dropdown-toggle ${['/routes', '/my_routes', '/nearby'].includes(activeLink) ? 'active' : ''}`}
+                className={`page-scroll nav-dropdown-toggle ${['/routes', '/priroda', '/preporuka'].includes(activeLink) ? 'active' : ''}`}
                 onClick={() => { setIsRoutesOpen(prev => !prev); setIsInfoOpen(false); setIsNalogOpen(false); }}
               >
                 Rute <span className="nav-dropdown-arrow">{isRoutesOpen ? '▲' : '▼'}</span>
@@ -151,18 +151,13 @@ export const Navigation = (props) => {
                     Pretraži rute
                   </Link>
                 </li>
+                <li>
+                  <Link to="/priroda" className={`page-scroll ${activeLink === '/priroda' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/priroda', e)}>
+                    Priroda Srbije
+                  </Link>
+                </li>
                 {isLoggedIn && (
                   <>
-                    <li>
-                      <Link to="/my_routes" className={`page-scroll ${activeLink === '/my_routes' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/my_routes', e)}>
-                        Moje rute
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/nearby" className={`page-scroll ${activeLink === '/nearby' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/nearby', e)}>
-                        Blizu mene
-                      </Link>
-                    </li>
                     <li>
                       <Link to="/preporuka" className={`page-scroll ${activeLink === '/preporuka' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/preporuka', e)}>
                         Preporuka za šetnju

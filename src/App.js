@@ -35,6 +35,8 @@ import "./styles/main.css";
 import { config } from './config';
 import QuizLobby from "./components/QuizLobby";
 import RouteRecommendation from "./components/RouteRecommendation";
+import OsmRoutesMap from "./components/OsmRoutesMap";
+import NatureMap from "./components/NatureMap";
 import QuizRoom from "./components/QuizRoom";
 import { authenticatedFetch } from "./utils/api";
 
@@ -268,6 +270,8 @@ const AppContent = () => {
               }
             />
             <Route path="/routes/:id" element={<RouteDetails />} />
+            <Route path="/osm-mapa" element={<OsmRoutesMap />} />
+            <Route path="/priroda" element={<NatureMap />} />
             <Route path="/preporuka" element={
               <PrivateRoute>
                 <RouteRecommendation />

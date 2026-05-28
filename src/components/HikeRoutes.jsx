@@ -32,7 +32,16 @@ export const HikeRoutes = (props) => {
   const [error, setError] = useState(null);
   const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showFollowingOnly, setShowFollowingOnly] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [radius, setRadius] = useState(null);        // null | 5 | 10 | 25 | 50
+  const [myRoutesOnly, setMyRoutesOnly] = useState(false);
+  const [followingOnly, setFollowingOnly] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState(null);
+
+  // Broji aktivne filtere za badge
+  const activeFilterCount = [radius, myRoutesOnly, followingOnly].filter(Boolean).length;
   const [likeError, setLikeError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -70,12 +79,29 @@ export const HikeRoutes = (props) => {
       setData([]);
       setPage(1);
       try {
-        const params = new URLSearchParams({ page: 1, per_page: 20 });
-        if (showFollowingOnly) params.set('scope', 'following');
-
-        const responseData = await authenticatedFetch(`/routes?${params.toString()}`);
-        setData(responseData.data || []);
-        setTotalPages(responseData.meta?.total_pages || 1);
+        if (radius && userLocation) {
+          // Nearby: filtriraj rezultate po scope-u client-side
+          const currentUserId = (() => {
+            const id = localStorage.getItem('userID');
+            if (id) return Number(id);
+            try { return JSON.parse(localStorage.getItem('userDetails') || 'null')?.id; } catch { return null; }
+          })();
+          const responseData = await authenticatedFetch(`/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radius=${radius}`);
+          let routes = responseData.data || [];
+          if (myRoutesOnly && currentUserId) routes = routes.filter(r => r.user_id === currentUserId || r.author?.id === currentUserId);
+          setData(routes);
+          setTotalPages(1);
+        } else if (myRoutesOnly) {
+          const responseData = await authenticatedFetch('/my_routes');
+          setData(Array.isArray(responseData) ? responseData : (responseData.data || []));
+          setTotalPages(1);
+        } else {
+          const params = new URLSearchParams({ page: 1, per_page: 20 });
+          if (followingOnly) params.set('scope', 'following');
+          const responseData = await authenticatedFetch(`/routes?${params.toString()}`);
+          setData(responseData.data || []);
+          setTotalPages(responseData.meta?.total_pages || 1);
+        }
       } catch (error) {
         setError(error.message);
       } finally {
@@ -84,14 +110,14 @@ export const HikeRoutes = (props) => {
     };
 
     fetchRoutes();
-  }, [showFollowingOnly]);
+  }, [radius, userLocation, myRoutesOnly, followingOnly]);
 
   const handleLoadMore = async () => {
     const nextPage = page + 1;
     setLoadingMore(true);
     try {
       const params = new URLSearchParams({ page: nextPage, per_page: 20 });
-      if (showFollowingOnly) params.set('scope', 'following');
+      if (followingOnly && !myRoutesOnly && !radius) params.set('scope', 'following');
 
       const responseData = await authenticatedFetch(`/routes?${params.toString()}`);
       setData((prev) => [...prev, ...(responseData.data || [])]);
@@ -151,6 +177,26 @@ export const HikeRoutes = (props) => {
       }));
       setLikeError(error.message);
     }
+  };
+
+  const requestLocation = () => {
+    if (!navigator.geolocation) { setLocationError('Geolokacija nije podržana.'); return; }
+    setLocationLoading(true);
+    setLocationError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }); setLocationLoading(false); },
+      () => { setLocationError('Pristup lokaciji odbijen.'); setLocationLoading(false); setRadius(null); }
+    );
+  };
+
+  const handleRadiusChange = (val) => {
+    setRadius(val);
+    if (val && !userLocation) requestLocation();
+  };
+
+  const resetFilters = () => {
+    setRadius(null); setMyRoutesOnly(false); setFollowingOnly(false);
+    setLocationError(null); setFiltersOpen(false);
   };
 
   if (error) {
@@ -221,15 +267,125 @@ export const HikeRoutes = (props) => {
         </div>
 
         {userIsAuthenticated && (
-          <div style={{ margin: '1.5rem 0', display: 'flex', justifyContent: 'flex-end' }}>
-            <button
-              type="button"
-              className={showFollowingOnly ? 'btn-primary-modern' : 'btn-secondary-modern'}
-              style={{ borderRadius: '999px', padding: '0.5rem 1.4rem', fontSize: '0.9rem' }}
-              onClick={() => setShowFollowingOnly((prev) => !prev)}
-            >
-              {showFollowingOnly ? 'Prikaži sve rute' : 'Samo rute koje pratiš'}
-            </button>
+          <div style={{ margin: '1.5rem 0', position: 'relative' }}>
+            {/* Filter trigger dugme */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(prev => !prev)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '0.5rem',
+                  padding: '0.5rem 1.1rem',
+                  borderRadius: '999px',
+                  border: filtersOpen || activeFilterCount > 0
+                    ? '2px solid #11998e'
+                    : '1px solid rgba(255,255,255,0.25)',
+                  background: filtersOpen || activeFilterCount > 0
+                    ? 'rgba(17,153,142,0.18)'
+                    : 'rgba(255,255,255,0.07)',
+                  color: 'white',
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  fontWeight: activeFilterCount > 0 ? 600 : 400,
+                  transition: 'all 0.2s',
+                }}
+              >
+                {/* Filter ikona */}
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="6" x2="20" y2="6"/>
+                  <line x1="8" y1="12" x2="16" y2="12"/>
+                  <line x1="11" y1="18" x2="13" y2="18"/>
+                </svg>
+                Filteri
+                {activeFilterCount > 0 && (
+                  <span style={{
+                    background: '#11998e', color: 'white',
+                    borderRadius: '50%', width: 18, height: 18,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.7rem', fontWeight: 700, marginLeft: 2,
+                  }}>
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+              {activeFilterCount > 0 && (
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', cursor: 'pointer', padding: '0.25rem 0.5rem' }}
+                >
+                  × Resetuj
+                </button>
+              )}
+            </div>
+
+            {/* Filter panel */}
+            {filtersOpen && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 8px)', left: 0,
+                background: 'rgba(19,78,74,0.97)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                borderRadius: 16,
+                padding: '1.25rem 1.5rem',
+                minWidth: 280, zIndex: 100,
+                boxShadow: '0 12px 40px rgba(0,0,0,0.4)',
+              }}>
+                {/* Radijus pretrage */}
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <p style={{ margin: '0 0 0.6rem', fontSize: '0.8rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Radijus pretrage
+                  </p>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {[null, 5, 10, 25, 50].map(val => (
+                      <button
+                        key={val ?? 'all'}
+                        type="button"
+                        onClick={() => handleRadiusChange(val)}
+                        style={{
+                          padding: '0.35rem 0.85rem',
+                          borderRadius: '999px',
+                          border: radius === val ? '2px solid #38ef7d' : '1px solid rgba(255,255,255,0.2)',
+                          background: radius === val ? 'rgba(56,239,125,0.15)' : 'rgba(255,255,255,0.06)',
+                          color: radius === val ? '#38ef7d' : 'rgba(255,255,255,0.75)',
+                          fontSize: '0.85rem', fontWeight: radius === val ? 700 : 400,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {val === null ? 'Sve' : `${val} km`}
+                      </button>
+                    ))}
+                  </div>
+                  {locationLoading && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>📍 Tražim lokaciju...</p>}
+                  {locationError && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#ffb4b4' }}>{locationError}</p>}
+                  {radius && userLocation && !locationLoading && (
+                    <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#38ef7d' }}>✓ Lokacija pronađena</p>
+                  )}
+                </div>
+
+                {/* Checkboxovi */}
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={myRoutesOnly}
+                      onChange={e => { setMyRoutesOnly(e.target.checked); if (e.target.checked) setFollowingOnly(false); }}
+                      style={{ width: 16, height: 16, accentColor: '#11998e', cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.85)' }}>Samo moje rute</span>
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={followingOnly}
+                      onChange={e => { setFollowingOnly(e.target.checked); if (e.target.checked) setMyRoutesOnly(false); }}
+                      style={{ width: 16, height: 16, accentColor: '#11998e', cursor: 'pointer' }}
+                    />
+                    <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.85)' }}>Samo rute korisnika koje pratim</span>
+                  </label>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -367,7 +523,7 @@ export const HikeRoutes = (props) => {
           )}
         </div>
 
-        {page < totalPages && (
+        {page < totalPages && !myRoutesOnly && !radius && (
           <div style={{ textAlign: 'center', marginTop: '2rem' }}>
             <button
               type="button"

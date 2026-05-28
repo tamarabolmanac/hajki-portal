@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import LocationTracker from './LocationTracker';
 import { BackgroundImage } from './BackgroundImage';
@@ -21,6 +22,9 @@ export const Profile = () => {
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState('');
+  const [myRoutes, setMyRoutes] = useState(null);   // null = nije učitano
+  const [routesLoading, setRoutesLoading] = useState(false);
+  const [routesError, setRoutesError] = useState(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -51,6 +55,20 @@ export const Profile = () => {
     if (!file) return;
     setAvatarFile(file);
     setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const loadMyRoutes = async () => {
+    if (myRoutes !== null) return; // već učitano
+    setRoutesLoading(true);
+    setRoutesError(null);
+    try {
+      const data = await authenticatedFetch('/my_routes');
+      setMyRoutes(Array.isArray(data) ? data : (data.data || []));
+    } catch (err) {
+      setRoutesError(err.message);
+    } finally {
+      setRoutesLoading(false);
+    }
   };
 
   const saveProfile = async (e) => {
@@ -240,6 +258,83 @@ export const Profile = () => {
           Moja lokacija
         </h2>
         <LocationTracker />
+      </div>
+
+      {/* Moje rute */}
+      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: myRoutes ? '1.25rem' : 0 }}>
+          <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
+            Moje rute
+          </h2>
+          {myRoutes === null && (
+            <button
+              className="btn-secondary-modern"
+              style={{ borderRadius: '999px', padding: '0.45rem 1.2rem', fontSize: '0.875rem' }}
+              onClick={loadMyRoutes}
+              disabled={routesLoading}
+            >
+              {routesLoading ? 'Učitavanje...' : 'Prikaži'}
+            </button>
+          )}
+          {myRoutes !== null && (
+            <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+              {myRoutes.length} {myRoutes.length === 1 ? 'ruta' : 'ruta'}
+            </span>
+          )}
+        </div>
+
+        {routesError && (
+          <p style={{ color: '#ffb4b4', fontSize: '0.9rem', margin: '0.75rem 0 0' }}>{routesError}</p>
+        )}
+
+        {myRoutes !== null && myRoutes.length === 0 && (
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.95rem', margin: 0 }}>
+            Još nemaš sačuvanih ruta.{' '}
+            <Link to="/new-route" style={{ color: '#38ef7d', textDecoration: 'none', fontWeight: 600 }}>
+              Dodaj prvu →
+            </Link>
+          </p>
+        )}
+
+        {myRoutes && myRoutes.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {myRoutes.map((route) => (
+              <Link
+                key={route.id}
+                to={`/route/${route.id}`}
+                style={{ textDecoration: 'none' }}
+              >
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: '0.75rem',
+                  padding: '0.75rem 1rem',
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 12,
+                  transition: 'background 0.15s',
+                }}>
+                  {route.thumbnail_url && (
+                    <img
+                      src={route.thumbnail_url}
+                      alt={route.title}
+                      style={{ width: 52, height: 52, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
+                    />
+                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {route.title}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
+                      {route.distance_km ? `${parseFloat(route.distance_km).toFixed(1)} km` : ''}
+                      {route.distance_km && route.duration_minutes ? ' · ' : ''}
+                      {route.duration_minutes ? formatDuration(route.duration_minutes) : ''}
+                    </div>
+                  </div>
+                  <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1rem' }}>›</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
     </div>
