@@ -12,14 +12,19 @@ const formatDuration = (minutes) => {
 };
 
 export const Profile = () => {
-  const [userDetails, setUserDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Učitaj iz keša odmah da ne čekamo API na mobilnom
+  const cachedUser = (() => {
+    try { return JSON.parse(localStorage.getItem('userDetails') || 'null'); } catch { return null; }
+  })();
+
+  const [userDetails, setUserDetails] = useState(cachedUser);
+  const [loading, setLoading] = useState(!cachedUser); // ako ima keš, ne pokazuj spinner
   const [error, setError] = useState(null);
-  const [name, setName] = useState('');
-  const [city, setCity] = useState('');
-  const [country, setCountry] = useState('');
+  const [name, setName] = useState(cachedUser?.name || '');
+  const [city, setCity] = useState(cachedUser?.city || '');
+  const [country, setCountry] = useState(cachedUser?.country || '');
   const [avatarFile, setAvatarFile] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState(cachedUser?.avatar_url || null);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState('');
   const [myRoutes, setMyRoutes] = useState(null);   // null = nije učitano
@@ -27,6 +32,9 @@ export const Profile = () => {
   const [routesError, setRoutesError] = useState(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
     const fetchUserProfile = async () => {
       try {
         const token = localStorage.getItem('authToken');
@@ -34,7 +42,7 @@ export const Profile = () => {
           window.location.href = '/login';
           return;
         }
-        const data = await authenticatedFetch('/user_data');
+        const data = await authenticatedFetch('/user_data', { signal: controller.signal });
         setUserDetails(data);
         localStorage.setItem('userDetails', JSON.stringify(data));
         setName(data?.name || '');
@@ -42,12 +50,19 @@ export const Profile = () => {
         setCountry(data?.country || '');
         setAvatarPreview(data?.avatar_url || null);
       } catch (err) {
-        setError(`Greška: ${err.message}`);
+        if (err.name === 'AbortError') {
+          setError('Veza je istekla. Proveri internet konekciju i pokušaj ponovo.');
+        } else {
+          setError(`Greška: ${err.message}`);
+        }
       } finally {
+        clearTimeout(timeoutId);
         setLoading(false);
       }
     };
     fetchUserProfile();
+
+    return () => { controller.abort(); clearTimeout(timeoutId); };
   }, []);
 
   const onAvatarChange = (e) => {

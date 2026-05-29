@@ -19,16 +19,19 @@ const MAP_ZOOM = 7;
 const TYPE_CONFIG = {
   national_park: {
     label: 'Nacionalni park',
+    legendLabel: 'nacionalnih parkova',
     color: '#22c55e',
     scale: 9,
   },
   nature_park: {
     label: 'Park prirode',
+    legendLabel: 'parkova prirode',
     color: '#3b82f6',
     scale: 7,
   },
   mountain: {
     label: 'Planina',
+    legendLabel: 'planina',
     color: '#a855f7',
     scale: 6,
   },
@@ -131,31 +134,54 @@ const NatureMap = () => {
 
   // Sadržaj panela (isti za sidebar i bottom sheet)
   const panelContent = selected && (
-    <div style={{ padding: isMobile ? '16px 16px 24px' : '20px 18px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#134e4a', lineHeight: 1.3, flex: 1 }}>
-          {selected.name}
-        </h2>
-        <button
-          onClick={handleDeselect}
-          style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#a0aec0', cursor: 'pointer', padding: '0 0 0 8px', lineHeight: 1 }}
-        >×</button>
-      </div>
-      {typeLabel && (
-        <span style={typeBadgeStyle(TYPE_CONFIG[selected.type].color)}>
-          {typeLabel.label}
-        </span>
+    <div>
+      {/* Slika */}
+      {selected.image && (
+        <div style={{ width: '100%', height: isMobile ? 180 : 200, overflow: 'hidden', borderRadius: isMobile ? '20px 20px 0 0' : '0' }}>
+          <img
+            src={selected.image}
+            alt={selected.name}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
+        </div>
       )}
-      <div style={{
-        background: 'rgba(17,153,142,0.04)',
-        border: '1px dashed rgba(17,153,142,0.2)',
-        borderRadius: 10,
-        padding: 14,
-        color: '#718096',
-        fontSize: '0.875rem',
-        textAlign: 'center',
-      }}>
-        Detalji uskoro...
+
+      <div style={{ padding: isMobile ? '14px 16px 24px' : '18px 18px 20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#134e4a', lineHeight: 1.3, flex: 1 }}>
+            {selected.name}
+          </h2>
+          <button
+            onClick={handleDeselect}
+            style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#a0aec0', cursor: 'pointer', padding: '0 0 0 8px', lineHeight: 1 }}
+          >×</button>
+        </div>
+
+        {typeLabel && (
+          <span style={typeBadgeStyle(TYPE_CONFIG[selected.type].color)}>
+            {typeLabel.label}
+          </span>
+        )}
+
+        {selected.description ? (
+          <div style={{ fontSize: '0.85rem', color: '#4a5568', lineHeight: 1.7 }}>
+            {selected.description.split('\n\n').map((para, i) => (
+              <p key={i} style={{ margin: i === 0 ? '0 0 10px' : '10px 0 0' }}>{para}</p>
+            ))}
+          </div>
+        ) : (
+          <div style={{
+            background: 'rgba(17,153,142,0.04)',
+            border: '1px dashed rgba(17,153,142,0.2)',
+            borderRadius: 10,
+            padding: 14,
+            color: '#718096',
+            fontSize: '0.875rem',
+            textAlign: 'center',
+          }}>
+            Detalji uskoro...
+          </div>
+        )}
       </div>
     </div>
   );
@@ -176,7 +202,7 @@ const NatureMap = () => {
             {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
               <span key={key} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '0.78rem', color: '#4a5568' }}>
                 <span style={dotStyle(cfg.color)} />
-                {counts[key]} {cfg.label.toLowerCase()}a
+                {counts[key]} {cfg.legendLabel}
               </span>
             ))}
           </div>

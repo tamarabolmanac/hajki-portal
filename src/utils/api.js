@@ -19,8 +19,9 @@ export const authenticatedFetch = async (url, options = {}) => {
     console.log('Added Authorization header'); // Debug log
   }
 
-  // The browser will automatically set the Content-Type for FormData.
-  if (!(options.body instanceof FormData)) {
+  // Set Content-Type samo kad ima body (POST/PUT/PATCH) — ne za GET zahteve.
+  // GET sa Content-Type: application/json nepotrebno trigeruje CORS preflight.
+  if (options.body && !(options.body instanceof FormData)) {
     headers['Content-Type'] = 'application/json';
   }
 
