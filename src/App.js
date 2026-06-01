@@ -37,6 +37,7 @@ import QuizLobby from "./components/QuizLobby";
 import RouteRecommendation from "./components/RouteRecommendation";
 import OsmRoutesMap from "./components/OsmRoutesMap";
 import NatureMap from "./components/NatureMap";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 import QuizRoom from "./components/QuizRoom";
 import { authenticatedFetch } from "./utils/api";
 
@@ -287,6 +288,7 @@ const AppContent = () => {
                 <Guide />
               </div>
             } />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/contact" element={
               <div className="content-container">
                 <Contact />

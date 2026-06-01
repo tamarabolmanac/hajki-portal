@@ -352,6 +352,13 @@ export const Profile = () => {
         )}
       </div>
 
+      {/* Footer */}
+      <div style={{ textAlign: 'center', padding: '1rem 0 2rem', fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)' }}>
+        <Link to="/privacy-policy" style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'underline' }}>
+          Politika privatnosti
+        </Link>
+      </div>
+
     </div>
     </div>
   );

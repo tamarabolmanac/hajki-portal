@@ -236,6 +236,12 @@ export const Register = () => {
           <button type="submit" className="submit-button">
             Registruj se
           </button>
+          <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)', margin: '1rem 0 0', textAlign: 'center', lineHeight: 1.5 }}>
+            Registracijom prihvataš našu{' '}
+            <a href="/privacy-policy" style={{ color: 'rgba(255,255,255,0.7)', textDecoration: 'underline' }}>
+              Politiku privatnosti
+            </a>
+          </p>
         </form>
         <div className="link">
           Već imaš nalog? <a href="/login">Uloguj se</a>

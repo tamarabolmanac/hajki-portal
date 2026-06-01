@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Capacitor } from "@capacitor/core";
+import { App } from "@capacitor/app";
+import { Browser } from "@capacitor/browser";
 import { GoogleLogin } from "@react-oauth/google";
 import { config } from "../config";
 import { explainUnreachableApiError } from "../utils/fetchErrors";
@@ -33,32 +35,9 @@ function getOAuthRedirectUri() {
   if (typeof window === "undefined") return "";
   const plat = Capacitor.getPlatform();
 
-  if (plat === "android") {
-    if (config.appWebOrigin) {
-      return `${config.appWebOrigin}/login`;
-    }
-    return "https://localhost/login";
-  }
-
-  if (plat === "ios") {
-    if (config.appWebOrigin) {
-      return `${config.appWebOrigin}/login`;
-    }
-    const rawOrigin = (window.location.origin || "").trim();
-    const o = rawOrigin.toLowerCase();
-    const unusable =
-      isBrokenOrigin(rawOrigin) ||
-      !o ||
-      o === "null" ||
-      o.startsWith("file:") ||
-      o.startsWith("capacitor:") ||
-      o.startsWith("ionic:") ||
-      o.startsWith("android-app:");
-    const isLoopback = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(rawOrigin);
-    if (unusable || isLoopback) {
-      return "https://localhost/login";
-    }
-    return `${rawOrigin.replace(/\/$/, "")}/login`;
+  // Na Androidu i iOS koristimo App Links — Android presreće https://hajki.com/login i vraća u app
+  if (plat === "android" || plat === "ios") {
+    return "https://hajki.com/login";
   }
 
   const rawOrigin = (window.location.origin || "").trim();
@@ -188,6 +167,51 @@ function GoogleSignInButton({ onLoggedIn }) {
     [onLoggedIn]
   );
 
+  // Native App Link listener — hvata https://hajki.com/login#id_token=... redirect
+  useEffect(() => {
+    const plat = Capacitor.getPlatform();
+    if (plat !== "android" && plat !== "ios") return;
+
+    let listener;
+    App.addListener("appUrlOpen", async ({ url }) => {
+      if (handledRedirect.current) return;
+      if (!url || !url.includes("/login")) return;
+
+      // Zatvori Chrome Custom Tab
+      try { await Browser.close(); } catch {}
+
+      // Parsiraj hash parametre iz URL-a
+      const hashIndex = url.indexOf("#");
+      if (hashIndex === -1) return;
+      const params = new URLSearchParams(url.slice(hashIndex + 1));
+      const idToken = params.get("id_token");
+      const error = params.get("error");
+
+      if (error) {
+        handledRedirect.current = true;
+        alert(decodeURIComponent(params.get("error_description") || error).replace(/\+/g, " "));
+        return;
+      }
+      if (!idToken) return;
+
+      const expectedState = sessionStorage.getItem(STORAGE_STATE);
+      const returnedState = params.get("state");
+      if (!expectedState || expectedState !== returnedState) {
+        handledRedirect.current = true;
+        alert("Greška bezbednosti pri Google prijavi. Pokušajte ponovo.");
+        return;
+      }
+
+      handledRedirect.current = true;
+      sessionStorage.removeItem(STORAGE_STATE);
+      sessionStorage.removeItem(STORAGE_NONCE);
+      void exchangeIdToken(idToken);
+    }).then(l => { listener = l; });
+
+    return () => { listener?.remove(); };
+  }, [exchangeIdToken]);
+
+  // Web redirect handler (hash u URL-u)
   useEffect(() => {
     if (handledRedirect.current) return;
     const params = parseHashParams();
@@ -243,16 +267,13 @@ function GoogleSignInButton({ onLoggedIn }) {
     return () => window.removeEventListener("resize", update);
   }, []);
 
-  const startRedirectLogin = () => {
+  const startRedirectLogin = async () => {
     const clientId = getClientId();
     const state = randomId();
     const nonce = randomId();
     sessionStorage.setItem(STORAGE_STATE, state);
     sessionStorage.setItem(STORAGE_NONCE, nonce);
     const redirectUri = getOAuthRedirectUri();
-    if (Capacitor.getPlatform() !== "web") {
-      console.info("[Hajki] Google OAuth redirect_uri (mora biti u Google Cloud):", redirectUri);
-    }
     const q = new URLSearchParams({
       client_id: clientId,
       redirect_uri: redirectUri,
@@ -262,7 +283,14 @@ function GoogleSignInButton({ onLoggedIn }) {
       nonce,
       prompt: "select_account",
     });
-    window.location.href = `${GOOGLE_AUTH}?${q.toString()}`;
+    const url = `${GOOGLE_AUTH}?${q.toString()}`;
+    const plat = Capacitor.getPlatform();
+    if (plat === "android" || plat === "ios") {
+      // Chrome Custom Tabs — Google prihvata, za razliku od WebView-a
+      await Browser.open({ url, windowName: "_self" });
+    } else {
+      window.location.href = url;
+    }
   };
 
   const handleIframeSuccess = async (credentialResponse) => {

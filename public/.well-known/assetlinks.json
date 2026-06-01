@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.hajki",
+    "sha256_cert_fingerprints": [
+      "2B:26:52:9E:12:48:9F:81:57:1C:3E:D1:18:CB:05:17:43:3C:02:24:4D:E7:B5:84:06:1A:71:59:48:2A:A3:0C"
+    ]
+  }
+}]

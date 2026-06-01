@@ -33,7 +33,7 @@ const server: NonNullable<CapacitorConfig['server']> = {
 };
 
 const config: CapacitorConfig = {
-  appId: 'com.hajki.portal',
+  appId: 'com.hajki',
   appName: 'hajki-portal',
   webDir: 'build',
   server,

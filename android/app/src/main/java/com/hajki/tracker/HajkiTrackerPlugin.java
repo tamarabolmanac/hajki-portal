@@ -1,4 +1,4 @@
-package com.hajki.portal.tracker;
+package com.hajki.tracker;
 
 import android.Manifest;
 import android.app.Activity;

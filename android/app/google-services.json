@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "672882572023",
+    "project_id": "hajki-9db0b",
+    "storage_bucket": "hajki-9db0b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672882572023:android:82fcced5a7b57eaf63b1f2",
+        "android_client_info": {
+          "package_name": "com.hajki"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9PvJL_4zOeWvtlC_Sawcr4kLuT4VyepQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

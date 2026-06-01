@@ -1,4 +1,4 @@
-package com.hajki.portal;
+package com.hajki;
 
 import android.os.Bundle;
 import android.app.NotificationChannel;
@@ -6,7 +6,7 @@ import android.app.NotificationManager;
 import android.os.Build;
 
 import com.getcapacitor.BridgeActivity;
-import com.hajki.portal.tracker.HajkiTrackerPlugin;
+import com.hajki.tracker.HajkiTrackerPlugin;
 
 public class MainActivity extends BridgeActivity {
 
