@@ -287,7 +287,7 @@ function GoogleSignInButton({ onLoggedIn }) {
     const plat = Capacitor.getPlatform();
     if (plat === "android" || plat === "ios") {
       // Chrome Custom Tabs — Google prihvata, za razliku od WebView-a
-      await Browser.open({ url, windowName: "_self" });
+      await Browser.open({ url });
     } else {
       window.location.href = url;
     }
