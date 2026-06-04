@@ -260,7 +260,7 @@ function GoogleSignInButton({ onLoggedIn }) {
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      setButtonWidth(Math.min(300, Math.max(200, w - 48)));
+      setButtonWidth(w >= 768 ? 360 : Math.min(300, Math.max(200, w - 48)));
     };
     update();
     window.addEventListener("resize", update);
@@ -312,7 +312,7 @@ function GoogleSignInButton({ onLoggedIn }) {
     <div
       style={{
         width: "100%",
-        maxWidth: "300px",
+        maxWidth: "360px",
         margin: "0 auto",
         display: "flex",
         justifyContent: "center",

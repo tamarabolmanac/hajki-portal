@@ -197,7 +197,7 @@ export const RouteDetails = () => {
                 >
                   🗺️ {route.status === 'tracking' ? 'Nastavi snimanje rute' : 'Započni snimanje rute'}
                 </button>
-                <button 
+                <button
                   onClick={() => navigate(`/routes/${id}/edit`)}
                   style={{
                     background: 'linear-gradient(135deg, #2E7D32, #4CAF50)',
@@ -211,6 +211,29 @@ export const RouteDetails = () => {
                   }}
                 >
                   ✏️ Izmeni rutu
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!window.confirm('Da li si sigurna da želiš da obrišeš ovu rutu?')) return;
+                    try {
+                      await authenticatedFetch(`/routes/${id}`, { method: 'DELETE' });
+                      navigate('/routes');
+                    } catch (err) {
+                      alert(`Greška pri brisanju: ${err.message}`);
+                    }
+                  }}
+                  style={{
+                    background: 'linear-gradient(135deg, #c62828, #e53935)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  🗑️ Obriši rutu
                 </button>
               </>
             ) : (

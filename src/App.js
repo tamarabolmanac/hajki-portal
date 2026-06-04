@@ -38,6 +38,7 @@ import RouteRecommendation from "./components/RouteRecommendation";
 import OsmRoutesMap from "./components/OsmRoutesMap";
 import NatureMap from "./components/NatureMap";
 import PrivacyPolicy from "./components/PrivacyPolicy";
+import DeleteAccount from "./components/DeleteAccount";
 import QuizRoom from "./components/QuizRoom";
 import { authenticatedFetch } from "./utils/api";
 
@@ -289,6 +290,7 @@ const AppContent = () => {
               </div>
             } />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/delete-account" element={<DeleteAccount />} />
             <Route path="/contact" element={
               <div className="content-container">
                 <Contact />

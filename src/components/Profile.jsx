@@ -30,10 +30,16 @@ export const Profile = () => {
   const [myRoutes, setMyRoutes] = useState(null);   // null = nije učitano
   const [routesLoading, setRoutesLoading] = useState(false);
   const [routesError, setRoutesError] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+    let timedOut = false;
+    const timeoutId = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, 10000); // 10s timeout
 
     const fetchUserProfile = async () => {
       try {
@@ -51,7 +57,10 @@ export const Profile = () => {
         setAvatarPreview(data?.avatar_url || null);
       } catch (err) {
         if (err.name === 'AbortError') {
-          setError('Veza je istekla. Proveri internet konekciju i pokušaj ponovo.');
+          // Ako je timedOut=false, abort je došao od cleanup-a (unmount) — ignorišemo
+          if (timedOut) {
+            setError('Veza je istekla. Proveri internet konekciju i pokušaj ponovo.');
+          }
         } else {
           setError(`Greška: ${err.message}`);
         }
@@ -70,6 +79,36 @@ export const Profile = () => {
     if (!file) return;
     setAvatarFile(file);
     setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const deleteRoute = async (e, routeId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm('Da li si sigurna da želiš da obrišeš ovu rutu?')) return;
+    setDeletingId(routeId);
+    try {
+      await authenticatedFetch(`/routes/${routeId}`, { method: 'DELETE' });
+      setMyRoutes(prev => prev.filter(r => r.id !== routeId));
+    } catch (err) {
+      alert(`Greška pri brisanju: ${err.message}`);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const deleteAccount = async () => {
+    if (!window.confirm('Poslaćemo ti email sa linkom za potvrdu brisanja naloga. Nastavi?')) return;
+    const userId = userDetails?.id || localStorage.getItem('userID');
+    if (!userId) return;
+    setDeletingAccount(true);
+    try {
+      await authenticatedFetch(`/users/${userId}/request_deletion`, { method: 'POST' });
+      alert('Email za potvrdu brisanja naloga je poslat. Proveri inbox i klikni na link da potvrdiš.');
+    } catch (err) {
+      alert(`Greška: ${err.message}`);
+    } finally {
+      setDeletingAccount(false);
+    }
   };
 
   const loadMyRoutes = async () => {
@@ -344,12 +383,51 @@ export const Profile = () => {
                       {route.duration_minutes ? formatDuration(route.duration_minutes) : ''}
                     </div>
                   </div>
+                  <button
+                    onClick={(e) => deleteRoute(e, route.id)}
+                    disabled={deletingId === route.id}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'rgba(255,100,100,0.6)', fontSize: '1.1rem',
+                      padding: '4px 6px', flexShrink: 0, lineHeight: 1,
+                    }}
+                    title="Obriši rutu"
+                  >
+                    {deletingId === route.id ? '…' : '🗑'}
+                  </button>
                   <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1rem' }}>›</span>
                 </div>
               </Link>
             ))}
           </div>
         )}
+      </div>
+
+      {/* Danger zone */}
+      <div className="glass-card" style={{ marginTop: '1.5rem', borderColor: 'rgba(239,68,68,0.3)' }}>
+        <h2 style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: 700, color: 'rgba(255,100,100,0.85)' }}>
+          Brisanje naloga
+        </h2>
+        <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', color: 'rgba(255,255,255,0.5)' }}>
+          Brisanje naloga je trajno. Svi tvoji podaci, rute i slike biće nepovratno obrisani.
+        </p>
+        <button
+          onClick={deleteAccount}
+          disabled={deletingAccount}
+          style={{
+            background: 'linear-gradient(135deg, #c62828, #e53935)',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            cursor: deletingAccount ? 'not-allowed' : 'pointer',
+            fontSize: '0.9rem',
+            fontWeight: 600,
+            opacity: deletingAccount ? 0.7 : 1,
+          }}
+        >
+          {deletingAccount ? 'Brisanje...' : '🗑️ Obriši nalog'}
+        </button>
       </div>
 
       {/* Footer */}
