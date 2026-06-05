@@ -175,7 +175,10 @@ function GoogleSignInButton({ onLoggedIn }) {
     let listener;
     App.addListener("appUrlOpen", async ({ url }) => {
       if (handledRedirect.current) return;
-      if (!url || !url.includes("/login")) return;
+      if (!url) return;
+      // Prihvata i https://hajki.com/login (App Links) i hajki://login (custom scheme fallback)
+      const isLoginUrl = url.includes("/login") || url.startsWith("hajki://login");
+      if (!isLoginUrl) return;
 
       // Zatvori Chrome Custom Tab
       try { await Browser.close(); } catch {}
@@ -285,10 +288,14 @@ function GoogleSignInButton({ onLoggedIn }) {
     });
     const url = `${GOOGLE_AUTH}?${q.toString()}`;
     const plat = Capacitor.getPlatform();
-    if (plat === "android" || plat === "ios") {
-      // Chrome Custom Tabs — Google prihvata, za razliku od WebView-a
+    if (plat === "ios") {
+      // iOS WebView dijeli kolačiće preko SFSafariViewController-a
       await Browser.open({ url });
     } else {
+      // Android (Capacitor WebView već radi na origin-u https://hajki.com, a Google domeni
+      // su u allowNavigation) i web: redirect ostaje UNUTAR WebView-a. Tako sessionStorage
+      // (OAuth state/nonce) preživljava redirect — ne gubi se kao kod eksternog browsera,
+      // pa nema "Greška bezbednosti", Samsung Internet otmica ni zavisnosti od App Links.
       window.location.href = url;
     }
   };
