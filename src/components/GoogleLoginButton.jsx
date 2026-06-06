@@ -160,7 +160,7 @@ function GoogleSignInButton({ onLoggedIn }) {
     try {
       const result = await SocialLogin.login({
         provider: "google",
-        options: { scopes: ["email", "profile"] },
+        options: {},
       });
       const idToken = result?.result?.idToken;
       if (!idToken) throw new Error("Nije dobijen ID token od Google-a.");
