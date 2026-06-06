@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Capacitor } from "@capacitor/core";
-import { App } from "@capacitor/app";
-import { Browser } from "@capacitor/browser";
 import { GoogleLogin } from "@react-oauth/google";
+import { SocialLogin } from "@capgo/capacitor-social-login";
 import { config } from "../config";
 import { explainUnreachableApiError } from "../utils/fetchErrors";
 
@@ -17,29 +16,17 @@ function getClientId() {
   );
 }
 
-/** Pojedini Android WebView-i vrate origin kao https://null → Google redirect na nedostupan host. */
 function isBrokenOrigin(origin) {
   const o = (origin || "").trim().toLowerCase();
   if (!o || o === "null") return true;
   return /^https?:\/\/null(?::|\/|$)/i.test(origin.trim());
 }
 
-/**
- * Mora biti BYTE-PO-BYTE isti kao jedan od "Authorized redirect URIs" za OAuth 2.0 Client tipa **Web application**.
- * U Console dodaj i "Authorized JavaScript origins" (origin bez /login).
- */
 function getOAuthRedirectUri() {
   if (config.googleOAuthRedirectUri) {
     return config.googleOAuthRedirectUri.replace(/\/$/, "");
   }
   if (typeof window === "undefined") return "";
-  const plat = Capacitor.getPlatform();
-
-  // Na Androidu i iOS koristimo App Links — Android presreće https://hajki.com/login i vraća u app
-  if (plat === "android" || plat === "ios") {
-    return "https://hajki.com/login";
-  }
-
   const rawOrigin = (window.location.origin || "").trim();
   if (isBrokenOrigin(rawOrigin)) {
     try {
@@ -48,9 +35,7 @@ function getOAuthRedirectUri() {
         const p = port ? `:${port}` : "";
         return `${protocol}//${hostname}${p}/login`.replace(/([^:]\/)\/+/g, "$1");
       }
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
     return "https://localhost/login";
   }
   return `${rawOrigin.replace(/\/$/, "")}/login`;
@@ -71,28 +56,43 @@ function decodeJwtPayload(token) {
   try {
     const b64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
     return JSON.parse(atob(b64));
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 function GoogleSignInButton({ onLoggedIn }) {
   const [loading, setLoading] = useState(false);
   const [buttonWidth, setButtonWidth] = useState(250);
-  /** GIS iframe is often blank in Android WebView; redirect flow returns id_token in hash (same backend). */
+  const [isNative, setIsNative] = useState(false);
+  // Web mobile still uses redirect flow (GIS iframe renders blank in mobile browsers)
   const [useRedirectFlow, setUseRedirectFlow] = useState(false);
   const handledRedirect = useRef(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    const sync = () => {
-      const plat = Capacitor.getPlatform();
-      const native = plat === "android" || plat === "ios";
-      setUseRedirectFlow(native || mq.matches);
+    const plat = Capacitor.getPlatform();
+    const native = plat === "android" || plat === "ios";
+    setIsNative(native);
+
+    if (native) {
+      // Initialize the native Credential Manager-based Google Sign-In once
+      SocialLogin.initialize({ google: { webClientId: getClientId() } }).catch(console.error);
+    } else {
+      // Web: show redirect button on mobile viewports (GIS iframe is blank on mobile browsers)
+      const mq = window.matchMedia("(max-width: 768px)");
+      const sync = () => setUseRedirectFlow(mq.matches);
+      sync();
+      mq.addEventListener("change", sync);
+      return () => mq.removeEventListener("change", sync);
+    }
+  }, []);
+
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      setButtonWidth(w >= 768 ? 360 : Math.min(300, Math.max(200, w - 48)));
     };
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
   }, []);
 
   const clearOAuthHash = useCallback(() => {
@@ -110,112 +110,76 @@ function GoogleSignInButton({ onLoggedIn }) {
     }
   }, []);
 
-  const exchangeIdToken = useCallback(
-    async (idToken) => {
-      if (!idToken) return;
-      setLoading(true);
-      try {
-        const res = await fetch(`${config.apiUrl}/auth/google`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ id_token: idToken }),
-        });
+  const exchangeIdToken = useCallback(async (idToken) => {
+    if (!idToken) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`${config.apiUrl}/auth/google`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ id_token: idToken }),
+      });
 
-        let payload = null;
-        const ct = res.headers.get("content-type") || "";
-        if (ct.includes("application/json")) {
-          payload = await res.json();
-        } else {
-          payload = { message: await res.text() };
-        }
-
-        if (!res.ok) {
-          throw new Error(payload?.message || "Google login failed");
-        }
-
-        if (payload.token) {
-          localStorage.setItem("authToken", payload.token);
-        }
-        if (payload.user_id) {
-          localStorage.setItem("userID", payload.user_id);
-        }
-
-        onLoggedIn?.(payload?.user || {});
-
-        if (!onLoggedIn) {
-          if (window.navigate) {
-            window.navigate("/");
-          } else {
-            window.location.assign("/");
-          }
-        }
-      } catch (error) {
-        console.error("Google login error:", error);
-        alert(
-          explainUnreachableApiError(error, config.apiUrl) ||
-            error?.message ||
-            "Failed to sign in with Google"
-        );
-      } finally {
-        setLoading(false);
+      let payload = null;
+      const ct = res.headers.get("content-type") || "";
+      if (ct.includes("application/json")) {
+        payload = await res.json();
+      } else {
+        payload = { message: await res.text() };
       }
-    },
-    [onLoggedIn]
-  );
 
-  // Native App Link listener — hvata https://hajki.com/login#id_token=... redirect
+      if (!res.ok) throw new Error(payload?.message || "Google login failed");
+
+      if (payload.token) localStorage.setItem("authToken", payload.token);
+      if (payload.user_id) localStorage.setItem("userID", payload.user_id);
+
+      onLoggedIn?.(payload?.user || {});
+
+      if (!onLoggedIn) {
+        if (window.navigate) window.navigate("/");
+        else window.location.assign("/");
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      alert(
+        explainUnreachableApiError(error, config.apiUrl) ||
+        error?.message ||
+        "Failed to sign in with Google"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [onLoggedIn]);
+
+  // ─── Native (Android / iOS) ───────────────────────────────────────────────
+  // Uses @capgo/capacitor-social-login which invokes the native Credential Manager
+  // API — no WebView OAuth flow, no disallowed_useragent error.
+  const startNativeLogin = async () => {
+    setLoading(true);
+    try {
+      const result = await SocialLogin.login({
+        provider: "google",
+        options: { scopes: ["email", "profile"] },
+      });
+      const idToken = result?.result?.idToken;
+      if (!idToken) throw new Error("Nije dobijen ID token od Google-a.");
+      await exchangeIdToken(idToken);
+    } catch (error) {
+      // User cancelled the picker — not an error
+      const msg = error?.message || "";
+      if (msg.toLowerCase().includes("cancel") || msg.toLowerCase().includes("dismiss")) return;
+      console.error("Native Google login error:", error);
+      alert(error?.message || "Greška pri Google prijavi.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ─── Web redirect flow (mobile browsers) ─────────────────────────────────
+  // Web hash handler: picks up id_token from Google redirect
   useEffect(() => {
-    const plat = Capacitor.getPlatform();
-    if (plat !== "android" && plat !== "ios") return;
-
-    let listener;
-    App.addListener("appUrlOpen", async ({ url }) => {
-      if (handledRedirect.current) return;
-      if (!url) return;
-      // Prihvata i https://hajki.com/login (App Links) i hajki://login (custom scheme fallback)
-      const isLoginUrl = url.includes("/login") || url.startsWith("hajki://login");
-      if (!isLoginUrl) return;
-
-      // Zatvori Chrome Custom Tab
-      try { await Browser.close(); } catch {}
-
-      // Parsiraj hash parametre iz URL-a
-      const hashIndex = url.indexOf("#");
-      if (hashIndex === -1) return;
-      const params = new URLSearchParams(url.slice(hashIndex + 1));
-      const idToken = params.get("id_token");
-      const error = params.get("error");
-
-      if (error) {
-        handledRedirect.current = true;
-        alert(decodeURIComponent(params.get("error_description") || error).replace(/\+/g, " "));
-        return;
-      }
-      if (!idToken) return;
-
-      const expectedState = sessionStorage.getItem(STORAGE_STATE);
-      const returnedState = params.get("state");
-      if (!expectedState || expectedState !== returnedState) {
-        handledRedirect.current = true;
-        alert("Greška bezbednosti pri Google prijavi. Pokušajte ponovo.");
-        return;
-      }
-
-      handledRedirect.current = true;
-      sessionStorage.removeItem(STORAGE_STATE);
-      sessionStorage.removeItem(STORAGE_NONCE);
-      void exchangeIdToken(idToken);
-    }).then(l => { listener = l; });
-
-    return () => { listener?.remove(); };
-  }, [exchangeIdToken]);
-
-  // Web redirect handler (hash u URL-u)
-  useEffect(() => {
+    if (isNative) return; // handled natively
     if (handledRedirect.current) return;
     const params = parseHashParams();
     if (!params) return;
@@ -230,7 +194,6 @@ function GoogleSignInButton({ onLoggedIn }) {
       alert(decodeURIComponent(errorDesc || error || "").replace(/\+/g, " ") || "Google prijava otkazana.");
       return;
     }
-
     if (!idToken) return;
 
     const expectedState = sessionStorage.getItem(STORAGE_STATE);
@@ -258,19 +221,9 @@ function GoogleSignInButton({ onLoggedIn }) {
     sessionStorage.removeItem(STORAGE_NONCE);
     clearOAuthHash();
     void exchangeIdToken(idToken);
-  }, [clearOAuthHash, exchangeIdToken]);
+  }, [isNative, clearOAuthHash, exchangeIdToken]);
 
-  useEffect(() => {
-    const update = () => {
-      const w = window.innerWidth;
-      setButtonWidth(w >= 768 ? 360 : Math.min(300, Math.max(200, w - 48)));
-    };
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  const startRedirectLogin = async () => {
+  const startRedirectLogin = () => {
     const clientId = getClientId();
     const state = randomId();
     const nonce = randomId();
@@ -286,34 +239,37 @@ function GoogleSignInButton({ onLoggedIn }) {
       nonce,
       prompt: "select_account",
     });
-    const url = `${GOOGLE_AUTH}?${q.toString()}`;
-    const plat = Capacitor.getPlatform();
-    if (plat === "ios") {
-      // iOS WebView dijeli kolačiće preko SFSafariViewController-a
-      await Browser.open({ url });
-    } else {
-      // Android (Capacitor WebView već radi na origin-u https://hajki.com, a Google domeni
-      // su u allowNavigation) i web: redirect ostaje UNUTAR WebView-a. Tako sessionStorage
-      // (OAuth state/nonce) preživljava redirect — ne gubi se kao kod eksternog browsera,
-      // pa nema "Greška bezbednosti", Samsung Internet otmica ni zavisnosti od App Links.
-      window.location.href = url;
-    }
+    window.location.href = `${GOOGLE_AUTH}?${q.toString()}`;
   };
 
   const handleIframeSuccess = async (credentialResponse) => {
     const idToken = credentialResponse?.credential;
-    if (!idToken) {
-      console.error("Missing ID token from Google:", credentialResponse);
-      alert("Google login failed: missing ID token.");
-      return;
-    }
+    if (!idToken) { alert("Google login failed: missing ID token."); return; }
     await exchangeIdToken(idToken);
   };
 
-  const handleIframeError = () => {
-    console.error("Google login failed");
-    alert("Failed to sign in with Google");
-  };
+  const handleIframeError = () => alert("Failed to sign in with Google");
+
+  // ─── Shared button style (native + web mobile redirect) ──────────────────
+  const sharedButton = (onClick) => (
+    <button
+      type="button"
+      className="google-login-fallback-btn"
+      onClick={onClick}
+      disabled={loading}
+      aria-label="Prijavi se putem Google-a"
+    >
+      <span className="google-login-fallback-btn__icon" aria-hidden>
+        <svg viewBox="0 0 48 48" width="20" height="20">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.43 37.96 46.98 31.79 46.98 24.55z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        </svg>
+      </span>
+      <span className="google-login-fallback-btn__text">Prijavi se putem Google-a</span>
+    </button>
+  );
 
   return (
     <div
@@ -326,88 +282,39 @@ function GoogleSignInButton({ onLoggedIn }) {
         position: "relative",
       }}
     >
-      {useRedirectFlow ? (
-        <button
-          type="button"
-          className="google-login-fallback-btn"
-          onClick={startRedirectLogin}
-          disabled={loading}
-          aria-label="Prijavi se putem Google-a"
-        >
-          <span className="google-login-fallback-btn__icon" aria-hidden>
-            <svg viewBox="0 0 48 48" width="20" height="20">
-              <path
-                fill="#EA4335"
-                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-              />
-              <path
-                fill="#4285F4"
-                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C44.43 37.96 46.98 31.79 46.98 24.55z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
-              />
-              <path
-                fill="#34A853"
-                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-              />
-            </svg>
-          </span>
-          <span className="google-login-fallback-btn__text">Prijavi se putem Google-a</span>
-        </button>
-      ) : (
-        <GoogleLogin
-          onSuccess={handleIframeSuccess}
-          onError={handleIframeError}
-          useOneTap={false}
-          theme="outline"
-          size="large"
-          width={String(buttonWidth)}
-          text="signin_with"
-          containerProps={{
-            style: {
-              width: "100%",
-              maxWidth: `${buttonWidth}px`,
-              margin: "0 auto",
-              overflow: "visible",
-            },
-          }}
-        />
-      )}
+      {isNative
+        ? sharedButton(startNativeLogin)
+        : useRedirectFlow
+          ? sharedButton(startRedirectLogin)
+          : (
+            <GoogleLogin
+              onSuccess={handleIframeSuccess}
+              onError={handleIframeError}
+              useOneTap={false}
+              theme="outline"
+              size="large"
+              width={String(buttonWidth)}
+              text="signin_with"
+              containerProps={{
+                style: { width: "100%", maxWidth: `${buttonWidth}px`, margin: "0 auto", overflow: "visible" },
+              }}
+            />
+          )
+      }
 
       {loading && (
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "rgba(15, 23, 42, 0.8)",
-            borderRadius: 999,
-            pointerEvents: "none",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "4px 12px",
-              borderRadius: 999,
-              background: "rgba(15, 23, 42, 0.9)",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.4)",
-            }}
-          >
+        <div style={{
+          position: "absolute", inset: 0, display: "flex",
+          alignItems: "center", justifyContent: "center",
+          background: "rgba(15, 23, 42, 0.8)", borderRadius: 999, pointerEvents: "none",
+        }}>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "4px 12px", borderRadius: 999,
+            background: "rgba(15, 23, 42, 0.9)", boxShadow: "0 6px 16px rgba(0,0,0,0.4)",
+          }}>
             <div className="loading-spinner-modern" />
-            <span
-              style={{
-                fontSize: 13,
-                color: "#e5e7eb",
-                fontWeight: 600,
-              }}
-            >
+            <span style={{ fontSize: 13, color: "#e5e7eb", fontWeight: 600 }}>
               Prijavljivanje Google nalogom…
             </span>
           </div>

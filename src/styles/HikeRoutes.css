@@ -132,10 +132,28 @@
 }
 
 .hike-description {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 0.5rem 0;
   color: #666;
   line-height: 1.6;
-  flex-grow: 1;
+  /* Clamp to 3 lines so all cards stay the same height in a row */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hike-read-more {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #11998e;
+  text-decoration: none;
+}
+
+.hike-read-more:hover {
+  color: #0d7a72;
+  text-decoration: underline;
 }
 
 .hike-details {

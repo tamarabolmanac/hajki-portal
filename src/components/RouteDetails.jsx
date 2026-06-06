@@ -6,6 +6,7 @@ import { getCurrentUserID } from '../utils/authHandler';
 import { config } from '../config';
 import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
 import AppLoader from './AppLoader';
+import { BackgroundImage } from './BackgroundImage';
 
 // Placeholder dok se mapa učitava
 const MapPlaceholder = () => {
@@ -122,6 +123,11 @@ export const RouteDetails = () => {
   };
 
   return (
+    <div className="route-details-page">
+      <div className="route-details-bg">
+        <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="route-details-bg-image" fetchPriority="low" />
+        <div className="route-details-overlay" />
+      </div>
     <div className="route-details-container">
       <div className="route-header">
         {route.author && (
@@ -327,6 +333,7 @@ export const RouteDetails = () => {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 };

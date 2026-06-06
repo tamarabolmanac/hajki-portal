@@ -1,4 +1,46 @@
+/* Full-bleed background wrapper (same pattern as routes-page) */
+.route-details-page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+.route-details-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.route-details-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.route-details-bg-image.bg-image-loaded {
+  opacity: 1;
+}
+
+.route-details-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(15, 20, 25, 0.78) 0%,
+    rgba(30, 45, 55, 0.65) 50%,
+    rgba(45, 55, 72, 0.60) 100%
+  );
+  z-index: 1;
+}
+
 .route-details-container {
+  position: relative;
+  z-index: 2;
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem;

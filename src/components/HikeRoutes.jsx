@@ -469,6 +469,9 @@ export const HikeRoutes = (props) => {
                 )}
                 <h3 className="hike-title">{hike.title}</h3>
                 <p className="hike-description">{hike.description}</p>
+                {hike.description && hike.description.length > 120 && (
+                  <Link to={`/route/${hike.id}`} className="hike-read-more">Pročitaj više →</Link>
+                )}
                 <div className="hike-details">
                   <span className="hike-duration">
                     Duration: {hike.duration}min
