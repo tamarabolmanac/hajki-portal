@@ -7,12 +7,14 @@ import android.os.Build;
 
 import com.getcapacitor.BridgeActivity;
 import com.hajki.tracker.HajkiTrackerPlugin;
+import ee.forgr.capacitor.social.login.SocialLoginPlugin;
 
 public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(HajkiTrackerPlugin.class);
+        registerPlugin(SocialLoginPlugin.class);
         super.onCreate(savedInstanceState);
         createTrackingNotificationChannel();
     }
