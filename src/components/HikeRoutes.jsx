@@ -130,6 +130,27 @@ export const HikeRoutes = (props) => {
     }
   };
 
+  const handleToggleBookmark = async (routeId, currentlyBookmarked) => {
+    if (!userIsAuthenticated) {
+      setLikeError('Uloguj se da bi sačuvala rute.');
+      return;
+    }
+    const optimistic = !currentlyBookmarked;
+    setData((curr) => curr?.map((r) =>
+      r.id === routeId ? { ...r, bookmarked_by_current_user: optimistic } : r
+    ));
+    try {
+      await authenticatedFetch(`/routes/${routeId}/bookmark`, {
+        method: currentlyBookmarked ? 'DELETE' : 'POST'
+      });
+    } catch {
+      // rollback
+      setData((curr) => curr?.map((r) =>
+        r.id === routeId ? { ...r, bookmarked_by_current_user: currentlyBookmarked } : r
+      ));
+    }
+  };
+
   const handleToggleLike = async (routeId, currentlyLiked) => {
     if (!userIsAuthenticated) {
       setLikeError('Uloguj se da bi lajkovala rute.');
@@ -491,18 +512,31 @@ export const HikeRoutes = (props) => {
                 </div>
               </div>
               <div className="hike-card-footer">
-                <button
-                  type="button"
-                  className={`route-like-button ${hike.liked_by_current_user ? 'liked' : ''}`}
-                  onClick={() => handleToggleLike(hike.id, hike.liked_by_current_user)}
-                  aria-pressed={!!hike.liked_by_current_user}
-                  aria-label={hike.liked_by_current_user ? 'Ukloni lajk sa rute' : 'Lajkuj rutu'}
-                >
-                  <span className="route-like-heart" aria-hidden="true">♥</span>
-                  <span className="route-like-count">{hike.likes_count || 0}</span>
-                </button>
-                <Link to={`/route/${hike.id}`} className="btn-primary-modern" style={{ borderRadius: '8px' }}>
-                  Pogledaj detalje
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className={`route-like-button ${hike.liked_by_current_user ? 'liked' : ''}`}
+                    onClick={() => handleToggleLike(hike.id, hike.liked_by_current_user)}
+                    aria-pressed={!!hike.liked_by_current_user}
+                    aria-label={hike.liked_by_current_user ? 'Ukloni lajk sa rute' : 'Lajkuj rutu'}
+                  >
+                    <span className="route-like-heart" aria-hidden="true">♥</span>
+                    <span className="route-like-count">{hike.likes_count || 0}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`route-bookmark-button ${hike.bookmarked_by_current_user ? 'bookmarked' : ''}`}
+                    onClick={() => handleToggleBookmark(hike.id, hike.bookmarked_by_current_user)}
+                    aria-pressed={!!hike.bookmarked_by_current_user}
+                    aria-label={hike.bookmarked_by_current_user ? 'Ukloni iz sačuvanih' : 'Sačuvaj rutu'}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill={hike.bookmarked_by_current_user ? '#8FA31E' : 'none'} stroke="#8FA31E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </button>
+                </div>
+                <Link to={`/route/${hike.id}`} className="btn-card-details">
+                  Detalji →
                 </Link>
               </div>
             </div>

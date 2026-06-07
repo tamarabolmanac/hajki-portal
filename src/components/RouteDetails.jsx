@@ -96,7 +96,13 @@ export const RouteDetails = () => {
 
   if (loading || !route) {
     return (
-      <AppLoader title="Učitavanje detalja rute..." compact />
+      <div className="route-details-page">
+        <div className="route-details-bg">
+          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="route-details-bg-image" fetchPriority="low" />
+          <div className="route-details-overlay" />
+        </div>
+        <AppLoader title="Učitavanje detalja rute..." />
+      </div>
     );
   }
 

@@ -46,6 +46,7 @@ export const UserProfile = () => {
     fetchUser();
   }, [id]);
 
+
   const toggleFollow = async () => {
     if (!user || user.is_me) return;
     const token = localStorage.getItem('authToken');
@@ -241,6 +242,7 @@ export const UserProfile = () => {
             </Link>
           </div>
         </div>
+
       </div>
     </div>
   );
