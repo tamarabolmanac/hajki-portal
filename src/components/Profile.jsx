@@ -487,6 +487,18 @@ export const Profile = () => {
         )}
       </div>
 
+      {/* Admin — pregled prijava */}
+      {userDetails?.role === 'admin' && (
+        <div className="glass-card" style={{ marginTop: '1.5rem' }}>
+          <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.2rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
+            🛡️ Administracija
+          </h2>
+          <Link to="/admin/reports" className="btn-secondary-modern" style={{ borderRadius: 8, display: 'inline-block' }}>
+            Pregled prijava →
+          </Link>
+        </div>
+      )}
+
       {/* Danger zone */}
       <div className="glass-card" style={{ marginTop: '1.5rem', borderColor: 'rgba(239,68,68,0.3)' }}>
         <h2 style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: 700, color: 'rgba(255,100,100,0.85)' }}>

@@ -9,7 +9,7 @@ const Section = ({ title, children }) => (
     }}>
       {title}
     </h2>
-    <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.95rem', lineHeight: 1.8 }}>
+    <div style={{ color: '#e8fdf2', fontSize: '0.95rem', lineHeight: 1.8 }}>
       {children}
     </div>
   </div>
@@ -46,7 +46,7 @@ const PrivacyPolicy = () => {
           </Section>
 
           <Section title="2. Koji podaci se prikupljaju">
-            <p style={{ margin: '0 0 0.5rem' }}>Tokom korišćenja aplikacije prikupljamo sledeće podatke:</p>
+            <p style={{ margin: '0 0 0.5rem', color: '#98FB98' }}>Tokom korišćenja aplikacije prikupljamo sledeće podatke:</p>
             <ul style={{ margin: '0.5rem 0', paddingLeft: '1.25rem' }}>
               <li><strong>Podaci naloga:</strong> ime, email adresa, grad, zemlja i profilna slika koje sami unosite.</li>
               <li><strong>GPS lokacija:</strong> koordinate se prikupljaju tokom aktivnog snimanja rute. Lokacija se ne prati u pozadini bez vaše eksplicitne akcije.</li>
@@ -66,16 +66,16 @@ const PrivacyPolicy = () => {
           </Section>
 
           <Section title="4. Lokacijski podaci">
-            <p style={{ margin: '0 0 0.5rem' }}>
+            <p style={{ margin: '0 0 0.5rem', color: '#98FB98' }}>
               Aplikacija koristi GPS isključivo tokom aktivnog snimanja rute — <strong>nikada u pozadini</strong> bez vaše akcije. Pre prvog korišćenja, aplikacija će zatražiti vašu dozvolu za pristup lokaciji.
             </p>
-            <p style={{ margin: 0 }}>
+            <p style={{ margin: 0, color: '#98FB98' }}>
               GPS koordinate koje snimite tokom rute čuvaju se na našim serverima i, ako odaberete javni prikaz rute, postaju vidljive drugim korisnicima. Možete obrisati bilo koju rutu u bilo kom trenutku.
             </p>
           </Section>
 
           <Section title="5. Deljenje podataka">
-            <p style={{ margin: '0 0 0.5rem' }}>Vaše podatke ne prodajemo trećim stranama. Podaci se dele samo u sledećim slučajevima:</p>
+            <p style={{ margin: '0 0 0.5rem', color: '#98FB98' }}>Vaše podatke ne prodajemo trećim stranama. Podaci se dele samo u sledećim slučajevima:</p>
             <ul style={{ margin: 0, paddingLeft: '1.25rem' }}>
               <li><strong>Google Maps:</strong> koordinate se prosleđuju radi prikaza mape (Google Maps API).</li>
               <li><strong>Google OAuth:</strong> ako se registrujete putem Google naloga, primamo vaše ime i email od Google-a.</li>

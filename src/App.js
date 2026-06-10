@@ -24,6 +24,7 @@ import ResetPassword from "./components/ResetPassword";
 import Register from "./components/Register";
 import "./styles/GlobalStyles.css";
 import { Profile } from "./components/Profile";
+import AdminReports from "./components/AdminReports";
 import EmailConfirmation from "./components/EmailConfirmation";
 import InstallPWA from "./components/InstallPWA";
 import { setNavigate } from "./utils/authHandler";
@@ -310,6 +311,16 @@ const AppContent = () => {
             />
             <Route path="/confirm/:token" element={<EmailConfirmation />} />
             <Route path="/confirm" element={<EmailConfirmation />} />
+            <Route
+              path="/admin/reports"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <AdminReports />
+                  </div>
+                </PrivateRoute>
+              }
+            />
           </Routes>
         </div>
       </div>

@@ -128,6 +128,32 @@ export const RouteDetails = () => {
     }
   };
 
+  const handleReportRoute = async () => {
+    const reasons = {
+      '1': 'spam',
+      '2': 'neprikladan_sadrzaj',
+      '3': 'uznemiravanje',
+      '4': 'netacne_informacije',
+      '5': 'ostalo',
+    };
+    const choice = window.prompt(
+      'Prijavi ovu rutu. Razlog:\n1 - Spam\n2 - Neprikladan sadržaj\n3 - Uznemiravanje\n4 - Netačne informacije\n5 - Ostalo\n\nUnesi broj (1-5):'
+    );
+    if (!choice) return;
+    const reason = reasons[choice.trim()];
+    if (!reason) { alert('Nevažeći izbor.'); return; }
+    const details = window.prompt('Dodatni opis (opciono):') || '';
+    try {
+      await authenticatedFetch('/reports', {
+        method: 'POST',
+        body: JSON.stringify({ hike_route_id: id, reason, details }),
+      });
+      alert('Prijava je poslata. Hvala što pomažeš da zajednica bude bezbedna.');
+    } catch (err) {
+      alert(`Greška: ${err.message}`);
+    }
+  };
+
   return (
     <div className="route-details-page">
       <div className="route-details-bg">
@@ -135,6 +161,11 @@ export const RouteDetails = () => {
         <div className="route-details-overlay" />
       </div>
     <div className="route-details-container">
+      <div style={{ marginBottom: '1rem' }}>
+        <Link to="/routes" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: 'rgba(255,255,255,0.75)', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>
+          ← Sve rute
+        </Link>
+      </div>
       <div className="route-header">
         {route.author && (
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem', gap: '0.5rem' }}>
@@ -249,8 +280,21 @@ export const RouteDetails = () => {
                 </button>
               </>
             ) : (
-              <div>
-              </div>
+              <button
+                onClick={handleReportRoute}
+                style={{
+                  background: 'transparent',
+                  color: '#c62828',
+                  border: '1.5px solid rgba(198,40,40,0.4)',
+                  padding: '10px 18px',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                }}
+              >
+                ⚠️ Prijavi rutu
+              </button>
             )}
           </div>
         )}

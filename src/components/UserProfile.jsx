@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { config } from '../config';
+import { authenticatedFetch } from '../utils/api';
 import { BackgroundImage } from './BackgroundImage';
 import '../styles/RoutesList.css';
 
@@ -70,6 +71,37 @@ export const UserProfile = () => {
       setUser((prev) => ({ ...prev, is_following: !prev.is_following }));
     } catch (err) {
       alert(err.message);
+    }
+  };
+
+  const reportUser = async () => {
+    const reasons = { '1': 'spam', '2': 'neprikladan_sadrzaj', '3': 'uznemiravanje', '4': 'ostalo' };
+    const choice = window.prompt(
+      'Prijavi ovog korisnika. Razlog:\n1 - Spam\n2 - Neprikladan sadržaj\n3 - Uznemiravanje\n4 - Ostalo\n\nUnesi broj (1-4):'
+    );
+    if (!choice) return;
+    const reason = reasons[choice.trim()];
+    if (!reason) { alert('Nevažeći izbor.'); return; }
+    const details = window.prompt('Dodatni opis (opciono):') || '';
+    try {
+      await authenticatedFetch('/reports', {
+        method: 'POST',
+        body: JSON.stringify({ reported_user_id: id, reason, details }),
+      });
+      alert('Prijava je poslata. Hvala što pomažeš da zajednica bude bezbedna.');
+    } catch (err) {
+      alert(`Greška: ${err.message}`);
+    }
+  };
+
+  const blockUser = async () => {
+    if (!window.confirm('Blokiraj ovog korisnika? Nećeš više videti njegove rute, niti će vas dvoje moći da se pratite.')) return;
+    try {
+      await authenticatedFetch(`/users/${id}/block`, { method: 'POST' });
+      alert('Korisnik je blokiran.');
+      setUser((prev) => ({ ...prev, is_following: false }));
+    } catch (err) {
+      alert(`Greška: ${err.message}`);
     }
   };
 
@@ -172,14 +204,30 @@ export const UserProfile = () => {
           </div>
 
           {!user.is_me && user.is_following !== undefined && (
-            <button
-              type="button"
-              className={user.is_following ? 'btn-unfollow' : 'btn-primary-modern'}
-              style={{ borderRadius: 10, padding: '0.65rem 1.5rem' }}
-              onClick={toggleFollow}
-            >
-              {user.is_following ? 'Otprati' : 'Prati'}
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <button
+                type="button"
+                className={user.is_following ? 'btn-unfollow' : 'btn-primary-modern'}
+                style={{ borderRadius: 10, padding: '0.65rem 1.5rem' }}
+                onClick={toggleFollow}
+              >
+                {user.is_following ? 'Otprati' : 'Prati'}
+              </button>
+              <button
+                type="button"
+                onClick={reportUser}
+                style={{ background: 'transparent', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 10, padding: '0.65rem 1rem', cursor: 'pointer', fontSize: '0.85rem' }}
+              >
+                ⚠️ Prijavi
+              </button>
+              <button
+                type="button"
+                onClick={blockUser}
+                style={{ background: 'transparent', color: '#ff9b9b', border: '1px solid rgba(198,40,40,0.4)', borderRadius: 10, padding: '0.65rem 1rem', cursor: 'pointer', fontSize: '0.85rem' }}
+              >
+                🚫 Blokiraj
+              </button>
+            </div>
           )}
         </div>
 

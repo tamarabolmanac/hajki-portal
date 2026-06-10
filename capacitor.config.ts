@@ -37,6 +37,17 @@ const config: CapacitorConfig = {
   appName: 'hajki-portal',
   webDir: 'build',
   server,
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 2500,
+      launchAutoHide: true,
+      backgroundColor: '#ffffff',
+      androidScaleType: 'CENTER_INSIDE',
+      showSpinner: false,
+      splashFullScreen: true,
+      splashImmersive: false,
+    },
+  },
 };
 
 export default config;
