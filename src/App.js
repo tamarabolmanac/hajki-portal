@@ -26,6 +26,7 @@ import "./styles/GlobalStyles.css";
 import { Profile } from "./components/Profile";
 import AdminReports from "./components/AdminReports";
 import { AdminPanel } from "./components/AdminPanel";
+import AdminRoute from "./components/AdminRoute";
 import EmailConfirmation from "./components/EmailConfirmation";
 import InstallPWA from "./components/InstallPWA";
 import { setNavigate } from "./utils/authHandler";
@@ -319,21 +320,21 @@ const AppContent = () => {
             <Route
               path="/admin/reports"
               element={
-                <PrivateRoute>
+                <AdminRoute>
                   <div className="content-container">
                     <AdminReports />
                   </div>
-                </PrivateRoute>
+                </AdminRoute>
               }
             />
             <Route
               path="/admin"
               element={
-                <PrivateRoute>
+                <AdminRoute>
                   <div className="content-container">
                     <AdminPanel />
                   </div>
-                </PrivateRoute>
+                </AdminRoute>
               }
             />
           </Routes>
