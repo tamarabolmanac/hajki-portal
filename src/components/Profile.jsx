@@ -493,8 +493,8 @@ export const Profile = () => {
           <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.2rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
             🛡️ Administracija
           </h2>
-          <Link to="/admin/reports" className="btn-secondary-modern" style={{ borderRadius: 8, display: 'inline-block' }}>
-            Pregled prijava →
+          <Link to="/admin" className="btn-secondary-modern" style={{ borderRadius: 8, display: 'inline-block' }}>
+            Admin panel →
           </Link>
         </div>
       )}

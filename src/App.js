@@ -25,6 +25,7 @@ import Register from "./components/Register";
 import "./styles/GlobalStyles.css";
 import { Profile } from "./components/Profile";
 import AdminReports from "./components/AdminReports";
+import { AdminPanel } from "./components/AdminPanel";
 import EmailConfirmation from "./components/EmailConfirmation";
 import InstallPWA from "./components/InstallPWA";
 import { setNavigate } from "./utils/authHandler";
@@ -42,6 +43,10 @@ import PrivacyPolicy from "./components/PrivacyPolicy";
 import DeleteAccount from "./components/DeleteAccount";
 import QuizRoom from "./components/QuizRoom";
 import { authenticatedFetch } from "./utils/api";
+
+// Stabilna referenca — mora biti van komponente, inače LoadScript reloaduje
+// Google Maps skriptu na svaki render i baca "This page can't load Google Maps correctly".
+const GOOGLE_MAPS_LIBRARIES = ['places'];
 
 // Wrapper component to access useNavigate
 const AppContent = () => {
@@ -85,7 +90,7 @@ const AppContent = () => {
   return (
     <LoadScript
       googleMapsApiKey={config.googleMapsApiKey}
-      libraries={['places']}
+      libraries={GOOGLE_MAPS_LIBRARIES}
       id="google-map-script"
       loadingElement={
         <div className="routes-page">
@@ -317,6 +322,16 @@ const AppContent = () => {
                 <PrivateRoute>
                   <div className="content-container">
                     <AdminReports />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <AdminPanel />
                   </div>
                 </PrivateRoute>
               }
