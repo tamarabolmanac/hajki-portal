@@ -16,6 +16,7 @@ export const Navigation = (props) => {
   const [isRoutesOpen, setIsRoutesOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isNalogOpen, setIsNalogOpen] = useState(false);
+  const [showPrirodaSrbije, setShowPrirodaSrbije] = useState(false);
   
   
   const menuRef = useRef(null);
@@ -43,6 +44,13 @@ export const Navigation = (props) => {
     // Update active link on route change
     setActiveLink(location.pathname);
   }, [location.pathname]);
+
+  useEffect(() => {
+    // Feature flag: da li se "Priroda Srbije" prikazuje u meniju (kontroliše admin)
+    authenticatedFetch('/settings')
+      .then((data) => setShowPrirodaSrbije(!!data?.show_priroda_srbije))
+      .catch(() => setShowPrirodaSrbije(false));
+  }, []);
 
 
   useEffect(() => {
@@ -137,13 +145,13 @@ export const Navigation = (props) => {
         >
           <ul className="nav navbar-nav navbar-right">
 
-            {/* Rute dropdown */}
+            {/* Istraži dropdown */}
             <li className={`nav-dropdown ${isRoutesOpen ? 'open' : ''}`}>
               <button
-                className={`page-scroll nav-dropdown-toggle ${['/routes', '/priroda', '/preporuka'].includes(activeLink) ? 'active' : ''}`}
+                className={`page-scroll nav-dropdown-toggle ${['/routes', '/priroda', '/preporuka', '/prirodnjacki-kviz'].includes(activeLink) ? 'active' : ''}`}
                 onClick={() => { setIsRoutesOpen(prev => !prev); setIsInfoOpen(false); setIsNalogOpen(false); }}
               >
-                Rute <span className="nav-dropdown-arrow">{isRoutesOpen ? '▲' : '▼'}</span>
+                Istraži <span className="nav-dropdown-arrow">{isRoutesOpen ? '▲' : '▼'}</span>
               </button>
               <ul className="nav-dropdown-menu">
                 <li>
@@ -151,31 +159,23 @@ export const Navigation = (props) => {
                     Pretraži rute
                   </Link>
                 </li>
-                <li>
-                  <Link to="/priroda" className={`page-scroll ${activeLink === '/priroda' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/priroda', e)}>
-                    Priroda Srbije
-                  </Link>
-                </li>
-                {isLoggedIn && (
-                  <>
-                    <li>
-                      <Link to="/preporuka" className={`page-scroll ${activeLink === '/preporuka' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/preporuka', e)}>
-                        Preporuka za šetnju
-                      </Link>
-                    </li>
-                  </>
+                {showPrirodaSrbije && (
+                  <li>
+                    <Link to="/priroda" className={`page-scroll ${activeLink === '/priroda' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/priroda', e)}>
+                      Priroda Srbije
+                    </Link>
+                  </li>
                 )}
+                {isLoggedIn && (
+                  <li>
+                    <Link to="/prirodnjacki-kviz" className={`page-scroll ${activeLink === '/prirodnjacki-kviz' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/prirodnjacki-kviz', e)}>
+                      Kviz sa prijateljem
+                    </Link>
+                  </li>
+                )}
+                {/* "Preporuka za šetnju" privremeno sakriveno iz menija (komponenta i ruta ostaju) */}
               </ul>
             </li>
-
-            {/* Kviz — samo za ulogovane */}
-            {isLoggedIn && (
-              <li>
-                <Link to="/prirodnjacki-kviz" className={`page-scroll ${activeLink === '/prirodnjacki-kviz' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/prirodnjacki-kviz', e)}>
-                  Kviz
-                </Link>
-              </li>
-            )}
 
             {/* Info dropdown */}
             <li className={`nav-dropdown ${isInfoOpen ? 'open' : ''}`}>

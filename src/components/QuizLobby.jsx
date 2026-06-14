@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import OnlineUsersList from "./OnlineUsersList";
 import { connectWebsocket } from "../cable";
 import { config } from "../config";
+import { BackgroundImage } from "./BackgroundImage";
+import "../styles/RoutesList.css";
 
 export default function QuizLobby({ token, currentUserId }) {
   const navigate = useNavigate();
@@ -135,12 +137,25 @@ export default function QuizLobby({ token, currentUserId }) {
   };
 
   return (
+    <div className="routes-page">
+      <div className="routes-background">
+        <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
+        <div className="routes-overlay" />
+      </div>
     <div className="page-container">
       <div className="page-header clean">
-        <h1>Prirodnjački kviz</h1>
+        <h1>Kviz sa prijateljem</h1>
         <p style={{ marginTop: "0.5rem" }}>
           Odaberi protivnika i pošalji izazov
           {!wsReady && <span style={{ marginLeft: 8, opacity: 0.7 }}>(povezivanje...)</span>}
+        </p>
+      </div>
+
+      <div className="glass-card" style={{ marginBottom: "1.5rem" }}>
+        <p style={{ margin: 0, color: "rgba(255,255,255,0.85)", lineHeight: 1.7, fontSize: "0.95rem" }}>
+          💡 Da biste se izazvali, <strong>i ti i tvoj prijatelj morate biti prijavljeni</strong> u
+          aplikaciju u isto vreme. Tada ćete se pojaviti jedno drugom na listi online korisnika ispod,
+          pa možete poslati izazov i zaigrati kviz uživo.
         </p>
       </div>
 
@@ -175,6 +190,7 @@ export default function QuizLobby({ token, currentUserId }) {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

@@ -32,6 +32,7 @@ export default function OnlineUsersList({ onlineUsers, currentUserId, onChalleng
             key={user.id}
             style={{
               background: "rgba(255,255,255,0.08)",
+              color: "white",
               border: "1px solid rgba(56,239,125,0.25)",
               borderRadius: 12,
               padding: "12px 16px",

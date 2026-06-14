@@ -409,10 +409,73 @@ function ProtectedAreasTab() {
   );
 }
 
+// ─── Settings Tab ─────────────────────────────────────────────────────────────
+function SettingsTab() {
+  const [settings, setSettings] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    authenticatedFetch('/settings').then(setSettings).catch(() => setSettings({}));
+  }, []);
+
+  const toggle = async (key) => {
+    const newValue = !settings[key];
+    setSaving(true);
+    try {
+      await authenticatedFetch('/admin/settings', {
+        method: 'PATCH',
+        body: JSON.stringify({ key, value: newValue }),
+      });
+      setSettings(prev => ({ ...prev, [key]: newValue }));
+    } catch (err) {
+      alert(`Greška: ${err.message}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (!settings) return <AppLoader title="Učitavanje..." compact />;
+
+  const Row = ({ flagKey, title, description }) => (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', padding: '1rem 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <div>
+        <div style={{ color: '#fff', fontWeight: 600, fontSize: '0.95rem' }}>{title}</div>
+        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginTop: 2 }}>{description}</div>
+      </div>
+      <button
+        onClick={() => toggle(flagKey)}
+        disabled={saving}
+        style={{
+          width: 52, height: 28, borderRadius: 999, border: 'none', cursor: 'pointer', flexShrink: 0,
+          background: settings[flagKey] ? 'linear-gradient(135deg,#11998e,#38ef7d)' : 'rgba(255,255,255,0.2)',
+          position: 'relative', transition: 'background 0.2s',
+        }}
+        aria-pressed={!!settings[flagKey]}
+      >
+        <span style={{
+          position: 'absolute', top: 3, left: settings[flagKey] ? 27 : 3,
+          width: 22, height: 22, borderRadius: '50%', background: '#fff', transition: 'left 0.2s',
+        }} />
+      </button>
+    </div>
+  );
+
+  return (
+    <div>
+      <Row
+        flagKey="show_priroda_srbije"
+        title="Priroda Srbije"
+        description={'Prikaži stavku „Priroda Srbije" u glavnom meniju (Rute).'}
+      />
+    </div>
+  );
+}
+
 // ─── Main Admin Panel ─────────────────────────────────────────────────────────
 const TABS = [
-  { key: 'areas',   label: '🗺️ Zaštićena područja' },
-  { key: 'reports', label: '⚠️ Prijave' },
+  { key: 'areas',    label: '🗺️ Zaštićena područja' },
+  { key: 'reports',  label: '⚠️ Prijave' },
+  { key: 'settings', label: '⚙️ Podešavanja' },
 ];
 
 export const AdminPanel = () => {
@@ -445,8 +508,9 @@ export const AdminPanel = () => {
         </div>
 
         <div className="glass-card">
-          {tab === 'areas'   && <ProtectedAreasTab />}
-          {tab === 'reports' && <ReportsTab />}
+          {tab === 'areas'    && <ProtectedAreasTab />}
+          {tab === 'reports'  && <ReportsTab />}
+          {tab === 'settings' && <SettingsTab />}
         </div>
       </div>
     </div>
