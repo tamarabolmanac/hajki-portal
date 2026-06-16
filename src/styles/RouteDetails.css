@@ -105,8 +105,8 @@
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
   font-weight: 700;
   color: #556B2F;
-  margin-bottom: 0.8rem;
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 0.6rem;
+  font-size: 1.1rem;
 }
 
 .route-description p {
@@ -139,9 +139,12 @@
   border-radius: 12px;
 }
 
-.route-map h3 {
-  color: #3498db;
-  margin-bottom: 1rem;
+.route-map h2 {
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  font-weight: 700;
+  color: #556B2F;
+  margin-bottom: 0.6rem;
+  font-size: 1.1rem;
 }
 
 .map-placeholder {
@@ -184,8 +187,8 @@
   font-family: "Plus Jakarta Sans", "Inter", sans-serif;
   font-weight: 700;
   color: #556B2F;
-  margin-bottom: 1rem;
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 0.6rem;
+  font-size: 1.1rem;
 }
 
 .image-gallery {

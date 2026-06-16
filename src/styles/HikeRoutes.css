@@ -121,20 +121,51 @@
 }
 
 .hike-card-content {
-  padding: 1.5rem;
+  padding: 0.75rem 0.5rem;
   flex-grow: 1;
+}
+
+/* Author header — first thing in the card, above the image */
+.hike-card-author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem 0.75rem;
+}
+
+.hike-card-author-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e2e8f0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.hike-card-author-name {
+  font-size: 0.9rem;
+  color: #4a5568;
 }
 
 .hike-title {
   margin: 0 0 1rem 0;
   color: #556B2F; /* Dark green for titles */
-  font-size: 1.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .hike-description {
   margin: 0 0 0.5rem 0;
   color: #666;
-  line-height: 1.6;
+  font-size: 0.85rem;
+  line-height: 1.55;
   /* Clamp to 3 lines so all cards stay the same height in a row */
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -159,22 +190,28 @@
 .hike-details {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
   margin-bottom: 1.5rem;
 }
 
-.hike-duration,
-.hike-difficulty {
-  padding: 0.5rem 1rem;
-  background: #EFF5D2; /* Light cream background */
+/* Unified badge — duration, difficulty, distance all look identical */
+.hike-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.85rem;
+  background: #EFF5D2; /* Light green background */
+  border: 1px solid rgba(143, 163, 30, 0.3);
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
   color: #556B2F; /* Dark green text */
+  text-transform: capitalize;
 }
 
 .hike-card-footer {
-  padding: 1rem 1.5rem;
-  background: rgba(248, 249, 250, 0.8);
+  padding: 0.6rem 0.5rem 0.25rem;
+  background: transparent;
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   text-align: center;
   display: flex;
@@ -235,29 +272,26 @@
   font-size: 0.95rem;
 }
 
-/* Suptilno dugme za detalje rute unutar kartice */
+/* Detalji — stil linka, ne dugmeta */
 .btn-card-details {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.45rem 1rem;
-  background: rgba(17, 153, 142, 0.1);
-  color: #0d7a72;
-  border: 1.5px solid rgba(17, 153, 142, 0.35);
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  padding: 0.25rem 0;
+  background: transparent;
+  color: #11998e;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 700;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: color 0.2s ease, gap 0.2s ease;
   cursor: pointer;
 }
 
 .btn-card-details:hover {
-  background: rgba(17, 153, 142, 0.18);
-  border-color: rgba(17, 153, 142, 0.6);
   color: #0d7a72;
   text-decoration: none;
-  transform: translateY(-1px);
+  gap: 0.5rem;
 }
 
 .view-route-btn {

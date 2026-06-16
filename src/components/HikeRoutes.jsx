@@ -445,6 +445,26 @@ export const HikeRoutes = (props) => {
           {filteredRoutes && filteredRoutes.length > 0 ? (
             filteredRoutes.map((hike, index) => (
             <div key={`${hike.title}-${index}`} className="hike-card">
+              {hike.author && (
+                <div className="hike-card-author">
+                  <div className="hike-card-author-avatar">
+                    {hike.author.avatar_url ? (
+                      <img
+                        src={hike.author.avatar_url}
+                        alt={hike.author.name}
+                        loading="lazy"
+                        decoding="async"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      (hike.author.name || '?').trim().charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div className="hike-card-author-name">
+                    Autor: <span style={{ fontWeight: 600 }}>{hike.author.name}</span>
+                  </div>
+                </div>
+              )}
               {hike.thumbnail_url && (
                 <RouteThumbnail
                   src={hike.thumbnail_url}
@@ -453,60 +473,19 @@ export const HikeRoutes = (props) => {
                 />
               )}
               <div className="hike-card-content">
-                {hike.author && (
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.5rem', gap: '0.5rem' }}>
-                    <div
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: '50%',
-                        overflow: 'hidden',
-                        background: '#e2e8f0',
-                        flexShrink: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '0.85rem',
-                        fontWeight: 600,
-                        color: '#4a5568'
-                      }}
-                    >
-                      {hike.author.avatar_url ? (
-                        <img
-                          src={hike.author.avatar_url}
-                          alt={hike.author.name}
-                          loading="lazy"
-                          decoding="async"
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      ) : (
-                        (hike.author.name || '?').trim().charAt(0).toUpperCase()
-                      )}
-                    </div>
-                    <div style={{ fontSize: '0.9rem', color: '#4a5568' }}>
-                      Autor: <span style={{ fontWeight: 600 }}>{hike.author.name}</span>
-                    </div>
-                  </div>
-                )}
                 <h3 className="hike-title">{hike.title}</h3>
                 <p className="hike-description">{hike.description}</p>
                 {hike.description && hike.description.length > 120 && (
                   <Link to={`/route/${hike.id}`} className="hike-read-more">Pročitaj više →</Link>
                 )}
                 <div className="hike-details">
-                  <span className="hike-duration">
-                    Duration: {hike.duration}min
-                    {hike.calculated_from_points && (
-                      <small style={{ color: '#28a745', marginLeft: '5px' }}>📍</small>
-                    )}
+                  <span className="hike-badge">
+                    ⏱ {hike.duration}min
                   </span>
-                  <span className="hike-difficulty">Difficulty: {hike.difficulty}</span>
+                  <span className="hike-badge">{hike.difficulty}</span>
                   {hike.distance && (
-                    <span className="hike-distance">
-                      Distance: {hike.distance}km
-                      {hike.calculated_from_points && (
-                        <small style={{ color: '#28a745', marginLeft: '5px' }}>📍</small>
-                      )}
+                    <span className="hike-badge">
+                      👣 {hike.distance}km
                     </span>
                   )}
                 </div>

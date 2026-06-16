@@ -207,16 +207,10 @@ export const RouteDetails = () => {
         <div className="route-meta">
           <span className="route-duration">
             Trajanje: {formatDuration(route.duration)}
-            {route.calculated_from_points && (
-              <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 GPS</small>
-            )}
           </span>
           <span className="route-difficulty">Težina: {route.difficulty}</span>
           <span className="route-distance">
             Dužina: {route.distance}km
-            {route.calculated_from_points && (
-              <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 GPS</small>
-            )}
           </span>
         </div>
         
@@ -225,35 +219,35 @@ export const RouteDetails = () => {
           <div className="route-actions" style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             {isRouteOwner() ? (
               <>
-                <button 
+                <button
                   onClick={handleStartTracking}
                   style={{
-                    background: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    padding: '12px 24px',
-                    borderRadius: '6px',
+                    background: 'rgba(0, 123, 255, 0.12)',
+                    color: '#0a66c2',
+                    border: '1px solid rgba(0, 123, 255, 0.35)',
+                    padding: '9px 18px',
+                    borderRadius: '8px',
                     cursor: 'pointer',
-                    fontSize: '16px',
-                    fontWeight: 'bold'
+                    fontSize: '14px',
+                    fontWeight: 600
                   }}
                 >
-                  🗺️ {route.status === 'tracking' ? 'Nastavi snimanje rute' : 'Započni snimanje rute'}
+                  🔴 Snimi rutu
                 </button>
                 <button
                   onClick={() => navigate(`/routes/${id}/edit`)}
+                  title="Izmeni rutu"
+                  aria-label="Izmeni rutu"
                   style={{
-                    background: 'linear-gradient(135deg, #2E7D32, #4CAF50)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '12px 24px',
-                    borderRadius: '6px',
+                    background: 'rgba(234, 179, 8, 0.12)',
+                    border: '1px solid rgba(234, 179, 8, 0.45)',
+                    padding: '9px 14px',
+                    borderRadius: '8px',
                     cursor: 'pointer',
-                    fontSize: '16px',
-                    fontWeight: 'bold'
+                    fontSize: '16px'
                   }}
                 >
-                  ✏️ Izmeni rutu
+                  ✏️
                 </button>
                 <button
                   onClick={async () => {
@@ -265,18 +259,18 @@ export const RouteDetails = () => {
                       alert(`Greška pri brisanju: ${err.message}`);
                     }
                   }}
+                  title="Obriši rutu"
+                  aria-label="Obriši rutu"
                   style={{
-                    background: 'linear-gradient(135deg, #c62828, #e53935)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '12px 24px',
-                    borderRadius: '6px',
+                    background: 'rgba(198, 40, 40, 0.1)',
+                    border: '1px solid rgba(198, 40, 40, 0.4)',
+                    padding: '9px 14px',
+                    borderRadius: '8px',
                     cursor: 'pointer',
-                    fontSize: '16px',
-                    fontWeight: 'bold'
+                    fontSize: '16px'
                   }}
                 >
-                  🗑️ Obriši rutu
+                  🗑️
                 </button>
               </>
             ) : (
@@ -302,13 +296,11 @@ export const RouteDetails = () => {
 
       <div className="route-content">
         <div className="route-description">
-          <h2>Opis</h2>
           <p>{route.description}</p>
         </div>
 
         {route.image_urls && route.image_urls.length > 0 && (
           <div className="route-images">
-            <h2>Slike</h2>
             <div className="image-gallery">
               {
                 route.image_urls.map((imageUrl, index) => {
@@ -324,7 +316,6 @@ export const RouteDetails = () => {
         )}
 
         <div className="route-map">
-          <h3>Mapa</h3>
           {isValidCoordinates && config.googleMapsApiKey ? (
             <GoogleMap
               mapContainerStyle={containerStyle}
