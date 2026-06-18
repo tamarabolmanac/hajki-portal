@@ -215,10 +215,9 @@ export const RouteDetails = () => {
         </div>
         
         {/* Action Buttons - Only show for route owner */}
-        {currentUserID && (
+        {currentUserID && isRouteOwner() && (
           <div className="route-actions" style={{ marginTop: '15px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            {isRouteOwner() ? (
-              <>
+            <>
                 <button
                   onClick={handleStartTracking}
                   style={{
@@ -272,24 +271,7 @@ export const RouteDetails = () => {
                 >
                   🗑️
                 </button>
-              </>
-            ) : (
-              <button
-                onClick={handleReportRoute}
-                style={{
-                  background: 'transparent',
-                  color: '#c62828',
-                  border: '1.5px solid rgba(198,40,40,0.4)',
-                  padding: '10px 18px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                }}
-              >
-                ⚠️ Prijavi rutu
-              </button>
-            )}
+            </>
           </div>
         )}
       </div>
@@ -373,6 +355,26 @@ export const RouteDetails = () => {
             <MapPlaceholder />
           )}
         </div>
+
+        {currentUserID && !isRouteOwner() && (
+          <div style={{ marginTop: '2.5rem', display: 'flex', justifyContent: 'center' }}>
+            <button
+              onClick={handleReportRoute}
+              style={{
+                background: 'transparent',
+                color: 'rgba(198,40,40,0.85)',
+                border: '1px solid rgba(198,40,40,0.3)',
+                padding: '7px 14px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 500,
+              }}
+            >
+              ⚠️ Prijavi rutu
+            </button>
+          </div>
+        )}
       </div>
     </div>
     </div>

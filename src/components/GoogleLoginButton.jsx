@@ -303,21 +303,9 @@ function GoogleSignInButton({ onLoggedIn }) {
       }
 
       {loading && (
-        <div style={{
-          position: "absolute", inset: 0, display: "flex",
-          alignItems: "center", justifyContent: "center",
-          background: "rgba(15, 23, 42, 0.8)", borderRadius: 999, pointerEvents: "none",
-        }}>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 8,
-            padding: "4px 12px", borderRadius: 999,
-            background: "rgba(15, 23, 42, 0.9)", boxShadow: "0 6px 16px rgba(0,0,0,0.4)",
-          }}>
-            <div className="loading-spinner-modern" />
-            <span style={{ fontSize: 13, color: "#e5e7eb", fontWeight: 600 }}>
-              Prijavljivanje Google nalogom…
-            </span>
-          </div>
+        <div className="google-login-loading">
+          <span className="google-login-loading__spinner" />
+          <span className="google-login-loading__text">Prijavljivanje…</span>
         </div>
       )}
     </div>
