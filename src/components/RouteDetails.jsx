@@ -297,6 +297,26 @@ export const RouteDetails = () => {
           </div>
         )}
 
+        {(routePoints.length > 1 || isValidCoordinates) && (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <button
+              className="navigate-route-cta"
+              onClick={() => navigate(`/routes/${id}/navigate`)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path
+                  d="M3 11l18-8-8 18-2.5-7.5L3 11z"
+                  fill="#fff"
+                  stroke="#fff"
+                  strokeWidth="1.5"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Navigiraj me
+            </button>
+          </div>
+        )}
+
         <div className="route-map">
           {isValidCoordinates && config.googleMapsApiKey ? (
             <GoogleMap

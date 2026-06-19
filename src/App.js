@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from '
 import { Navigation } from "./components/navigation";
 import { HikeRoutes } from "./components/HikeRoutes";
 import { RouteDetails } from "./components/RouteDetails";
+import { NavigateRoute } from "./components/NavigateRoute";
 import { UserProfile } from "./components/UserProfile";
 import { EditRoute } from "./components/EditRoute";
 import { NearbyRoutes } from "./components/NearbyRoutes";
@@ -279,6 +280,14 @@ const AppContent = () => {
               }
             />
             <Route path="/routes/:id" element={<RouteDetails />} />
+            <Route
+              path="/routes/:id/navigate"
+              element={
+                <PrivateRoute>
+                  <NavigateRoute />
+                </PrivateRoute>
+              }
+            />
             <Route path="/osm-mapa" element={<OsmRoutesMap />} />
             <Route path="/priroda" element={<NatureMap />} />
             <Route path="/preporuka" element={

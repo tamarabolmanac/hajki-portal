@@ -166,11 +166,18 @@ function GoogleSignInButton({ onLoggedIn }) {
       if (!idToken) throw new Error("Nije dobijen ID token od Google-a.");
       await exchangeIdToken(idToken);
     } catch (error) {
-      // User cancelled the picker — not an error
-      const msg = error?.message || "";
-      if (msg.toLowerCase().includes("cancel") || msg.toLowerCase().includes("dismiss")) return;
-      console.error("Native Google login error:", error);
-      alert(error?.message || "Greška pri Google prijavi.");
+      // DEBUG: ne gutamo ništa — prikaži pun error da vidimo zašto SocialLogin puca
+      // posle izbora naloga (SHA-1 / webClientId / no credentials / cancel).
+      let raw = "";
+      try {
+        raw = JSON.stringify(error, Object.getOwnPropertyNames(error || {}));
+      } catch {
+        raw = String(error);
+      }
+      console.error("Native Google login error:", error, raw);
+      alert(
+        `Google prijava nije uspela.\nmessage: ${error?.message || "—"}\ncode: ${error?.code || "—"}\nraw: ${raw}`
+      );
     } finally {
       setLoading(false);
     }
