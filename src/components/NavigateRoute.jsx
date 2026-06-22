@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { GoogleMap, Marker, Polyline, OverlayView } from '@react-google-maps/api';
+import Map, { Source, Layer, Marker } from 'react-map-gl/maplibre';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { authenticatedFetch } from '../utils/api';
 import { config } from '../config';
 import AppLoader from './AppLoader';
@@ -8,10 +10,9 @@ import { BackgroundImage } from './BackgroundImage';
 import '../styles/RouteDetails.css';
 import '../styles/NavigateRoute.css';
 
-const containerStyle = { width: '100%', height: '100%' };
-
-// Centriraj pulsirajući marker tačno na koordinatu
-const centerOverlay = (w, h) => ({ x: -(w / 2), y: -(h / 2) });
+// Free, no-key flat basemap (top-down, like the old Google view).
+const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
+const ROUTE_LINE_PAINT = { 'line-color': '#1E66F5', 'line-width': 5, 'line-opacity': 0.9 };
 
 export const NavigateRoute = () => {
   const { id } = useParams();
@@ -26,14 +27,14 @@ export const NavigateRoute = () => {
   const watchIdRef = useRef(null);
   const mapRef = useRef(null);
 
-  const onMapLoad = useCallback((map) => {
-    mapRef.current = map;
+  const onMapLoad = useCallback((e) => {
+    mapRef.current = e.target;
   }, []);
 
-  // Auto-zum: drži oba pina (korisnik + odredište/cela ruta) uvek u kadru
+  // Auto-zoom: keep both pins (user + destination / whole route) in frame.
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !window.google) return;
+    if (!map) return;
 
     const pts = [...routePoints];
     if (routePoints.length === 0 && destination) pts.push(destination);
@@ -41,17 +42,19 @@ export const NavigateRoute = () => {
     if (pts.length === 0) return;
 
     if (pts.length === 1) {
-      map.setCenter(pts[0]);
-      map.setZoom(16);
+      map.easeTo({ center: [pts[0].lng, pts[0].lat], zoom: 16 });
       return;
     }
 
-    const bounds = new window.google.maps.LatLngBounds();
-    pts.forEach((p) => bounds.extend(p));
-    map.fitBounds(bounds, 80);
+    const lons = pts.map((p) => p.lng);
+    const lats = pts.map((p) => p.lat);
+    map.fitBounds(
+      [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
+      { padding: 80, maxZoom: 16, duration: 600 }
+    );
   }, [routePoints, destination, userPos]);
 
-  // Učitaj rutu (tačke već stižu sa GET /routes/:id)
+  // Load route (points already come from GET /routes/:id).
   useEffect(() => {
     if (!id) {
       setLoading(false);
@@ -66,7 +69,7 @@ export const NavigateRoute = () => {
         const pts = (data.data?.points || []).map((p) => ({ lat: p.lat, lng: p.lng }));
         setRoutePoints(pts);
 
-        // Rute bez GPS putanje: navigiraj do lokacije rute (početne/lokacijske tačke)
+        // Routes without a GPS track: navigate to the route's location point.
         const lat = Number(data.data?.location_latitude);
         const lng = Number(data.data?.location_longitude);
         if (!Number.isNaN(lat) && !Number.isNaN(lng) && (lat !== 0 || lng !== 0)) {
@@ -79,12 +82,10 @@ export const NavigateRoute = () => {
       }
     })();
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [id]);
 
-  // Prati korisnikovu poziciju uživo
+  // Track the user's live position.
   useEffect(() => {
     if (!navigator.geolocation) {
       setError('Geolokacija nije podržana na ovom uređaju.');
@@ -92,9 +93,7 @@ export const NavigateRoute = () => {
     }
 
     const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude });
-      },
+      (pos) => setUserPos({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       (err) => {
         console.error('Geolocation error:', err);
         setError(`Greška pri lociranju: ${err.message}`);
@@ -104,18 +103,18 @@ export const NavigateRoute = () => {
     watchIdRef.current = watchId;
 
     return () => {
-      if (watchIdRef.current != null) {
-        navigator.geolocation.clearWatch(watchIdRef.current);
-      }
+      if (watchIdRef.current != null) navigator.geolocation.clearWatch(watchIdRef.current);
     };
   }, []);
 
+  const lineGeoJSON = useMemo(() => ({
+    type: 'Feature',
+    geometry: { type: 'LineString', coordinates: routePoints.map((p) => [p.lng, p.lat]) },
+  }), [routePoints]);
+
   if (loading) return <AppLoader />;
 
-  const mapCenter =
-    userPos ||
-    (routePoints.length > 0 ? routePoints[0] : destination) ||
-    config.mapCenter;
+  const start = userPos || (routePoints.length > 0 ? routePoints[0] : destination) || config.mapCenter;
 
   return (
     <div className="navigate-route-page">
@@ -132,39 +131,38 @@ export const NavigateRoute = () => {
         {error && <div className="navigate-route-error">{error}</div>}
 
         <div className="navigate-route-map">
-      {config.googleMapsApiKey ? (
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={mapCenter}
-          zoom={15}
-          onLoad={onMapLoad}
-        >
-          {routePoints.length > 1 && (
-            <Polyline
-              path={routePoints}
-              options={{ strokeColor: '#1E66F5', strokeWeight: 5, strokeOpacity: 0.9 }}
-            />
-          )}
+          <Map
+            mapLib={maplibregl}
+            initialViewState={{ longitude: start.lng, latitude: start.lat, zoom: 15 }}
+            mapStyle={MAP_STYLE}
+            onLoad={onMapLoad}
+            style={{ position: 'absolute', inset: 0 }}
+          >
+            {routePoints.length > 1 && (
+              <Source id="nav-route" type="geojson" data={lineGeoJSON}>
+                <Layer id="nav-route-line" type="line" paint={ROUTE_LINE_PAINT}
+                  layout={{ 'line-cap': 'round', 'line-join': 'round' }} />
+              </Source>
+            )}
 
-          {routePoints.length > 0 ? (
-            <Marker position={routePoints[0]} title="Početak rute" />
-          ) : (
-            destination && <Marker position={destination} title="Lokacija rute" />
-          )}
+            {routePoints.length > 0 ? (
+              <Marker longitude={routePoints[0].lng} latitude={routePoints[0].lat} anchor="bottom">
+                <div className="nav-start-pin" title="Početak rute">▲</div>
+              </Marker>
+            ) : (
+              destination && (
+                <Marker longitude={destination.lng} latitude={destination.lat} anchor="bottom">
+                  <div className="nav-start-pin" title="Lokacija rute">▲</div>
+                </Marker>
+              )
+            )}
 
-          {userPos && (
-            <OverlayView
-              position={userPos}
-              mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-              getPixelPositionOffset={centerOverlay}
-            >
-              <div className="nav-user-dot" title="Vi ste ovde" />
-            </OverlayView>
-          )}
-        </GoogleMap>
-      ) : (
-        <div style={{ padding: 24 }}>Mapa nije dostupna (nedostaje Google Maps ključ).</div>
-      )}
+            {userPos && (
+              <Marker longitude={userPos.lng} latitude={userPos.lat} anchor="center">
+                <div className="nav-user-dot" title="Vi ste ovde" />
+              </Marker>
+            )}
+          </Map>
         </div>
       </div>
     </div>

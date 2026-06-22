@@ -3,8 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import '../styles/RouteDetails.css';
 import { authenticatedFetch } from '../utils/api';
 import { getCurrentUserID } from '../utils/authHandler';
-import { config } from '../config';
-import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
+import ElevationMap from './ElevationMap';
 import AppLoader from './AppLoader';
 import { BackgroundImage } from './BackgroundImage';
 
@@ -106,11 +105,6 @@ export const RouteDetails = () => {
     );
   }
 
-
-  const containerStyle = {
-    width: '100%',
-    height: '400px'
-  };
 
   const center = {
     lat: Number(route.location_latitude),
@@ -317,64 +311,22 @@ export const RouteDetails = () => {
           </div>
         )}
 
-        <div className="route-map">
-          {isValidCoordinates && config.googleMapsApiKey ? (
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-              center={routePoints.length > 0 ? routePoints[routePoints.length - 1] : center}
-              zoom={routePoints.length > 0 ? 15 : 10}
-            >
-              {/* Osnovni marker za lokaciju rute */}
-              <Marker position={center} />
-              
-              {/* Prikaz tracked route ako postoji */}
-              {routePoints.length > 1 && (
-                <Polyline
-                  path={routePoints}
-                  options={{
-                    strokeColor: "#FF0000",
-                    strokeWeight: 4,
-                    strokeOpacity: 0.8,
-                  }}
-                />
-              )}
-              
-              {/* Start i end markeri za tracked rutu */}
-              {routePoints.length > 0 && (
-                <>
-                  <Marker
-                    position={routePoints[0]}
-                    icon={{
-                      url: "data:image/svg+xml;charset=UTF-8," +
-                        encodeURIComponent(`
-                          <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="10" cy="10" r="8" fill="#00FF00" stroke="#FFFFFF" stroke-width="2"/>
-                          </svg>
-                        `),
-                      scaledSize: { width: 20, height: 20 },
-                    }}
-                    title="Start Position"
-                  />
-                  <Marker
-                    position={routePoints[routePoints.length - 1]}
-                    icon={{
-                      url: "data:image/svg+xml;charset=UTF-8," +
-                        encodeURIComponent(`
-                          <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="10" cy="10" r="8" fill="#FF0000" stroke="#FFFFFF" stroke-width="2"/>
-                          </svg>
-                        `),
-                      scaledSize: { width: 20, height: 20 },
-                    }}
-                    title="End Position"
-                  />
-                </>
-              )}
-            </GoogleMap>
-          ) : (
+        {(routePoints.length > 0 || isValidCoordinates) ? (
+          <div className="route-map">
+            <h3 style={{ color: '#1a202c', fontSize: '1.05rem', fontWeight: 700, margin: '0 0 0.85rem' }}>
+              Teren i nadmorska visina
+            </h3>
+            <ElevationMap
+              routeId={id}
+              points={routePoints}
+              center={isValidCoordinates ? center : null}
+            />
+          </div>
+        ) : (
+          <div className="route-map">
             <MapPlaceholder />
-          )}
-        </div>
+          </div>
+        )}
 
         {currentUserID && !isRouteOwner() && (
           <div style={{ marginTop: '2.5rem', display: 'flex', justifyContent: 'center' }}>
