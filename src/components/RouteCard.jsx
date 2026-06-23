@@ -2,7 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/RouteCard.css';
 
-const FALLBACK_IMG = '/img/routes-bgd.jpg';
+const IcMountain = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="40" height="40"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
+);
 
 const difficultyMeta = (d) => {
   const v = (d || '').toLowerCase();
@@ -35,12 +37,16 @@ export default function RouteCard({ hike, onToggleLike, onToggleBookmark, priori
   return (
     <article className="route-card">
       <Link to={`/route/${hike.id}`} className="route-card__media">
-        <img
-          src={hike.thumbnail_url || FALLBACK_IMG}
-          alt={hike.title}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
-        />
+        {hike.thumbnail_url ? (
+          <img
+            src={hike.thumbnail_url}
+            alt={hike.title}
+            loading={priority ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        ) : (
+          <div className="route-card__noimg" aria-hidden="true"><IcMountain /></div>
+        )}
         <span className={`route-card__badge route-card__badge--${diff.cls}`}>{diff.label}</span>
         <button
           type="button"

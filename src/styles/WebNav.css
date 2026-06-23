@@ -54,7 +54,8 @@ body #menu .nav-dropdown-menu .page-scroll:hover {
 /* hamburger (mobile web) + collapsed menu panel */
 body #menu .navbar-toggle { background: rgba(80, 200, 120, 0.1) !important; border-color: rgba(80, 200, 120, 0.25) !important; }
 body #menu .navbar-toggle .icon-bar { background-color: #50c878 !important; }
-body #menu .navbar-collapse,
+/* Only the OPEN panel gets the dark background. Painting `.navbar-collapse`
+   unconditionally left a black box covering the page while the menu was closed. */
 body #menu .navbar-collapse.in { background: rgba(11, 15, 13, 0.97) !important; }
 
 /* Brand: mountain mark + HAJKI wordmark (design DesktopNav) */

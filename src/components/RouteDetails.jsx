@@ -119,7 +119,7 @@ export const RouteDetails = () => {
 
   const center = { lat: Number(route.location_latitude), lng: Number(route.location_longitude) };
   const diff = diffMeta(route.difficulty);
-  const heroImg = (route.image_urls && route.image_urls[0]) || '/img/routes-bgd.jpg';
+  const heroImg = route.image_urls && route.image_urls[0];
   const hasMap = routePoints.length > 0 || isValidCoordinates;
   const canNavigate = routePoints.length > 1 || isValidCoordinates;
 
@@ -191,7 +191,13 @@ export const RouteDetails = () => {
     <div className="rd-page">
       {/* hero */}
       <div className="rd-hero">
-        <img className="rd-hero__img" src={heroImg} alt={route.title} />
+        {heroImg
+          ? <img className="rd-hero__img" src={heroImg} alt={route.title} />
+          : (
+            <div className="rd-hero__img rd-hero__noimg" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="72" height="72"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
+            </div>
+          )}
         <div className="rd-hero__overlay" />
         <button className="rd-back" onClick={() => navigate('/routes')}>← Nazad</button>
         <div className="rd-hero__content">
