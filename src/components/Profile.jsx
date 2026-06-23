@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import LocationTracker from './LocationTracker';
-import { BackgroundImage } from './BackgroundImage';
+import '../styles/Profile.css';
 
 const formatDuration = (minutes) => {
   if (!minutes) return '0h 0min';
@@ -75,6 +75,11 @@ export const Profile = () => {
 
     return () => { controller.abort(); clearTimeout(timeoutId); };
   }, []);
+
+  const handleLogout = () => {
+    ['authToken', 'user', 'userID', 'userDetails'].forEach((k) => localStorage.removeItem(k));
+    window.location.href = '/login';
+  };
 
   const onAvatarChange = (e) => {
     const file = e.target.files && e.target.files[0];
@@ -167,7 +172,7 @@ export const Profile = () => {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="pf-page" style={{ display: 'grid', placeItems: 'center' }}>
         <div className="loading-spinner-modern" />
       </div>
     );
@@ -183,357 +188,180 @@ export const Profile = () => {
       return null;
     }
     return (
-      <div className="page-container">
-        <div className="alert-error-modern"><p>{error}</p></div>
-      </div>
+      <div className="pf-page"><div className="pf-inner"><p style={{ color: '#e05252' }}>{error}</p></div></div>
     );
   }
 
   const initials = (name || userDetails?.name || '?').trim().charAt(0).toUpperCase();
+  const renderRoute = (route, withDelete) => (
+    <Link key={route.id} to={`/route/${route.id}`} className="pf-route">
+      {route.thumbnail_url && <img src={route.thumbnail_url} alt={route.title} loading="lazy" />}
+      <div className="pf-route__body">
+        <div className="pf-route__title">{route.title}</div>
+        <div className="pf-route__sub">
+          {route.distance != null ? `${Number(route.distance ?? route.distance_km).toFixed(1)} km` : ''}
+          {(route.distance != null) && (route.duration != null || route.duration_minutes != null) ? ' · ' : ''}
+          {route.duration != null ? `${route.duration} min` : (route.duration_minutes ? formatDuration(route.duration_minutes) : '')}
+        </div>
+      </div>
+      {withDelete && (
+        <button
+          className="pf-route__del"
+          onClick={(e) => deleteRoute(e, route.id)}
+          disabled={deletingId === route.id}
+          title="Obriši rutu"
+        >
+          {deletingId === route.id ? '…' : '🗑'}
+        </button>
+      )}
+    </Link>
+  );
 
   return (
-    <div className="routes-page">
-      <div className="routes-background">
-        <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
-        <div className="routes-overlay" />
-      </div>
-    <div className="page-container" style={{ maxWidth: 760 }}>
+    <div className="pf-page">
+      <div className="pf-inner">
+        <p className="pf-greet">Dobrodošla</p>
+        <h1 className="pf-h1">Moj nalog</h1>
 
-      {/* Hero — avatar + ime + stats */}
-      <div className="glass-card" style={{ textAlign: 'center', padding: '2.5rem 2rem 2rem' }}>
-        {/* Avatar */}
-        <div style={{ position: 'relative', display: 'inline-block', marginBottom: '1.25rem' }}>
-          <div style={{
-            width: 110, height: 110, borderRadius: '50%', overflow: 'hidden',
-            background: 'linear-gradient(135deg, #11998e, #38ef7d)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '2.5rem', fontWeight: 700, color: 'white',
-            border: '3px solid rgba(255,255,255,0.3)',
-            boxShadow: '0 8px 32px rgba(17,153,142,0.4)',
-            margin: '0 auto'
-          }}>
-            {avatarPreview
-              ? <img src={avatarPreview} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : initials}
-          </div>
-          <label style={{
-            position: 'absolute', bottom: 0, right: 0,
-            background: 'linear-gradient(135deg, #11998e, #38ef7d)',
-            borderRadius: '50%', width: 32, height: 32,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', border: '2px solid white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-          }}>
-            <span style={{ fontSize: '0.85rem' }}>📷</span>
-            <input type="file" accept="image/*" onChange={onAvatarChange} style={{ display: 'none' }} />
-          </label>
-        </div>
-
-        <h1 style={{
-          margin: '0 0 0.25rem',
-          fontSize: '1.75rem', fontWeight: 800,
-          background: 'linear-gradient(135deg, #ffffff, #f0fdf4)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
-        }}>
-          {name || userDetails?.name || 'Planinar'}
-        </h1>
-        {(city || country) && (
-          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.95rem', margin: '0 0 1.5rem' }}>
-            📍 {[city, country].filter(Boolean).join(', ')}
-          </p>
-        )}
-
-        {/* Stats */}
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          {[
-            { icon: '🥾', value: `${(userDetails?.total_distance || 0).toFixed(1)} km`, label: 'Prepešačeno' },
-            { icon: '⏱️', value: formatDuration(userDetails?.total_duration || 0), label: 'Vreme u prirodi' },
-            { icon: '🗺️', value: userDetails?.routes_count || 0, label: 'Ruta' },
-          ].map(({ icon, value, label }) => (
-            <div key={label} style={{
-              background: 'rgba(255,255,255,0.08)',
-              border: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: 16, padding: '0.75rem 1.25rem',
-              minWidth: 100, flex: '1 1 100px'
-            }}>
-              <div style={{ fontSize: '1.4rem', marginBottom: 2 }}>{icon}</div>
-              <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#38ef7d' }}>{value}</div>
-              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Forma za uređivanje */}
-      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
-        <h2 style={{ margin: '0 0 1.5rem', fontSize: '1.2rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
-          Uredi profil
-        </h2>
-
-        <form onSubmit={saveProfile}>
-          {[
-            { label: 'Ime', value: name, onChange: setName },
-            { label: 'Grad', value: city, onChange: setCity },
-            { label: 'Zemlja', value: country, onChange: setCountry },
-          ].map(({ label, value, onChange }) => (
-            <div key={label} style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '0.4rem' }}>
-                {label}
-              </label>
-              <input
-                type="text"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                style={{
-                  width: '100%', boxSizing: 'border-box',
-                  padding: '0.75rem 1rem',
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: 12, color: 'white', fontSize: '1rem',
-                  outline: 'none'
-                }}
-              />
-            </div>
-          ))}
-
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '0.4rem' }}>
-              Email
+        {/* profile header */}
+        <div className="pf-card pf-profile">
+          <div className="pf-avatar">
+            {avatarPreview ? <img src={avatarPreview} alt="avatar" /> : initials}
+            <label className="pf-avatar__edit" title="Promeni sliku">
+              📷
+              <input type="file" accept="image/*" onChange={onAvatarChange} style={{ display: 'none' }} />
             </label>
-            <div style={{
-              padding: '0.75rem 1rem',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: 12, color: 'rgba(255,255,255,0.5)', fontSize: '1rem'
-            }}>
-              {userDetails?.email}
-            </div>
           </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '1.5rem' }}>
-            <button type="submit" className="btn-primary-modern" disabled={saving} style={{ borderRadius: 12 }}>
-              {saving ? 'Čuvanje...' : 'Sačuvaj izmene'}
-            </button>
-            {savedMsg && (
-              <span style={{ color: '#38ef7d', fontSize: '0.9rem', fontWeight: 600 }}>✓ {savedMsg}</span>
+          <div className="pf-profile__info">
+            <h2 className="pf-profile__name">{name || userDetails?.name || 'Planinar'}</h2>
+            {userDetails?.email && <p className="pf-profile__email">{userDetails.email}</p>}
+            {(city || country) && (
+              <p className="pf-profile__loc">📍 {[city, country].filter(Boolean).join(', ')}</p>
             )}
           </div>
-        </form>
-      </div>
+        </div>
 
-      {/* Lokacija */}
-      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
-        <h2 style={{ margin: '0 0 1rem', fontSize: '1.2rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
-          Moja lokacija
-        </h2>
-        <LocationTracker />
-      </div>
+        {/* stats */}
+        <div className="pf-stats">
+          <div className="pf-stat">
+            <div className="pf-stat__value pf-stat__value--green">{(userDetails?.total_distance || 0).toFixed(1)}</div>
+            <div className="pf-stat__label">km</div>
+          </div>
+          <div className="pf-stat">
+            <div className="pf-stat__value">{formatDuration(userDetails?.total_duration || 0)}</div>
+            <div className="pf-stat__label">Vreme</div>
+          </div>
+          <div className="pf-stat">
+            <div className="pf-stat__value">{userDetails?.routes_count || 0}</div>
+            <div className="pf-stat__label">Ruta</div>
+          </div>
+        </div>
 
-      {/* Moje rute */}
-      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: myRoutes ? '1.25rem' : 0 }}>
-          <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
-            Moje rute
-          </h2>
-          {myRoutes === null && (
-            <button
-              className="btn-secondary-modern"
-              style={{ borderRadius: '999px', padding: '0.45rem 1.2rem', fontSize: '0.875rem' }}
-              onClick={loadMyRoutes}
-              disabled={routesLoading}
-            >
-              {routesLoading ? 'Učitavanje...' : 'Prikaži'}
-            </button>
+        {/* edit form */}
+        <div className="pf-card">
+          <h3 className="pf-card-title">Uredi profil</h3>
+          <form onSubmit={saveProfile}>
+            <div className="pf-field">
+              <label>Ime i prezime</label>
+              <input className="pf-input" type="text" value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div className="pf-row2">
+              <div className="pf-field">
+                <label>Grad</label>
+                <input className="pf-input" type="text" value={city} onChange={(e) => setCity(e.target.value)} />
+              </div>
+              <div className="pf-field">
+                <label>Zemlja</label>
+                <input className="pf-input" type="text" value={country} onChange={(e) => setCountry(e.target.value)} />
+              </div>
+            </div>
+            <div className="pf-field">
+              <label>Email</label>
+              <div className="pf-readonly">{userDetails?.email}</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <button type="submit" className="pf-btn-primary" disabled={saving} style={{ width: 'auto', padding: '0.8rem 1.6rem' }}>
+                {saving ? 'Čuvanje...' : 'Sačuvaj'}
+              </button>
+              {savedMsg && <span className="pf-saved">✓ {savedMsg}</span>}
+            </div>
+          </form>
+        </div>
+
+        {/* location */}
+        <div className="pf-card">
+          <h3 className="pf-card-title">Moja lokacija</h3>
+          <LocationTracker />
+        </div>
+
+        {/* my routes */}
+        <div className="pf-card">
+          <div className="pf-card-head">
+            <h3 className="pf-card-title" style={{ margin: 0 }}>Moje rute</h3>
+            {myRoutes === null ? (
+              <button className="pf-btn-ghost" onClick={loadMyRoutes} disabled={routesLoading}>
+                {routesLoading ? 'Učitavanje...' : 'Prikaži'}
+              </button>
+            ) : (
+              <span className="pf-count">{myRoutes.length} ruta</span>
+            )}
+          </div>
+          {routesError && <p className="pf-empty">{routesError}</p>}
+          {myRoutes !== null && myRoutes.length === 0 && (
+            <p className="pf-empty">Još nemaš ruta. <Link to="/new-route">Dodaj prvu →</Link></p>
           )}
-          {myRoutes !== null && (
-            <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
-              {myRoutes.length} {myRoutes.length === 1 ? 'ruta' : 'ruta'}
-            </span>
+          {myRoutes && myRoutes.length > 0 && (
+            <div className="pf-routes">{myRoutes.map((r) => renderRoute(r, true))}</div>
           )}
         </div>
 
-        {routesError && (
-          <p style={{ color: '#ffb4b4', fontSize: '0.9rem', margin: '0.75rem 0 0' }}>{routesError}</p>
-        )}
+        {/* saved routes */}
+        <div className="pf-card">
+          <div className="pf-card-head">
+            <h3 className="pf-card-title" style={{ margin: 0 }}>Sačuvane rute</h3>
+            {savedRoutes === null ? (
+              <button className="pf-btn-ghost" onClick={loadSavedRoutes} disabled={savedRoutesLoading}>
+                {savedRoutesLoading ? 'Učitavanje...' : 'Prikaži'}
+              </button>
+            ) : (
+              <span className="pf-count">{savedRoutes.length} ruta</span>
+            )}
+          </div>
+          {savedRoutes !== null && savedRoutes.length === 0 && (
+            <p className="pf-empty">Još nisi sačuvala rute. <Link to="/routes">Istraži →</Link></p>
+          )}
+          {savedRoutes && savedRoutes.length > 0 && (
+            <div className="pf-routes">{savedRoutes.map((r) => renderRoute(r, false))}</div>
+          )}
+        </div>
 
-        {myRoutes !== null && myRoutes.length === 0 && (
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.95rem', margin: 0 }}>
-            Još nemaš sačuvanih ruta.{' '}
-            <Link to="/new-route" style={{ color: '#38ef7d', textDecoration: 'none', fontWeight: 600 }}>
-              Dodaj prvu →
-            </Link>
-          </p>
-        )}
-
-        {myRoutes && myRoutes.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {myRoutes.map((route) => (
-              <Link
-                key={route.id}
-                to={`/route/${route.id}`}
-                style={{ textDecoration: 'none' }}
-              >
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: '0.75rem',
-                  padding: '0.75rem 1rem',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 12,
-                  transition: 'background 0.15s',
-                }}>
-                  {route.thumbnail_url && (
-                    <img
-                      src={route.thumbnail_url}
-                      alt={route.title}
-                      style={{ width: 52, height: 52, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
-                    />
-                  )}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {route.title}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
-                      {route.distance_km ? `${parseFloat(route.distance_km).toFixed(1)} km` : ''}
-                      {route.distance_km && route.duration_minutes ? ' · ' : ''}
-                      {route.duration_minutes ? formatDuration(route.duration_minutes) : ''}
-                    </div>
-                  </div>
-                  <button
-                    onClick={(e) => deleteRoute(e, route.id)}
-                    disabled={deletingId === route.id}
-                    style={{
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      color: 'rgba(255,100,100,0.6)', fontSize: '1.1rem',
-                      padding: '4px 6px', flexShrink: 0, lineHeight: 1,
-                    }}
-                    title="Obriši rutu"
-                  >
-                    {deletingId === route.id ? '…' : '🗑'}
-                  </button>
-                  <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1rem' }}>›</span>
-                </div>
-              </Link>
-            ))}
+        {/* admin */}
+        {userDetails?.role === 'admin' && (
+          <div className="pf-card">
+            <h3 className="pf-card-title">Administracija</h3>
+            <Link to="/admin" className="pf-btn-ghost" style={{ display: 'inline-block' }}>Admin panel →</Link>
           </div>
         )}
-      </div>
 
-      {/* Sačuvane rute */}
-      <div className="glass-card" style={{ marginTop: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: savedRoutes ? '1.25rem' : 0 }}>
-          <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#8FA31E" stroke="#8FA31E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
-            </svg>
-            Sačuvane rute
-          </h2>
-          {savedRoutes === null && (
-            <button
-              className="btn-secondary-modern"
-              style={{ borderRadius: '999px', padding: '0.45rem 1.2rem', fontSize: '0.875rem' }}
-              onClick={loadSavedRoutes}
-              disabled={savedRoutesLoading}
-            >
-              {savedRoutesLoading ? 'Učitavanje...' : 'Prikaži'}
-            </button>
-          )}
-          {savedRoutes !== null && (
-            <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
-              {savedRoutes.length} {savedRoutes.length === 1 ? 'ruta' : 'ruta'}
-            </span>
-          )}
-        </div>
-
-        {savedRoutes !== null && savedRoutes.length === 0 && (
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.95rem', margin: 0 }}>
-            Još nisi sačuvala nijednu rutu.{' '}
-            <Link to="/routes" style={{ color: '#38ef7d', textDecoration: 'none', fontWeight: 600 }}>
-              Istraži rute →
-            </Link>
-          </p>
-        )}
-
-        {savedRoutes && savedRoutes.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {savedRoutes.map((route) => (
-              <Link key={route.id} to={`/route/${route.id}`} style={{ textDecoration: 'none' }}>
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: '0.75rem',
-                  padding: '0.75rem 1rem',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  borderRadius: 12,
-                  transition: 'background 0.15s',
-                }}>
-                  {route.thumbnail_url && (
-                    <img src={route.thumbnail_url} alt={route.title}
-                      style={{ width: 52, height: 52, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }} />
-                  )}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, color: 'rgba(255,255,255,0.9)', fontSize: '0.95rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {route.title}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>
-                      {route.distance ? `${Number(route.distance).toFixed(1)} km` : ''}
-                      {route.distance && route.duration ? ' · ' : ''}
-                      {route.duration ? `${route.duration} min` : ''}
-                    </div>
-                  </div>
-                  <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '1rem' }}>›</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Admin — pregled prijava */}
-      {userDetails?.role === 'admin' && (
-        <div className="glass-card" style={{ marginTop: '1.5rem' }}>
-          <h2 style={{ margin: '0 0 0.75rem', fontSize: '1.2rem', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
-            🛡️ Administracija
-          </h2>
-          <Link to="/admin" className="btn-secondary-modern" style={{ borderRadius: 8, display: 'inline-block' }}>
-            Admin panel →
-          </Link>
-        </div>
-      )}
-
-      {/* Danger zone */}
-      <div className="glass-card" style={{ marginTop: '1.5rem', borderColor: 'rgba(239,68,68,0.3)' }}>
-        <h2 style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: 700, color: 'rgba(255,100,100,0.85)' }}>
-          Brisanje naloga
-        </h2>
-        <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', color: 'rgba(255,255,255,0.5)' }}>
-          Brisanje naloga je trajno. Svi tvoji podaci, rute i slike biće nepovratno obrisani.
-        </p>
-        <button
-          onClick={deleteAccount}
-          disabled={deletingAccount}
-          style={{
-            background: 'linear-gradient(135deg, #c62828, #e53935)',
-            color: 'white',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            cursor: deletingAccount ? 'not-allowed' : 'pointer',
-            fontSize: '0.9rem',
-            fontWeight: 600,
-            opacity: deletingAccount ? 0.7 : 1,
-          }}
-        >
-          {deletingAccount ? 'Brisanje...' : '🗑️ Obriši nalog'}
+        {/* logout */}
+        <button className="pf-btn-logout" onClick={handleLogout}>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /></svg>
+          Odjavi se
         </button>
-      </div>
 
-      {/* Footer */}
-      <div style={{ textAlign: 'center', padding: '1rem 0 2rem', fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)' }}>
-        <Link to="/privacy-policy" style={{ color: 'rgba(255,255,255,0.45)', textDecoration: 'underline' }}>
-          Politika privatnosti
-        </Link>
-      </div>
+        {/* danger */}
+        <div className="pf-card pf-danger">
+          <h3 className="pf-card-title">Brisanje naloga</h3>
+          <p>Brisanje naloga je trajno. Svi tvoji podaci, rute i slike biće nepovratno obrisani.</p>
+          <button className="pf-btn-danger" onClick={deleteAccount} disabled={deletingAccount}>
+            {deletingAccount ? 'Brisanje...' : '🗑 Obriši nalog'}
+          </button>
+        </div>
 
-    </div>
+        <div className="pf-footer">
+          <Link to="/privacy-policy">Politika privatnosti</Link>
+        </div>
+      </div>
     </div>
   );
 };

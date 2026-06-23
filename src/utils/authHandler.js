@@ -31,14 +31,19 @@ export const isAuthenticated = () => {
 
 export const getCurrentUserID = () => {
   const userID = localStorage.getItem('userID');
-  if (userID) {
-    try {
-      return userID;
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      return null;
-    }
-  }
+  if (userID) return userID;
+
+  // Fallback: id may live under `user` or `userDetails` (web login path
+  // doesn't always set the standalone `userID` key).
+  try {
+    const u = JSON.parse(localStorage.getItem('user') || 'null');
+    if (u?.id != null) return String(u.id);
+  } catch { /* ignore */ }
+  try {
+    const det = JSON.parse(localStorage.getItem('userDetails') || 'null');
+    if (det?.id != null) return String(det.id);
+  } catch { /* ignore */ }
+
   return null;
 };
 

@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
-import '../styles/EditRoute.css';
+import '../styles/AddForm.css';
 
 export const EditRoute = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+  const fileInputRef = useRef(null);
+
   const [route, setRoute] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -153,229 +154,125 @@ export const EditRoute = () => {
 
   if (loading) {
     return (
-      <div className="edit-route-container">
-        <div className="loading">Loading route data...</div>
+      <div className="af-page" style={{ display: 'grid', placeItems: 'center' }}>
+        <div className="af-spin" style={{ borderTopColor: '#50c878', borderColor: 'rgba(80,200,120,0.25)' }} />
       </div>
     );
   }
 
   if (error && !route) {
     return (
-      <div className="edit-route-container">
-        <div className="error">{error}</div>
-      </div>
+      <div className="af-page"><div className="af-inner"><p className="af-msg error">{error}</p></div></div>
     );
   }
 
+  const gps = route?.calculated_from_points;
+
   return (
-    <div className="edit-route-container">
-      <div className="edit-route-header">
-        <h1>Edit Route</h1>
-        <p>Update the details of your hiking route</p>
-      </div>
+    <div className="af-page">
+      <div className="af-inner">
+        <button type="button" className="af-back" onClick={handleCancel}>← Nazad</button>
+        <h1 className="af-h1">Izmeni rutu</h1>
 
-      <form onSubmit={handleSubmit} className="edit-route-form">
-        {error && <div className="error-message">{error}</div>}
-        
-        {route?.calculated_from_points && (
-          <div className="info-message">
-            <strong>📍 GPS Tracking Detected:</strong> Distance and duration are automatically calculated from your GPS tracking points and cannot be manually edited.
+        <form onSubmit={handleSubmit}>
+          {error && <p className="af-msg error" style={{ marginTop: 0, marginBottom: '1rem' }}>{error}</p>}
+
+          {gps && (
+            <div className="af-info">📍 Distanca i trajanje se računaju iz GPS tačaka i ne mogu se ručno menjati.</div>
+          )}
+
+          <div className="af-field">
+            <label className="af-label">Naziv *</label>
+            <input className="af-input" type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="Naziv rute" />
           </div>
-        )}
-        
-        <div className="form-group">
-          <label htmlFor="title">Route Title *</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            required
-            placeholder="Enter route title"
-          />
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="description">Description</label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            rows="4"
-            placeholder="Describe your hiking route..."
-          />
-        </div>
+          <div className="af-field">
+            <label className="af-label">Opis</label>
+            <textarea className="af-textarea" name="description" value={formData.description} onChange={handleInputChange} placeholder="Opišite rutu..." />
+          </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="difficulty">Difficulty</label>
-            <select
-              id="difficulty"
-              name="difficulty"
-              value={formData.difficulty}
-              onChange={handleInputChange}
-            >
-              <option value="easy">Easy</option>
-              <option value="medium">Medium</option>
-              <option value="hard">Hard</option>
+          <div className="af-field">
+            <label className="af-label">Težina</label>
+            <select className="af-select" name="difficulty" value={formData.difficulty} onChange={handleInputChange}>
+              <option value="easy">Laka</option>
+              <option value="medium">Srednja</option>
+              <option value="hard">Teška</option>
             </select>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="duration">
-              Duration (minutes)
-              {route?.calculated_from_points && (
-                <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 Calculated from GPS</small>
-              )}
-            </label>
-            <input
-              type="number"
-              id="duration"
-              name="duration"
-              value={formData.duration}
-              onChange={handleInputChange}
-              min="0"
-              placeholder="120"
-              disabled={route?.calculated_from_points}
-              style={{
-                backgroundColor: route?.calculated_from_points ? '#f8f9fa' : 'white',
-                cursor: route?.calculated_from_points ? 'not-allowed' : 'text'
-              }}
-            />
-            {route?.calculated_from_points && (
-              <small style={{ color: '#6c757d', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>
-                This value is automatically calculated from your GPS tracking points
-              </small>
-            )}
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="distance">
-              Distance (km)
-              {route?.calculated_from_points && (
-                <small style={{ color: '#28a745', marginLeft: '5px' }}>📍 Calculated from GPS</small>
-              )}
-            </label>
-            <input
-              type="number"
-              id="distance"
-              name="distance"
-              value={formData.distance}
-              onChange={handleInputChange}
-              min="0"
-              step="0.1"
-              placeholder="5.2"
-              disabled={route?.calculated_from_points}
-              style={{
-                backgroundColor: route?.calculated_from_points ? '#f8f9fa' : 'white',
-                cursor: route?.calculated_from_points ? 'not-allowed' : 'text'
-              }}
-            />
-            {route?.calculated_from_points && (
-              <small style={{ color: '#6c757d', fontSize: '0.8rem', marginTop: '4px', display: 'block' }}>
-                This value is automatically calculated from your GPS tracking points
-              </small>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="best_time_to_visit">Best Time to Visit</label>
-            <input
-              type="text"
-              id="best_time_to_visit"
-              name="best_time_to_visit"
-              value={formData.best_time_to_visit}
-              onChange={handleInputChange}
-              placeholder="Spring, Summer"
-            />
-          </div>
-        </div>
-
-        {/* Images Section */}
-        <div className="form-section">
-          <h3>Slike rute</h3>
-          
-          {/* Existing Images */}
-          {existingImages.length > 0 && (
-            <div className="existing-images">
-              <h4>Postojeće slike:</h4>
-              <div className="images-grid">
-                {existingImages.map((imageUrl, index) => (
-                  <div key={index} className="image-preview">
-                    <img src={imageUrl} alt={`Ruta ${index + 1}`} />
-                    <button
-                      type="button"
-                      className="remove-image-btn"
-                      onClick={() => removeExistingImage(index)}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
+          <div className="af-row2">
+            <div className="af-field" style={{ flex: 1 }}>
+              <label className="af-label">Trajanje (min){gps ? ' · GPS' : ''}</label>
+              <input className={`af-input ${gps ? 'af-disabled' : ''}`} type="number" name="duration" value={formData.duration} onChange={handleInputChange} min="0" placeholder="120" disabled={gps} />
             </div>
-          )}
+            <div className="af-field" style={{ flex: 1 }}>
+              <label className="af-label">Dužina (km){gps ? ' · GPS' : ''}</label>
+              <input className={`af-input ${gps ? 'af-disabled' : ''}`} type="number" name="distance" value={formData.distance} onChange={handleInputChange} min="0" step="0.1" placeholder="5.2" disabled={gps} />
+            </div>
+          </div>
 
-          {/* New Images Upload */}
-          <div className="new-images">
-            <label htmlFor="images">Dodaj nove slike:</label>
-            <input
-              type="file"
-              id="images"
-              name="images"
-              multiple
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-            
-            {selectedImages.length > 0 && (
-              <div className="selected-images">
-                <h4>Nove slike za upload:</h4>
-                <div className="images-grid">
-                  {selectedImages.map((file, index) => (
-                    <div key={index} className="image-preview">
-                      <img 
-                        src={URL.createObjectURL(file)} 
-                        alt={`Nova ruta ${index + 1}`} 
-                      />
-                      <button
-                        type="button"
-                        className="remove-image-btn"
-                        onClick={() => removeSelectedImage(index)}
-                      >
-                        ✕
-                      </button>
-                      <span className="image-name">{file.name}</span>
+          <div className="af-field">
+            <label className="af-label">Najbolje vreme za posetu</label>
+            <input className="af-input" type="text" name="best_time_to_visit" value={formData.best_time_to_visit} onChange={handleInputChange} placeholder="Proleće, Leto" />
+          </div>
+
+          {/* Images */}
+          <div className="af-field">
+            <label className="af-label">Slike rute</label>
+            {existingImages.length > 0 && (
+              <>
+                <p className="af-subtitle">Postojeće slike</p>
+                <div className="af-imggrid" style={{ marginBottom: '0.9rem' }}>
+                  {existingImages.map((imageUrl, index) => (
+                    <div key={index} className="af-imgcell">
+                      <img src={imageUrl} alt={`Ruta ${index + 1}`} />
+                      <button type="button" className="af-imgremove" onClick={() => removeExistingImage(index)}>✕</button>
                     </div>
                   ))}
                 </div>
-              </div>
+              </>
+            )}
+
+            <div
+              className="af-drop"
+              role="button"
+              tabIndex={0}
+              onClick={() => fileInputRef.current && fileInputRef.current.click()}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current && fileInputRef.current.click(); } }}
+            >
+              <span className="af-drop__ic">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z" /><circle cx="12" cy="13" r="3.5" /></svg>
+              </span>
+              <span>
+                <p className="af-drop__t">Dodaj nove slike</p>
+                <p className="af-drop__s">Kliknite da izaberete slike</p>
+              </span>
+            </div>
+            <input ref={fileInputRef} type="file" name="images" multiple accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
+
+            {selectedImages.length > 0 && (
+              <>
+                <p className="af-subtitle" style={{ marginTop: '0.9rem' }}>Nove slike</p>
+                <div className="af-imggrid">
+                  {selectedImages.map((file, index) => (
+                    <div key={index} className="af-imgcell">
+                      <img src={URL.createObjectURL(file)} alt={`Nova ${index + 1}`} />
+                      <button type="button" className="af-imgremove" onClick={() => removeSelectedImage(index)}>✕</button>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
-        </div>
 
-        <div className="form-actions">
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="btn-cancel"
-            disabled={saving}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="btn-save"
-            disabled={saving}
-          >
-            {saving ? 'Saving...' : 'Save Changes'}
-          </button>
-        </div>
-      </form>
+          <div className="af-actions">
+            <button type="button" className="af-cancel" onClick={handleCancel} disabled={saving}>Otkaži</button>
+            <button type="submit" className="af-submit" disabled={saving}>
+              {saving ? <><span className="af-spin" /> Čuvanje...</> : 'Sačuvaj izmene'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

@@ -27,7 +27,9 @@ const server: NonNullable<CapacitorConfig['server']> = {
   ...(liveUrl
     ? {
         url: liveUrl,
-        cleartext: false,
+        // Allow cleartext only for local http dev (e.g. http://localhost:3001 over adb reverse);
+        // stays strict for https production URLs.
+        cleartext: liveUrl.startsWith('http://'),
       }
     : {}),
 };
@@ -41,7 +43,7 @@ const config: CapacitorConfig = {
     SplashScreen: {
       launchShowDuration: 2500,
       launchAutoHide: true,
-      backgroundColor: '#ffffff',
+      backgroundColor: '#0B0F0D',
       androidScaleType: 'CENTER_INSIDE',
       showSpinner: false,
       splashFullScreen: true,

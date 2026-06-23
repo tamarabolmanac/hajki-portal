@@ -1,0 +1,40 @@
+/* UserProfile — reuses the dark `pf-` design system (Profile.css) and adds
+   the follow / report / block action row specific to other hikers. */
+
+.up-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.up-btn {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px; cursor: pointer;
+  font-family: inherit; font-weight: 700; font-size: 0.88rem;
+  border: 1px solid var(--border);
+  background: #1a221c; color: #e4ebe5;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.up-btn:hover { border-color: rgba(80, 200, 120, 0.4); }
+
+/* primary follow CTA */
+.up-btn--follow {
+  background: var(--g); color: #06210c; border-color: transparent;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.up-btn--follow:hover { background: #61d488; }
+
+/* following (toggle to unfollow) */
+.up-btn--following {
+  background: transparent; color: var(--g); border-color: rgba(80, 200, 120, 0.4);
+}
+
+.up-btn--muted { color: var(--muted); }
+.up-btn--muted:hover { color: #e4ebe5; border-color: rgba(255, 255, 255, 0.2); }
+
+.up-btn--danger { color: #ff9b9b; border-color: rgba(224, 82, 82, 0.35); }
+.up-btn--danger:hover { color: #ff9b9b; border-color: rgba(224, 82, 82, 0.6); background: rgba(224, 82, 82, 0.08); }
+
+.up-me-tag { color: var(--muted); font-size: 0.85rem; font-weight: 400; }

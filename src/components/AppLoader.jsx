@@ -1,15 +1,27 @@
 import React from 'react';
+import '../styles/AppLoader.css';
+
+const Mountain = () => (
+  <svg className="hjk-loader__mtn" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
+  </svg>
+);
 
 export const AppLoader = ({ title = 'Učitavanje...', subtitle = '', compact = false }) => {
   return (
-    <div className={`app-loader-shell ${compact ? 'app-loader-shell-compact' : ''}`}>
-      <div className="app-loader-card">
-        <div className="app-loader-logo-wrap" aria-hidden="true">
-          <div className="app-loader-ring" />
-          <img src="/img/small-logo.png" alt="" className="app-loader-logo" />
+    <div className={`hjk-loader ${compact ? 'hjk-loader--compact' : ''}`}>
+      <div className="hjk-loader__card">
+        <div className="hjk-loader__ringwrap" aria-hidden="true">
+          <svg className="hjk-loader__ring" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(80,200,120,0.15)" strokeWidth="4" />
+            <circle cx="40" cy="40" r="36" fill="none" stroke="#50C878" strokeWidth="4" strokeDasharray="60 165" strokeLinecap="round" />
+          </svg>
+          <Mountain />
         </div>
-        <h2 className="app-loader-title">{title}</h2>
-        {subtitle ? <p className="app-loader-subtitle">{subtitle}</p> : null}
+        <div className="hjk-loader__text">
+          <p className="hjk-loader__title">{title}</p>
+          {subtitle ? <p className="hjk-loader__sub">{subtitle}</p> : null}
+        </div>
       </div>
     </div>
   );

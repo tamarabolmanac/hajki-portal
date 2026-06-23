@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { config } from '../config';
 import { authenticatedFetch } from '../utils/api';
-import { BackgroundImage } from './BackgroundImage';
-import '../styles/RoutesList.css';
+import '../styles/Profile.css';
+import '../styles/UserProfile.css';
 
 const formatDuration = (minutes) => {
   if (!minutes) return '0h 0min';
@@ -107,33 +107,22 @@ export const UserProfile = () => {
 
   if (loading) {
     return (
-      <div className="routes-page">
-        <div className="routes-background">
-          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
-          <div className="routes-overlay" />
-        </div>
-        <div className="page-container">
-          <div className="loading-container" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div className="loading-spinner-modern" />
-          </div>
-        </div>
+      <div className="pf-page" style={{ display: 'grid', placeItems: 'center' }}>
+        <div className="loading-spinner-modern" />
       </div>
     );
   }
 
   if (error || !user) {
     return (
-      <div className="routes-page">
-        <div className="routes-background">
-          <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
-          <div className="routes-overlay" />
-        </div>
-        <div className="page-container">
-          <div className="alert-error-modern">
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.5rem' }}>⚠️ Greška</h3>
-            <p style={{ margin: 0, fontSize: '1.1rem' }}>{error || 'Korisnik nije pronađen.'}</p>
-            <Link to="/routes" className="btn-primary-modern" style={{ marginTop: '1rem', display: 'inline-block' }}>
-              Nazad na rute
+      <div className="pf-page">
+        <div className="pf-inner">
+          <p className="pf-greet">Profil</p>
+          <h1 className="pf-h1">Greška</h1>
+          <div className="pf-card">
+            <p style={{ color: 'var(--muted)', margin: '0 0 1rem' }}>{error || 'Korisnik nije pronađen.'}</p>
+            <Link to="/routes" className="pf-btn-ghost" style={{ display: 'inline-block' }}>
+              ← Nazad na rute
             </Link>
           </div>
         </div>
@@ -141,156 +130,90 @@ export const UserProfile = () => {
     );
   }
 
+  const location = [user.city, user.country].filter((v) => v && v !== 'Unknown').join(', ');
+
   return (
-    <div className="routes-page">
-      <div className="routes-background">
-        <BackgroundImage src="/img/routes-bgd.jpg" alt="" className="routes-bg-image" fetchPriority="low" />
-        <div className="routes-overlay" />
-      </div>
+    <div className="pf-page">
+      <div className="pf-inner">
+        <p className="pf-greet">Profil planinara</p>
+        <h1 className="pf-h1">
+          {user.name}
+          {user.is_me && <span className="up-me-tag"> (ti)</span>}
+        </h1>
 
-      <div className="page-container">
-        <div className="page-header clean">
-          <h1>Profil planinara</h1>
-        </div>
-
-        <div className="glass-card" style={{ textAlign: 'center', padding: '2rem' }}>
-          {/* Avatar */}
-          <div style={{
-            width: 100, height: 100, borderRadius: '50%', overflow: 'hidden',
-            background: 'linear-gradient(135deg, #11998e, #38ef7d)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '2.2rem', fontWeight: 700, color: 'white',
-            border: '3px solid rgba(255,255,255,0.3)',
-            boxShadow: '0 8px 32px rgba(17,153,142,0.4)',
-            margin: '0 auto 1rem'
-          }}>
+        {/* profile header card */}
+        <div className="pf-card pf-profile">
+          <div className="pf-avatar">
             {user.avatar_url
-              ? <img src={user.avatar_url} alt={user.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ? <img src={user.avatar_url} alt={user.name} />
               : (user.name || '?').trim().charAt(0).toUpperCase()}
           </div>
+          <div className="pf-profile__info">
+            <h2 className="pf-profile__name">{user.name}</h2>
+            {location && <p className="pf-profile__loc">📍 {location}</p>}
 
-          <h2 style={{
-            margin: '0 0 0.25rem', fontSize: '1.6rem', fontWeight: 800,
-            background: 'linear-gradient(135deg, #ffffff, #f0fdf4)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
-          }}>
-            {user.name}
-            {user.is_me && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', fontWeight: 400, WebkitTextFillColor: 'rgba(255,255,255,0.5)' }}> (ti)</span>}
-          </h2>
-
-          {(user.city || user.country) && (
-            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', margin: '0 0 1.25rem' }}>
-              📍 {[user.city, user.country].filter(v => v && v !== 'Unknown').join(', ') || 'Nije uneto'}
-            </p>
-          )}
-
-          {/* Stats */}
-          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
-            {[
-              { icon: '🥾', value: `${(user.total_distance || 0).toFixed(1)} km`, label: 'Prepešačeno' },
-              { icon: '⏱️', value: formatDuration(user.total_duration || 0), label: 'Vreme u prirodi' },
-              { icon: '🗺️', value: user.routes_count || 0, label: 'Ruta' },
-            ].map(({ icon, value, label }) => (
-              <div key={label} style={{
-                background: 'rgba(255,255,255,0.08)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                borderRadius: 14, padding: '0.65rem 1rem', minWidth: 90, flex: '1 1 90px'
-              }}>
-                <div style={{ fontSize: '1.2rem', marginBottom: 2 }}>{icon}</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', color: '#38ef7d' }}>{value}</div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{label}</div>
+            {!user.is_me && user.is_following !== undefined && (
+              <div className="up-actions">
+                <button
+                  type="button"
+                  className={`up-btn ${user.is_following ? 'up-btn--following' : 'up-btn--follow'}`}
+                  onClick={toggleFollow}
+                >
+                  {user.is_following ? 'Otprati' : 'Prati'}
+                </button>
+                <button type="button" className="up-btn up-btn--muted" onClick={reportUser}>
+                  ⚠️ Prijavi
+                </button>
+                <button type="button" className="up-btn up-btn--danger" onClick={blockUser}>
+                  🚫 Blokiraj
+                </button>
               </div>
-            ))}
+            )}
           </div>
-
-          {!user.is_me && user.is_following !== undefined && (
-            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-              <button
-                type="button"
-                className={user.is_following ? 'btn-unfollow' : 'btn-primary-modern'}
-                style={{ borderRadius: 10, padding: '0.65rem 1.5rem' }}
-                onClick={toggleFollow}
-              >
-                {user.is_following ? 'Otprati' : 'Prati'}
-              </button>
-              <button
-                type="button"
-                onClick={reportUser}
-                style={{ background: 'transparent', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 10, padding: '0.65rem 1rem', cursor: 'pointer', fontSize: '0.85rem' }}
-              >
-                ⚠️ Prijavi
-              </button>
-              <button
-                type="button"
-                onClick={blockUser}
-                style={{ background: 'transparent', color: '#ff9b9b', border: '1px solid rgba(198,40,40,0.4)', borderRadius: 10, padding: '0.65rem 1rem', cursor: 'pointer', fontSize: '0.85rem' }}
-              >
-                🚫 Blokiraj
-              </button>
-            </div>
-          )}
         </div>
 
-        {/* Rute ovog korisnika */}
-        <div className="glass-card" style={{ marginTop: '2rem' }}>
-          <div className="header-with-button" style={{ marginBottom: '1rem' }}>
-            <h2 style={{ margin: 0, fontSize: '1.4rem', color: '#ffffff' }}>
-              Rute ovog planinara
-            </h2>
+        {/* stats */}
+        <div className="pf-stats">
+          <div className="pf-stat">
+            <div className="pf-stat__value pf-stat__value--green">{(user.total_distance || 0).toFixed(1)}</div>
+            <div className="pf-stat__label">km prepešačeno</div>
           </div>
+          <div className="pf-stat">
+            <div className="pf-stat__value">{formatDuration(user.total_duration || 0)}</div>
+            <div className="pf-stat__label">Vreme u prirodi</div>
+          </div>
+          <div className="pf-stat">
+            <div className="pf-stat__value">{user.routes_count || 0}</div>
+            <div className="pf-stat__label">Ruta</div>
+          </div>
+        </div>
+
+        {/* routes */}
+        <div className="pf-card">
+          <h3 className="pf-card-title">Rute ovog planinara</h3>
 
           {!user.routes || user.routes.length === 0 ? (
-            <p className="hike-description" style={{ marginBottom: 0 }}>
-              Ovaj korisnik još uvek nije podelio nijednu rutu.
-            </p>
+            <p className="pf-empty">Ovaj korisnik još uvek nije podelio nijednu rutu.</p>
           ) : (
-            <div className="hike-cards-container">
+            <div className="pf-routes">
               {user.routes.map((route) => (
-                <div key={route.id} className="hike-card">
-                  <div className="hike-card-content">
-                    <h3 className="hike-title" style={{ marginBottom: '0.4rem' }}>
-                      {route.title}
-                    </h3>
-                    {route.description && (
-                      <p className="hike-description">
-                        {route.description.length > 140
-                          ? `${route.description.slice(0, 140)}…`
-                          : route.description}
-                      </p>
-                    )}
-                    <div className="hike-details">
-                      <span className="hike-duration">
-                        🕒{` ${(route.duration || 0)} min`}
-                      </span>
-                      <span className="hike-distance">
-                        🥾{` ${(route.distance || 0).toFixed ? route.distance.toFixed(2) : Number(route.distance || 0).toFixed(2)} km`}
-                      </span>
-                      <span className="hike-points">
-                        📍{` ${route.points_count || 0} tačaka`}
-                      </span>
+                <Link key={route.id} to={`/route/${route.id}`} className="pf-route">
+                  {route.thumbnail_url && <img src={route.thumbnail_url} alt={route.title} loading="lazy" />}
+                  <div className="pf-route__body">
+                    <div className="pf-route__title">{route.title}</div>
+                    <div className="pf-route__sub">
+                      {Number(route.distance || 0).toFixed(2)} km · {route.duration || 0} min · {route.points_count || 0} tačaka
                     </div>
                   </div>
-                  <div className="hike-card-footer">
-                    <Link
-                      to={`/route/${route.id}`}
-                      className="btn-primary-modern"
-                      style={{ borderRadius: '8px' }}
-                    >
-                      Pogledaj rutu
-                    </Link>
-                  </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
-
-          <div style={{ marginTop: '1.5rem' }}>
-            <Link to="/routes" className="btn-secondary-modern" style={{ borderRadius: 8 }}>
-              ← Nazad na rute
-            </Link>
-          </div>
         </div>
 
+        <Link to="/routes" className="pf-btn-ghost" style={{ display: 'inline-block' }}>
+          ← Nazad na rute
+        </Link>
       </div>
     </div>
   );

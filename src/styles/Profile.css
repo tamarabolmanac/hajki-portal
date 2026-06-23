@@ -1,0 +1,120 @@
+/* Profile — dark account screen matching the Figma design. `pf-` scoped. */
+.pf-page {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  z-index: 5;
+  background: #0b0f0d;
+  color: #e4ebe5;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: calc(var(--app-nav-clearance, 80px) + 12px) 0 calc(env(safe-area-inset-bottom, 0px) + 110px);
+  --g: #50c878;
+  --card: #141a16;
+  --muted: #6b7f6d;
+  --border: rgba(255, 255, 255, 0.08);
+  --red: #e05252;
+}
+.pf-inner { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+.pf-greet { color: var(--g); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; margin: 0 0 0.3rem; }
+.pf-h1 { font-size: 2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; margin: 0 0 1.5rem; }
+
+.pf-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+.pf-card-title { color: var(--muted); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; margin: 0 0 1rem; }
+
+/* profile header card */
+.pf-profile { display: flex; align-items: center; gap: 1rem; }
+.pf-avatar {
+  position: relative; width: 72px; height: 72px; border-radius: 50%;
+  overflow: hidden; flex-shrink: 0;
+  background: #1e2820; border: 2px solid rgba(80, 200, 120, 0.4);
+  display: grid; place-items: center; font-size: 1.6rem; font-weight: 800; color: var(--g);
+}
+.pf-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.pf-avatar__edit {
+  position: absolute; bottom: -2px; right: -2px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--g); color: #06210c; border: 2px solid #0b0f0d;
+  display: grid; place-items: center; cursor: pointer; font-size: 0.75rem;
+}
+.pf-profile__info { flex: 1; min-width: 0; }
+.pf-profile__name { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.01em; margin: 0; }
+.pf-profile__email { color: var(--muted); font-size: 0.82rem; margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pf-profile__loc { color: var(--muted); font-size: 0.82rem; margin: 4px 0 0; display: flex; align-items: center; gap: 0.3rem; }
+
+/* stats */
+.pf-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 18px; }
+.pf-stat { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 10px; text-align: center; }
+.pf-stat__value { font-size: 1.5rem; font-weight: 800; }
+.pf-stat__value--green { color: var(--g); }
+.pf-stat__label { color: var(--muted); font-size: 0.72rem; margin-top: 4px; }
+
+/* form */
+.pf-field { margin-bottom: 1rem; }
+.pf-field label { display: block; color: var(--muted); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.45rem; }
+.pf-input, .pf-readonly {
+  width: 100%; box-sizing: border-box; padding: 0.8rem 1rem;
+  border-radius: 12px; font-size: 0.95rem; font-family: inherit; outline: none;
+  background: #1a221c; border: 1px solid var(--border); color: #e4ebe5;
+}
+.pf-input:focus { border-color: rgba(80, 200, 120, 0.5); }
+.pf-readonly { color: var(--muted); }
+.pf-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.pf-btn-primary {
+  width: 100%; padding: 0.85rem; border: none; border-radius: 12px; cursor: pointer;
+  background: var(--g); color: #06210c; font-family: inherit;
+  font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.9rem;
+}
+.pf-btn-primary:disabled { opacity: 0.6; cursor: default; }
+.pf-btn-ghost {
+  background: transparent; border: 1px solid rgba(80, 200, 120, 0.35); color: var(--g);
+  border-radius: 10px; padding: 0.5rem 1rem; cursor: pointer; font-family: inherit;
+  font-size: 0.82rem; font-weight: 700;
+}
+.pf-saved { color: var(--g); font-size: 0.88rem; font-weight: 700; margin-left: 0.75rem; }
+
+.pf-card-head { display: flex; align-items: center; justify-content: space-between; }
+.pf-count { color: var(--muted); font-size: 0.82rem; }
+
+/* route rows */
+.pf-routes { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1rem; }
+.pf-route { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; background: #1a221c; border: 1px solid var(--border); border-radius: 12px; text-decoration: none; }
+.pf-route img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+.pf-route__body { flex: 1; min-width: 0; }
+.pf-route__title { color: #e4ebe5; font-weight: 700; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pf-route__sub { color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
+.pf-route__del { background: none; border: none; cursor: pointer; color: rgba(224, 82, 82, 0.7); font-size: 1rem; flex-shrink: 0; }
+.pf-empty { color: var(--muted); font-size: 0.92rem; margin: 0.5rem 0 0; }
+.pf-empty a { color: var(--g); text-decoration: none; font-weight: 700; }
+
+/* danger */
+.pf-danger { background: rgba(224, 82, 82, 0.06); border: 1px solid rgba(224, 82, 82, 0.22); }
+.pf-danger .pf-card-title { color: var(--red); }
+.pf-danger p { color: var(--muted); font-size: 0.88rem; line-height: 1.5; margin: 0 0 1rem; }
+.pf-btn-danger {
+  width: 100%; padding: 0.8rem; border: none; border-radius: 12px; cursor: pointer;
+  background: #e05252; color: #fff; font-family: inherit; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.88rem;
+}
+.pf-btn-danger:disabled { opacity: 0.6; }
+
+.pf-btn-logout {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  background: var(--card); border: 1px solid var(--border); color: #e4ebe5;
+  border-radius: 14px; padding: 0.9rem; margin-bottom: 18px; cursor: pointer;
+  font-family: inherit; font-weight: 700; font-size: 0.92rem;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.pf-btn-logout:hover { border-color: rgba(80, 200, 120, 0.4); color: #50c878; }
+.pf-btn-logout svg { color: #50c878; }
+
+.pf-footer { text-align: center; padding: 1.25rem 0; font-size: 0.8rem; }
+.pf-footer a { color: var(--muted); text-decoration: underline; }

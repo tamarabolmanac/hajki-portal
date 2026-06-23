@@ -112,17 +112,12 @@ export const Navigation = (props) => {
     closeMenu();
   };
 
-  const handleAboutClick = () => {
-    setActiveLink('/about');
-    closeMenu();
-  };
-
-
   return (
     <nav id="menu" className="navbar navbar-default navbar-fixed-top">
       <div className="navbar-inner">
-        <Link className="navbar-brand" to="/" onClick={handleHomeClick}>
-          <img className="logo-navbar" src="/img/small-logo.png" alt="Hajki Logo" />
+        <Link className="navbar-brand nav-brand2" to="/" onClick={handleHomeClick}>
+          <svg className="nav-brand2__ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
+          <span className="nav-brand2__txt">Hajki</span>
         </Link>
         <button
           type="button"
@@ -180,17 +175,12 @@ export const Navigation = (props) => {
             {/* Info dropdown */}
             <li className={`nav-dropdown ${isInfoOpen ? 'open' : ''}`}>
               <button
-                className={`page-scroll nav-dropdown-toggle ${['/contact', '/about'].includes(activeLink) ? 'active' : ''}`}
+                className={`page-scroll nav-dropdown-toggle ${['/contact'].includes(activeLink) ? 'active' : ''}`}
                 onClick={() => { setIsInfoOpen(prev => !prev); setIsRoutesOpen(false); setIsNalogOpen(false); }}
               >
                 Info <span className="nav-dropdown-arrow">{isInfoOpen ? '▲' : '▼'}</span>
               </button>
               <ul className="nav-dropdown-menu">
-                <li>
-                  <Link to="/about" className={`page-scroll ${activeLink === '/about' ? 'active' : ''}`} onClick={handleAboutClick}>
-                    O nama
-                  </Link>
-                </li>
                 <li>
                   <Link to="/contact" className={`page-scroll ${activeLink === '/contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/contact', e)}>
                     Kontakt
@@ -244,7 +234,17 @@ export const Navigation = (props) => {
                 </ul>
               </li>
             )}
-            
+
+            {/* Green "Nova ruta" CTA (design DesktopNav) */}
+            {isLoggedIn && (
+              <li className="nav-cta-li">
+                <Link to="/new-route" className="nav-cta" onClick={(e) => handleLinkClick('/new-route', e)}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+                  Nova ruta
+                </Link>
+              </li>
+            )}
+
           </ul>
         </div>
       </div>

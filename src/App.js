@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { Navigation } from "./components/navigation";
+import BottomNav from "./components/BottomNav";
+import Home from "./components/Home";
+import SplashScreen from "./components/SplashScreen";
+import { isMobileApp } from "./utils/platform";
+import "./styles/WebNav.css";
 import { HikeRoutes } from "./components/HikeRoutes";
 import { RouteDetails } from "./components/RouteDetails";
 import { NavigateRoute } from "./components/NavigateRoute";
@@ -8,7 +13,6 @@ import { UserProfile } from "./components/UserProfile";
 import { EditRoute } from "./components/EditRoute";
 import { NearbyRoutes } from "./components/NearbyRoutes";
 import { ChoseRouteCreationType } from "./components/ChoseRouteCreationType";
-import { About } from "./components/about";
 import { Guide } from "./components/Guide";
 import { Services } from "./components/services";
 import { Gallery } from "./components/gallery";
@@ -54,6 +58,9 @@ const GOOGLE_MAPS_LIBRARIES = ['places'];
 const AppContent = () => {
   const navigate = useNavigate();
   const [landingPageData, setLandingPageData] = useState({});
+  const [showSplash, setShowSplash] = useState(() => {
+    try { return sessionStorage.getItem('hjkSplashSeen') !== '1'; } catch { return true; }
+  });
 
   useEffect(() => {
     setLandingPageData(JsonData);
@@ -90,6 +97,10 @@ const AppContent = () => {
   };
 
   return (
+    <>
+    {showSplash && (
+      <SplashScreen onDone={() => { try { sessionStorage.setItem('hjkSplashSeen', '1'); } catch {} setShowSplash(false); }} />
+    )}
     <LoadScript
       googleMapsApiKey={config.googleMapsApiKey}
       libraries={GOOGLE_MAPS_LIBRARIES}
@@ -115,27 +126,11 @@ const AppContent = () => {
       }
     >
       <div>
-        <Navigation />
+        {/* Web: top hamburger navbar. Mobile app: bottom tab bar instead. */}
+        {!isMobileApp() && <Navigation />}
         <div className="main-content">
           <Routes>
-            <Route
-              path="/"
-              element={
-                <>
-                  <div className="content-container">
-                    <About data={landingPageData.About} />
-                    {/*
-                    <HikeRoutes data={landingPageData.HikeRoutes} />
-                    <Services data={landingPageData.Services} />
-                    <Gallery data={landingPageData.Gallery} />
-                    <Testimonials data={landingPageData.Testimonials} />
-                    <Team data={landingPageData.Team} />
-                    <Contact data={landingPageData.Contact} />
-                    */}
-                  </div>
-                </>
-              }
-            />
+            <Route path="/" element={<Home />} />
             <Route
               path="/profile"
               element={
@@ -295,11 +290,6 @@ const AppContent = () => {
                 <RouteRecommendation />
               </PrivateRoute>
             } />
-            <Route path="/about" element={
-              <div className="content-container">
-                <About data={landingPageData.About} />
-              </div>
-            } />
             <Route path="/guide" element={
               <div className="content-container">
                 <Guide />
@@ -348,8 +338,10 @@ const AppContent = () => {
             />
           </Routes>
         </div>
+        {isMobileApp() && <BottomNav />}
       </div>
     </LoadScript>
+    </>
   );
 };
 

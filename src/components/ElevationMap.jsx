@@ -57,7 +57,11 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
   const isTerrain = effectiveMode === 'terrain';
 
   // Track to draw: profile (has elevation) → raw points → single center point.
-  const track = profile.length ? profile : (points.length ? points : (center ? [center] : []));
+  // Filter out any non-finite coords so the map never gets a NaN LngLat.
+  const track = useMemo(() => {
+    const raw = profile.length ? profile : (points.length ? points : (center ? [center] : []));
+    return raw.filter((p) => p && Number.isFinite(p.lng) && Number.isFinite(p.lat));
+  }, [profile, points, center]);
 
   const lineGeoJSON = useMemo(() => ({
     type: 'Feature',
@@ -68,20 +72,41 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
   }), [track]);
 
   const initialViewState = useMemo(() => {
-    const mid = track[Math.floor(track.length / 2)] || center || { lat: 44.0165, lng: 21.0059 };
+    const fallback = center && Number.isFinite(center.lng) ? center : { lat: 44.0165, lng: 21.0059 };
+    const mid = track[Math.floor(track.length / 2)] || fallback;
     return { longitude: mid.lng, latitude: mid.lat, zoom: track.length > 1 ? 12 : 13, pitch: 0, bearing: 0 };
   }, [track, center]);
 
+  // Re-fit the map to the route. Robust against 3D-terrain projection quirks:
+  // compute the camera first, validate it's finite, and fall back to the
+  // centroid otherwise — never let fitBounds crash the page with a NaN LngLat.
   const fitToTrack = (map) => {
-    if (track.length >= 2) {
+    if (!map || track.length === 0) return;
+    try {
+      if (track.length === 1) {
+        map.easeTo({ center: [track[0].lng, track[0].lat], zoom: 14, duration: 500 });
+        return;
+      }
       const lons = track.map((p) => p.lng);
       const lats = track.map((p) => p.lat);
-      map.fitBounds(
-        [[Math.min(...lons), Math.min(...lats)], [Math.max(...lons), Math.max(...lats)]],
-        { padding: 60, duration: 0 }
-      );
-    } else if (track.length === 1) {
-      map.jumpTo({ center: [track[0].lng, track[0].lat], zoom: 13 });
+      const sw = [Math.min(...lons), Math.min(...lats)];
+      const ne = [Math.max(...lons), Math.max(...lats)];
+      const cx = (sw[0] + ne[0]) / 2;
+      const cy = (sw[1] + ne[1]) / 2;
+
+      // Degenerate box (all points ~same spot) → just center.
+      if (sw[0] === ne[0] && sw[1] === ne[1]) {
+        map.easeTo({ center: [cx, cy], zoom: 14, duration: 500 });
+        return;
+      }
+      const cam = map.cameraForBounds([sw, ne], { padding: 60, maxZoom: 16 });
+      if (cam && Number.isFinite(cam.center?.lng) && Number.isFinite(cam.center?.lat) && Number.isFinite(cam.zoom)) {
+        map.easeTo({ center: cam.center, zoom: cam.zoom, duration: 500 });
+      } else {
+        map.easeTo({ center: [cx, cy], zoom: 13, duration: 500 });
+      }
+    } catch (e) {
+      console.warn('fitToTrack failed:', e);
     }
   };
 
@@ -131,6 +156,16 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
             🗺 Obična mapa
           </button>
         </div>
+        <button
+          type="button"
+          className="elevation-map__recenter"
+          onClick={() => { const m = mapObjRef.current; if (m) fitToTrack(m); }}
+          title="Centriraj rutu"
+          aria-label="Centriraj rutu"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></svg>
+          <span>Centriraj</span>
+        </button>
         <Map
           mapLib={maplibregl}
           initialViewState={initialViewState}

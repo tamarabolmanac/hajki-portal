@@ -1,0 +1,88 @@
+/* Dark web navbar / menu — Figma manner. Overrides Navigation.css
+   (uses #menu + body for higher specificity than the existing !important rules). */
+body #menu.navbar,
+body #menu.navbar.navbar-default {
+  background: rgba(11, 15, 13, 0.9) !important;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+/* nav links */
+body #menu .navbar-nav > li > a,
+body #menu .navbar-nav > li > .page-scroll,
+body #menu .navbar-nav > li > button.nav-dropdown-toggle,
+body #menu .nav.navbar-nav a.page-scroll,
+body #menu .nav li a,
+body #menu .nav li .page-scroll {
+  color: #e4ebe5 !important;
+}
+body #menu .navbar-nav > li > a:hover,
+body #menu .navbar-nav > li > .page-scroll:hover,
+body #menu .navbar-nav > li > button.nav-dropdown-toggle:hover,
+body #menu .nav li a:hover,
+body #menu .nav li .page-scroll:hover {
+  color: #50c878 !important;
+  background-color: rgba(80, 200, 120, 0.1) !important;
+}
+body #menu .navbar-nav > li > a.active,
+body #menu .navbar-nav > li > .page-scroll.active,
+body #menu .navbar-nav > li > button.nav-dropdown-toggle.active,
+body #menu .nav li a.active,
+body #menu .nav li .page-scroll.active {
+  color: #50c878 !important;
+  background-color: rgba(80, 200, 120, 0.14) !important;
+}
+
+/* dropdown menus */
+body #menu .nav-dropdown-menu {
+  background: rgba(15, 18, 15, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+body #menu .nav-dropdown-menu a,
+body #menu .nav-dropdown-menu .page-scroll {
+  color: #e4ebe5 !important;
+}
+body #menu .nav-dropdown-menu a:hover,
+body #menu .nav-dropdown-menu .page-scroll:hover {
+  color: #50c878 !important;
+  background-color: rgba(80, 200, 120, 0.1) !important;
+}
+
+/* hamburger (mobile web) + collapsed menu panel */
+body #menu .navbar-toggle { background: rgba(80, 200, 120, 0.1) !important; border-color: rgba(80, 200, 120, 0.25) !important; }
+body #menu .navbar-toggle .icon-bar { background-color: #50c878 !important; }
+body #menu .navbar-collapse,
+body #menu .navbar-collapse.in { background: rgba(11, 15, 13, 0.97) !important; }
+
+/* Brand: mountain mark + HAJKI wordmark (design DesktopNav) */
+body #menu .nav-brand2 { display: inline-flex !important; align-items: center; gap: 0.5rem; text-decoration: none; }
+body #menu .nav-brand2__ic { width: 24px; height: 24px; color: #50c878; }
+body #menu .nav-brand2__txt {
+  font-family: 'Archivo', Arial, sans-serif;
+  font-weight: 900; text-transform: uppercase; letter-spacing: 0.18em;
+  color: #e4ebe5; font-size: 1.2rem; line-height: 1;
+}
+
+/* nav links as rounded pills */
+body #menu .navbar-nav > li > a,
+body #menu .navbar-nav > li > .page-scroll,
+body #menu .navbar-nav > li > button.nav-dropdown-toggle {
+  border-radius: 10px !important;
+  padding: 0.5rem 0.9rem !important;
+  font-weight: 600 !important;
+}
+
+/* Green "Nova ruta" CTA */
+body #menu .nav-cta-li { display: flex; align-items: center; }
+body #menu .nav-cta {
+  display: inline-flex !important; align-items: center; gap: 0.4rem;
+  background: #50c878 !important; color: #06210c !important;
+  border-radius: 10px !important; padding: 0.55rem 1rem !important;
+  font-weight: 800 !important; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.82rem;
+  text-decoration: none !important; white-space: nowrap;
+}
+body #menu .nav-cta:hover { background: #61d488 !important; }
+body #menu .nav-cta svg { width: 15px; height: 15px; }

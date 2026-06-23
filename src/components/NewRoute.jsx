@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SelectableMap from './SelectableMap';
+import LocationPicker from './LocationPicker';
 import { authenticatedFetch } from '../utils/api';
-import { BackgroundImage } from './BackgroundImage';
-import '../styles/NewRoute.css';
+import '../styles/AddForm.css';
 
 const DEFAULT_LOCATION = {
   lat: 44.8048,
@@ -17,6 +16,7 @@ const normalizeDecimal = (value) => {
 
 export const NewRoute = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [hours, setHours] = useState("");
@@ -134,84 +134,45 @@ export const NewRoute = () => {
     }
   };
   
+  const fileCount = files && files.length ? files.length : 0;
+
   return (
-    <div className="new-route-container">
-      <div className="new-route-bg">
-        <BackgroundImage
-          src="/img/create-route.jpg"
-          alt=""
-          className="new-route-bg-image"
-          fetchPriority="low"
-        />
-        <div className="new-route-overlay" />
-      </div>
-      <div className="route-form">
-        <h2>Dodaj novu rutu</h2>
+    <div className="af-page">
+      <div className="af-inner">
+        <button type="button" className="af-back" onClick={() => navigate(-1)}>← Nazad</button>
+        <h1 className="af-h1">Dodaj novu rutu</h1>
+
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Naziv:</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="form-control"
-            />
+          <div className="af-field">
+            <label className="af-label">Naziv</label>
+            <input className="af-input" type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Naziv rute" required />
           </div>
 
-          <div className="form-group">
-            <label>Opis:</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-              className="form-control"
-              rows="5"
-            ></textarea>
+          <div className="af-field">
+            <label className="af-label">Opis</label>
+            <textarea className="af-textarea" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Opišite rutu..." required />
           </div>
 
-          <div className="form-group duration-group">
-            <label>Trajanje:</label>
-            <div className="duration-inputs">
-              <div className="duration-input">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={hours}
-                  onChange={(e) => setHours(e.target.value.replace(/\D/g, ''))}
-                  className="form-control"
-                  placeholder="0"
-                  aria-label="Časova"
-                />
-                <span>časova</span>
+          <div className="af-field">
+            <label className="af-label">Trajanje</label>
+            <div className="af-row2">
+              <div>
+                <input className="af-input" type="text" inputMode="numeric" value={hours} onChange={(e) => setHours(e.target.value.replace(/\D/g, ''))} placeholder="0" aria-label="Časova" />
+                <span className="af-suffix">časova</span>
               </div>
-              <div className="duration-input">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={minutes}
-                  onChange={(e) => setMinutes(e.target.value.replace(/\D/g, '').slice(0, 2))}
-                  className="form-control"
-                  placeholder="0"
-                  maxLength={2}
-                  aria-label="Minuta"
-                />
-                <span>minuta</span>
+              <div>
+                <input className="af-input" type="text" inputMode="numeric" value={minutes} onChange={(e) => setMinutes(e.target.value.replace(/\D/g, '').slice(0, 2))} placeholder="0" maxLength={2} aria-label="Minuta" />
+                <span className="af-suffix">minuta</span>
               </div>
             </div>
             {(hours !== '' || minutes !== '') && (
-              <p className="duration-hint">Ukupno: {(parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0)} min</p>
+              <p className="af-hint">Ukupno: {(parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0)} min</p>
             )}
           </div>
 
-          <div className="form-group">
-            <label>Težina:</label>
-            <select
-              value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value)}
-              required
-              className="form-control"
-            >
+          <div className="af-field">
+            <label className="af-label">Težina</label>
+            <select className="af-select" value={difficulty} onChange={(e) => setDifficulty(e.target.value)} required>
               <option value="">Izaberi težinu</option>
               <option value="Easy">Laka</option>
               <option value="Moderate">Srednja</option>
@@ -220,81 +181,62 @@ export const NewRoute = () => {
             </select>
           </div>
 
-          <div className="form-group">
-            <label>Dužina (km):</label>
-            <div className="distance-input">
-              <input
-                type="text"
-                inputMode="decimal"
-                value={distance}
-                onChange={(e) => setDistance(normalizeDecimal(e.target.value))}
-                required
-                className="form-control"
-                placeholder="npr. 5.5"
-              />
+          <div className="af-field">
+            <label className="af-label">Dužina (km)</label>
+            <input className="af-input" type="text" inputMode="decimal" value={distance} onChange={(e) => setDistance(normalizeDecimal(e.target.value))} placeholder="npr. 5.5" required />
+            {distance && !isNaN(parseFloat(distance)) && <p className="af-hint">{parseFloat(distance).toFixed(2)} km</p>}
+          </div>
+
+          <div className="af-field">
+            <label className="af-label">Fotografije</label>
+            <div
+              className="af-drop"
+              role="button"
+              tabIndex={0}
+              onClick={() => fileInputRef.current && fileInputRef.current.click()}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInputRef.current && fileInputRef.current.click(); } }}
+            >
+              <span className="af-drop__ic">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z" /><circle cx="12" cy="13" r="3.5" /></svg>
+              </span>
+              <span>
+                <p className="af-drop__t">{fileCount > 0 ? `${fileCount} ${fileCount === 1 ? 'slika izabrana' : 'slika izabrano'}` : 'Dodajte fotografije'}</p>
+                <p className="af-drop__s">Kliknite da izaberete slike</p>
+              </span>
             </div>
-            {distance && !isNaN(parseFloat(distance)) && (
-              <div className="distance-preview">
-                <span>{parseFloat(distance).toFixed(2)}</span> km
-              </div>
-            )}
+            <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={(e) => setFiles(e.target.files)} style={{ display: 'none' }} />
           </div>
 
-          <div className="form-group">
-            <input type="file" multiple onChange={e => setFiles(e.target.files)} /> 
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="location">Lokacija:</label>
-            <div className="location-search">
-              <input
-                type="text"
-                placeholder="Pretraži lokaciju (npr. Kopaonik, Tara...)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={handleKeyPress}
-                className="search-input"
-              />
-              <button type="button" className="search-btn" onClick={handleSearch}>Traži</button>
+          <div className="af-field">
+            <label className="af-label">Lokacija</label>
+            <div className="af-loc-row">
+              <input className="af-input" type="text" placeholder="Pretraži lokaciju (npr. Kopaonik, Tara...)" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleKeyPress} />
+              <button type="button" className="af-trazi" onClick={handleSearch}>Traži</button>
             </div>
             {searchResults.length > 0 && (
-              <ul className="search-results">
+              <ul className="af-results">
                 {searchResults.map((r, idx) => (
-                  <li key={idx} className="search-item" onClick={() => handleSelectLocation(r)}>
-                    <div className="result-name">{r.name}</div>
-                    <div className="result-coords">{r.lat.toFixed(5)}, {r.lng.toFixed(5)}</div>
+                  <li key={idx} onClick={() => handleSelectLocation(r)}>
+                    <div className="rn">{r.name}</div>
+                    <div className="rc">{r.lat.toFixed(5)}, {r.lng.toFixed(5)}</div>
                   </li>
                 ))}
               </ul>
             )}
-            <div className="map-container">
-              <SelectableMap selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} />
+            <div className="af-map">
+              <LocationPicker value={selectedLocation} onChange={(lat, lng) => setSelectedLocation({ lat, lng })} />
             </div>
+            <p className="af-coords">Izabrano: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}</p>
           </div>
 
-          <p>
-            Izabrano: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
-          </p>
-
-          <button type="submit" className="submit-button" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <span className="loading-spinner"></span>
-                Čuvanje...
-              </>
-            ) : (
-              'Sačuvaj rutu'
-            )}
+          <button type="submit" className="af-submit" disabled={isLoading}>
+            {isLoading ? <><span className="af-spin" /> Čuvanje...</> : 'Sačuvaj rutu'}
           </button>
-          {message && (
-            <p className={`message ${message.includes('Error') ? 'error' : 'success'}`}>
-              {message}
-            </p>
-          )}
+          {message && <p className={`af-msg ${message.includes('Error') ? 'error' : 'success'}`}>{message}</p>}
         </form>
       </div>
     </div>
-  );  
+  );
 };
 
 export default NewRoute;

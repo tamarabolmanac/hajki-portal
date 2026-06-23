@@ -1,0 +1,76 @@
+/* Explore / routes list — dark page matching the Figma "Istraživanje". ex2- scoped. */
+.ex2-page {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  z-index: 5;
+  background: #0b0f0d;
+  color: #e4ebe5;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px);
+  --g: #50c878;
+  --card: #141a16;
+  --muted: #6b7f6d;
+  --border: rgba(255, 255, 255, 0.08);
+}
+
+/* hero */
+.ex2-hero { position: relative; height: 220px; overflow: hidden; }
+.ex2-hero__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ex2-hero__ov { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,15,13,0.25), rgba(11,15,13,0.6) 60%, #0b0f0d); }
+.ex2-hero__c { position: absolute; left: 0; right: 0; bottom: 0; max-width: 1100px; margin: 0 auto; padding: 0 24px 20px; }
+.ex2-kicker { color: var(--g); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; margin: 0 0 0.35rem; }
+.ex2-title { font-size: clamp(1.9rem, 5vw, 3rem); font-weight: 800; text-transform: uppercase; letter-spacing: 0.01em; margin: 0; text-shadow: 0 2px 14px rgba(0,0,0,0.5); }
+
+.ex2-inner { max-width: 1100px; margin: 0 auto; padding: 22px 24px 0; }
+
+/* search row */
+.ex2-searchrow { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.ex2-search { position: relative; flex: 1; min-width: 200px; }
+.ex2-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+.ex2-search input {
+  width: 100%; box-sizing: border-box;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 0.8rem 1rem 0.8rem 2.6rem; color: #e4ebe5; font-family: inherit; font-size: 0.95rem; outline: none;
+}
+.ex2-search input:focus { border-color: rgba(80,200,120,0.5); }
+.ex2-add {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--g); color: #06210c; border: none; border-radius: 12px;
+  padding: 0 1.2rem; font-family: inherit; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.04em; font-size: 0.82rem; cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+
+/* filters row */
+.ex2-filters { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 18px; }
+.ex2-flabel { display: flex; align-items: center; gap: 0.4rem; color: var(--muted); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.ex2-pill {
+  padding: 0.42rem 1rem; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--card); color: var(--muted); font-family: inherit;
+  font-size: 0.74rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ex2-pill.is-active { background: var(--g); border-color: var(--g); color: #06210c; }
+.ex2-fbtn {
+  display: inline-flex; align-items: center; gap: 0.4rem; margin-left: auto;
+  background: var(--card); border: 1px solid var(--border); color: #e4ebe5;
+  border-radius: 999px; padding: 0.42rem 1rem; font-family: inherit; font-size: 0.76rem; cursor: pointer;
+}
+.ex2-fbtn.is-active { border-color: var(--g); color: var(--g); }
+.ex2-fbadge { background: var(--g); color: #06210c; border-radius: 50%; width: 17px; height: 17px; display: grid; place-items: center; font-size: 0.65rem; font-weight: 700; }
+
+/* advanced filter panel */
+.ex2-panel { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.25rem; margin-bottom: 18px; }
+.ex2-panel__label { color: var(--muted); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; margin: 0 0 0.6rem; }
+.ex2-radii { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.ex2-check { display: flex; align-items: center; gap: 0.6rem; cursor: pointer; color: #cfe0d0; font-size: 0.9rem; }
+.ex2-check input { width: 16px; height: 16px; accent-color: #50c878; cursor: pointer; }
+
+.ex2-count { color: var(--muted); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 1rem; }
+.ex2-error { color: #e05252; font-size: 0.85rem; margin: 0 0 1rem; }
+.ex2-empty { text-align: center; color: var(--muted); padding: 3rem 1rem; }
+.ex2-loadmore {
+  display: block; margin: 1.5rem auto 0; background: transparent;
+  border: 1px solid rgba(80,200,120,0.35); color: var(--g); border-radius: 999px;
+  padding: 0.7rem 1.8rem; font-family: inherit; font-weight: 700; cursor: pointer;
+}
