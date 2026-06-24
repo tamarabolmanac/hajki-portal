@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import LocationTracker from './LocationTracker';
+import ConfirmModal from './ConfirmModal';
 import '../styles/Profile.css';
 
 const formatDuration = (minutes) => {
@@ -32,6 +33,8 @@ export const Profile = () => {
   const [routesError, setRoutesError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [routeToDelete, setRouteToDelete] = useState(null);
+  const [showDeleteAccount, setShowDeleteAccount] = useState(false);
   const [savedRoutes, setSavedRoutes] = useState(null);   // null = nije učitano
   const [savedRoutesLoading, setSavedRoutesLoading] = useState(false);
 
@@ -88,14 +91,21 @@ export const Profile = () => {
     setAvatarPreview(URL.createObjectURL(file));
   };
 
-  const deleteRoute = async (e, routeId) => {
+  // Otvori potvrdu za brisanje rute (stvarno brisanje u confirmDeleteRoute).
+  const requestDeleteRoute = (e, route) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!window.confirm('Da li si sigurna da želiš da obrišeš ovu rutu?')) return;
+    setRouteToDelete(route);
+  };
+
+  const confirmDeleteRoute = async () => {
+    if (!routeToDelete) return;
+    const routeId = routeToDelete.id;
     setDeletingId(routeId);
     try {
       await authenticatedFetch(`/routes/${routeId}`, { method: 'DELETE' });
       setMyRoutes(prev => prev.filter(r => r.id !== routeId));
+      setRouteToDelete(null);
     } catch (err) {
       alert(`Greška pri brisanju: ${err.message}`);
     } finally {
@@ -103,13 +113,13 @@ export const Profile = () => {
     }
   };
 
-  const deleteAccount = async () => {
-    if (!window.confirm('Poslaćemo ti email sa linkom za potvrdu brisanja naloga. Nastavi?')) return;
+  const confirmDeleteAccount = async () => {
     const userId = userDetails?.id || localStorage.getItem('userID');
     if (!userId) return;
     setDeletingAccount(true);
     try {
       await authenticatedFetch(`/users/${userId}/request_deletion`, { method: 'POST' });
+      setShowDeleteAccount(false);
       alert('Email za potvrdu brisanja naloga je poslat. Proveri inbox i klikni na link da potvrdiš.');
     } catch (err) {
       alert(`Greška: ${err.message}`);
@@ -207,7 +217,7 @@ export const Profile = () => {
       {withDelete && (
         <button
           className="pf-route__del"
-          onClick={(e) => deleteRoute(e, route.id)}
+          onClick={(e) => requestDeleteRoute(e, route)}
           disabled={deletingId === route.id}
           title="Obriši rutu"
         >
@@ -353,8 +363,8 @@ export const Profile = () => {
         <div className="pf-card pf-danger">
           <h3 className="pf-card-title">Brisanje naloga</h3>
           <p>Brisanje naloga je trajno. Svi tvoji podaci, rute i slike biće nepovratno obrisani.</p>
-          <button className="pf-btn-danger" onClick={deleteAccount} disabled={deletingAccount}>
-            {deletingAccount ? 'Brisanje...' : '🗑 Obriši nalog'}
+          <button className="pf-btn-danger" onClick={() => setShowDeleteAccount(true)} disabled={deletingAccount}>
+            🗑 Obriši nalog
           </button>
         </div>
 
@@ -362,6 +372,29 @@ export const Profile = () => {
           <Link to="/privacy-policy">Politika privatnosti</Link>
         </div>
       </div>
+
+      <ConfirmModal
+        open={!!routeToDelete}
+        title="Obriši rutu"
+        message="Ova akcija je trajna i ne može se poništiti."
+        detail={routeToDelete?.title ? `"${routeToDelete.title}"` : null}
+        confirmLabel={deletingId ? 'Brisanje…' : 'Obriši'}
+        busy={!!deletingId}
+        onConfirm={confirmDeleteRoute}
+        onCancel={() => setRouteToDelete(null)}
+      />
+
+      <ConfirmModal
+        open={showDeleteAccount}
+        icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>}
+        title="Obriši nalog"
+        message="Ova akcija je trajna i ne može se poništiti. Biće obrisani svi tvoji podaci, rute i fotografije."
+        requireCheckLabel="Razumem da ovo briše moj nalog zauvek"
+        confirmLabel={deletingAccount ? 'Slanje…' : 'Obriši nalog'}
+        busy={deletingAccount}
+        onConfirm={confirmDeleteAccount}
+        onCancel={() => setShowDeleteAccount(false)}
+      />
     </div>
   );
 };

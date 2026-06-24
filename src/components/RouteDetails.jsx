@@ -6,6 +6,7 @@ import { authenticatedFetch } from '../utils/api';
 import { getCurrentUserID } from '../utils/authHandler';
 import ElevationMap from './ElevationMap';
 import AppLoader from './AppLoader';
+import ConfirmModal from './ConfirmModal';
 
 const MapPlaceholder = () => (
   <div className="map-placeholder">
@@ -41,6 +42,8 @@ export const RouteDetails = () => {
   const [routePoints, setRoutePoints] = useState([]);
   const [gain, setGain] = useState(null);
   const [currentUserID, setCurrentUserID] = useState(null);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -134,11 +137,13 @@ export const RouteDetails = () => {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Da li si sigurna da želiš da obrišeš ovu rutu?')) return;
+    setDeleting(true);
     try {
       await authenticatedFetch(`/routes/${id}`, { method: 'DELETE' });
       navigate('/routes');
     } catch (err) {
+      setDeleting(false);
+      setShowDelete(false);
       alert(`Greška pri brisanju: ${err.message}`);
     }
   };
@@ -292,7 +297,7 @@ export const RouteDetails = () => {
           {isRouteOwner() && (
             <div className="rd-owner">
               <button onClick={handleStartTracking}>🔴 Snimi rutu</button>
-              <button className="rd-danger" onClick={handleDelete}>🗑 Obriši</button>
+              <button className="rd-danger" onClick={() => setShowDelete(true)}>🗑 Obriši</button>
             </div>
           )}
 
@@ -310,6 +315,17 @@ export const RouteDetails = () => {
           )}
         </aside>
       </div>
+
+      <ConfirmModal
+        open={showDelete}
+        title="Obriši rutu"
+        message="Ova akcija je trajna i ne može se poništiti."
+        detail={route.title ? `"${route.title}"` : null}
+        confirmLabel={deleting ? 'Brisanje…' : 'Obriši'}
+        busy={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setShowDelete(false)}
+      />
     </div>
   );
 };

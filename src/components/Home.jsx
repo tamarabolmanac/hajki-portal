@@ -49,7 +49,7 @@ export const Home = () => {
         <div className="hm-hero__ov" />
         <div className="hm-hero__c">
           <span className="hm-badge"><span className="dot" /> Dobrodošli</span>
-          <h1 className="hm-h1">Vreme je za<br /><span className="g">bolje</span><br />planinarenje</h1>
+          <h1 className="hm-h1">Vreme je za<br /><span className="g">HAJKi</span></h1>
           <p className="hm-lead">Otkrij prirodu, prati svoje rute, deli avanture</p>
           <p className="hm-sub">Hajki je tvoj savršen pratilac za planinske avanture. Prati svoje putanje, otkrivaj nova mesta i poveži se sa zajednicom planinara.</p>
           <div className="hm-cta-row">

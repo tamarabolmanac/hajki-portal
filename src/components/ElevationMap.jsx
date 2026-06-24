@@ -172,6 +172,7 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
           mapStyle={MAP_STYLE}
           maxPitch={75}
           onLoad={onLoad}
+          cooperativeGestures
           style={{ width: '100%', height: '100%' }}
         >
           {track.length > 1 && (

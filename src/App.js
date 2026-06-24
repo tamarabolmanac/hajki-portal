@@ -72,22 +72,26 @@ const AppContent = () => {
   const TrackRoutePage = () => {
     const { id } = useParams();
     const nav = useNavigate();
+    // "new" = ruta još nije kreirana; RouteTracker je kreira tek na "Započni snimanje".
+    const isNew = !id || id === "new";
 
-    const handleStop = useCallback(() => {
-      nav(`/route/${id}`);
-    }, [nav, id]);
+    const handleStop = useCallback((finalRouteId) => {
+      const target = finalRouteId || (isNew ? null : id);
+      if (target) nav(`/route/${target}`);
+      else nav("/routes");
+    }, [nav, id, isNew]);
 
     const onTrackingStart = useCallback(() => {
       console.log("Started tracking route", id);
     }, [id]);
 
-    const trackingStartedKey = `tracking:route:${id}:started`;
-    const shouldAutoStart = localStorage.getItem(trackingStartedKey) === "1";
+    const trackingStartedKey = isNew ? null : `tracking:route:${id}:started`;
+    const shouldAutoStart = trackingStartedKey ? localStorage.getItem(trackingStartedKey) === "1" : false;
 
     return (
       <div className="content-container track-route-page">
         <RouteTracker
-          routeId={id}
+          routeId={isNew ? null : id}
           autoStart={shouldAutoStart}
           onTrackingStart={onTrackingStart}
           onTrackingStop={handleStop}

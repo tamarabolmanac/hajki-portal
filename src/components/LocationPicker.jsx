@@ -3,7 +3,8 @@ import Map, { Marker } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
-const STYLE = 'https://tiles.openfreemap.org/styles/liberty';
+// Dark vector style (no API key) matching the Figma map look.
+const STYLE = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 
 /**
  * MapLibre location picker (no API key). Tap or drag the pin to set location;
@@ -28,6 +29,7 @@ export default function LocationPicker({ value, onChange }) {
       initialViewState={{ longitude: lng, latitude: lat, zoom: 11 }}
       mapStyle={STYLE}
       style={{ width: '100%', height: '100%' }}
+      cooperativeGestures
       onClick={(e) => onChange(e.lngLat.lat, e.lngLat.lng)}
     >
       <Marker

@@ -1,42 +1,81 @@
-/* Puna visina ispod fiksiranog navbar-a (usklađeno sa GlobalStyles --app-nav-clearance) */
-.route-tracker {
-  position: relative;
-  width: 100%;
-  /* Bez ugnježdenog calc() u var() — postcss-calc u produkcijskom build-u ga ne parsira */
-  height: calc(100vh - var(--app-nav-clearance, 92px));
-  min-height: 280px;
-  margin: 0;
-  overflow: hidden;
+/* Record-route screen — dark Figma "Snimanje rute" (MobileAddRecord). rt2- scoped. */
+.rt2 {
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  background: #0b0f0d;
+  color: #e4ebe5;
+  font-family: Arial, Helvetica, sans-serif;
+  padding-top: calc(var(--app-nav-clearance, 80px) + 4px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
 }
 
-/* Na ekranu za praćenje mapa ide ivica do ivice (povlačenje preko main-content paddinga) */
-.track-route-page {
-  margin-left: -1rem;
-  margin-right: -1rem;
-  width: calc(100% + 2rem);
+/* header */
+.rt2__head { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1.25rem 0.75rem; flex-shrink: 0; }
+.rt2__title { font-size: 1.6rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.02em; margin: 0; }
+.rt2__live {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 0.45rem;
+  background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 999px; padding: 0.3rem 0.7rem;
+  font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: #f87171; font-weight: 700;
+}
+.rt2__live-dot { width: 7px; height: 7px; border-radius: 50%; background: #f87171; animation: rt2-pulse 1.2s ease-in-out infinite; }
+
+.rt2__error {
+  margin: 0 1.25rem 0.5rem; padding: 0.6rem 0.8rem;
+  background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 10px; color: #f87171; font-size: 0.85rem;
 }
 
-@media screen and (min-width: 768px) {
-  .track-route-page {
-    margin-left: -2rem;
-    margin-right: -2rem;
-    width: calc(100% + 4rem);
-  }
+/* map */
+.rt2__map {
+  flex: 1; position: relative; min-height: 200px;
+  margin: 0 1rem; border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08); background: #0e1a12;
 }
+.rt2__hint {
+  position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap;
+  background: rgba(20, 26, 22, 0.7); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 999px;
+  padding: 0.45rem 0.9rem; font-size: 0.78rem; color: #6b7f6d;
+}
+.rt2__hint-dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7f6d; }
 
-.route-tracker__panel {
-  position: absolute;
-  top: 12px;
-  left: max(12px, env(safe-area-inset-left, 0px));
-  z-index: 1000;
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-width: min(340px, calc(100vw - 24px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px)));
-}
+/* GPS pins */
+.rt2__pin { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; background: #6b7f6d; box-shadow: 0 1px 4px rgba(0,0,0,0.5); }
+.rt2__pin--start { background: #e4ebe5; }
+.rt2__pin--live { background: #50c878; box-shadow: 0 0 0 6px rgba(80, 200, 120, 0.25); }
 
-.route-tracker__map {
-  height: 100%;
-  width: 100%;
+/* stats */
+.rt2__stats {
+  margin: 0.85rem 1rem; display: grid; grid-template-columns: 1fr 1fr;
+  background: #141a16; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; overflow: hidden;
 }
+.rt2__stat { padding: 0.9rem 1rem; text-align: center; }
+.rt2__stat--right { border-left: 1px solid rgba(255, 255, 255, 0.08); }
+.rt2__stat-label { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: #6b7f6d; margin: 0 0 0.4rem; }
+.rt2__stat-value { font-size: 1.7rem; font-weight: 600; margin: 0; font-variant-numeric: tabular-nums; color: #e4ebe5; }
+.rt2__stat-value--off { color: rgba(107, 127, 109, 0.5); }
+.rt2__stat-unit { font-size: 0.85rem; color: #6b7f6d; margin-left: 0.3rem; }
+
+/* CTA */
+.rt2__cta { padding: 0 1rem; flex-shrink: 0; }
+.rt2__btn {
+  width: 100%; padding: 1.05rem; border: none; border-radius: 16px; cursor: pointer;
+  font-family: inherit; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; font-size: 1.05rem;
+  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+.rt2__btn:active { transform: scale(0.98); }
+.rt2__btn--start { background: #50c878; color: #06210c; box-shadow: 0 10px 24px rgba(80, 200, 120, 0.22); }
+.rt2__btn--start:hover { background: #61d488; }
+.rt2__btn--stop { background: #ef4444; color: #fff; box-shadow: 0 10px 24px rgba(239, 68, 68, 0.22); }
+.rt2__btn--stop:hover { background: #dc2626; }
+.rt2__btn-ic { width: 12px; height: 12px; background: currentColor; }
+.rt2__btn-ic--circle { border-radius: 50%; }
+.rt2__btn-ic--square { border-radius: 3px; }
+
+@keyframes rt2-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }

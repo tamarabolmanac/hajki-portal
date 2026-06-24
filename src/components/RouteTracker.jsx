@@ -1,6 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Capacitor } from "@capacitor/core";
-import { GoogleMap, Polyline, Marker } from "@react-google-maps/api";
+import Map, { Source, Layer, Marker } from "react-map-gl/maplibre";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { authenticatedFetch } from "../utils/api";
 import { config } from "../config";
 import {
@@ -9,7 +11,34 @@ import {
   startNativeTracking,
   stopNativeTracking
 } from "../tracking/nativeTracker";
+import ConfirmModal from "./ConfirmModal";
 import "../styles/RouteTracker.css";
+
+/** Dark MapLibre style (no API key) matching the Figma record screen. */
+const DARK_MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+
+const fmtElapsed = (s) => {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+};
+
+/** Total distance (km) across the rendered GPS points via Haversine. */
+const totalDistanceKm = (pts) => {
+  if (!pts || pts.length < 2) return 0;
+  const R = 6371;
+  let km = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+    const dLng = ((b.lng - a.lng) * Math.PI) / 180;
+    const la1 = (a.lat * Math.PI) / 180, la2 = (b.lat * Math.PI) / 180;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLng / 2) ** 2;
+    km += 2 * R * Math.asin(Math.sqrt(h));
+  }
+  return km;
+};
 
 /** Uspešan track_point: Rails šalje { status: 200, route_id, point, ... } u JSON telu. */
 function isTrackPointSaved(response) {
@@ -24,7 +53,9 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
   const [error, setError] = useState(null);
   const [routeToRender, setRouteToRender] = useState([]);
   const [showFinishConfirm, setShowFinishConfirm] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
 
+  const mapRef = useRef(null);
   const routeRef = useRef([]);
   const watchIdRef = useRef(null);
   const flushIntervalRef = useRef(null);
@@ -135,7 +166,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     }
     setIsTracking(false);
     isTrackingRef.current = false;
-    onTrackingStop && onTrackingStop();
+    onTrackingStop && onTrackingStop(currentRouteIdRef.current);
   }, [onTrackingStop]);
 
   const startTracking = useCallback(async () => {
@@ -147,12 +178,31 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     nativeBackgroundRef.current = false;
 
     setRouteToRender([]);
+    setElapsed(0);
     routeRef.current = [];
     lastSyncedIndexRef.current = -1;
     lastFlushAtRef.current = null;
     currentRouteIdRef.current = routeId;
     setError(null);
     isSavingRef.current = false;
+
+    // Rekord rute se kreira TEK ovde (lenjo), ako još ne postoji — tako se ruta
+    // ne pravi pre nego što korisnik stvarno započne snimanje putanje.
+    if (!currentRouteIdRef.current) {
+      try {
+        const res = await authenticatedFetch("/routes/start_new", { method: "POST" });
+        if (res && res.id) {
+          currentRouteIdRef.current = res.id;
+        } else {
+          throw new Error("Nije moguće kreirati rutu za snimanje.");
+        }
+      } catch (e) {
+        console.error("start_new:", e);
+        setError(e.message || "Nije moguće započeti snimanje rute.");
+        return;
+      }
+    }
+
     setIsTracking(true);
     isTrackingRef.current = true;
     if (startedKey) localStorage.setItem(startedKey, "1");
@@ -163,7 +213,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === "android") {
       try {
         await startNativeTracking({
-          routeId: routeId != null && routeId !== undefined ? String(routeId) : "",
+          routeId: currentRouteIdRef.current != null ? String(currentRouteIdRef.current) : "",
           apiBaseUrl: config.apiUrl.replace(/\/$/, ""),
           authToken: localStorage.getItem("authToken") || "",
         });
@@ -287,121 +337,136 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     };
   }, [autoStart, startTracking]);
 
+  // Elapsed timer while recording.
+  useEffect(() => {
+    if (!isTracking) return undefined;
+    const t = setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [isTracking]);
+
+  // Keep the map centered on the latest GPS point.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map && routeToRender.length) {
+      const last = routeToRender[routeToRender.length - 1];
+      try { map.easeTo({ center: [last.lng, last.lat], duration: 600 }); } catch (_) { /* not ready */ }
+    }
+  }, [routeToRender]);
+
+  const distanceKm = useMemo(() => totalDistanceKm(routeToRender), [routeToRender]);
+
+  const lineGeoJSON = {
+    type: "Feature",
+    geometry: { type: "LineString", coordinates: routeToRender.map((p) => [p.lng, p.lat]) },
+  };
+  const start = routeToRender[0];
+  const current = routeToRender[routeToRender.length - 1];
+
   return (
-    <div className="route-tracker">
-      <div className="route-tracker__panel">
-        <h3>Snimanje rute</h3>
-        {error && (
-          <div style={{ color: "red", fontSize: "14px", marginBottom: "10px" }}>
-            {error}
+    <div className="rt2">
+      {/* Header */}
+      <div className="rt2__head">
+        <h1 className="rt2__title">Snimanje rute</h1>
+        {isTracking && (
+          <span className="rt2__live"><span className="rt2__live-dot" /> UŽIVO</span>
+        )}
+      </div>
+
+      {error && <div className="rt2__error">{error}</div>}
+
+      {/* Map */}
+      <div className="rt2__map">
+        <Map
+          ref={mapRef}
+          mapLib={maplibregl}
+          initialViewState={{
+            longitude: current ? current.lng : 20.4569,
+            latitude: current ? current.lat : 44.8176,
+            zoom: 15,
+          }}
+          mapStyle={DARK_MAP_STYLE}
+          cooperativeGestures
+          attributionControl={false}
+          style={{ width: "100%", height: "100%" }}
+        >
+          {routeToRender.length > 1 && (
+            <Source id="rt-line" type="geojson" data={lineGeoJSON}>
+              <Layer
+                id="rt-line-layer"
+                type="line"
+                layout={{ "line-cap": "round", "line-join": "round" }}
+                paint={{ "line-color": "#50C878", "line-width": 4 }}
+              />
+            </Source>
+          )}
+          {start && (
+            <Marker longitude={start.lng} latitude={start.lat} anchor="center">
+              <div className="rt2__pin rt2__pin--start" />
+            </Marker>
+          )}
+          {current && (
+            <Marker longitude={current.lng} latitude={current.lat} anchor="center">
+              <div className={`rt2__pin ${isTracking ? "rt2__pin--live" : ""}`} />
+            </Marker>
+          )}
+        </Map>
+
+        {!isTracking && (
+          <div className="rt2__hint">
+            <span className="rt2__hint-dot" /> GPS spreman · Čeka na start
           </div>
         )}
+      </div>
+
+      {/* Stats */}
+      <div className="rt2__stats">
+        <div className="rt2__stat">
+          <p className="rt2__stat-label">Vreme</p>
+          <p className={`rt2__stat-value ${isTracking ? "" : "rt2__stat-value--off"}`}>{fmtElapsed(elapsed)}</p>
+        </div>
+        <div className="rt2__stat rt2__stat--right">
+          <p className="rt2__stat-label">Distanca</p>
+          <p className={`rt2__stat-value ${isTracking ? "" : "rt2__stat-value--off"}`}>
+            {distanceKm.toFixed(2)}<span className="rt2__stat-unit">km</span>
+          </p>
+        </div>
+      </div>
+
+      {/* CTA */}
+      <div className="rt2__cta">
         {!isTracking ? (
-          <button 
+          <button
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              void startTracking();
-            }} 
-            style={{ background: "#28a745", color: "white", border: "none", padding: "10px 15px", borderRadius: "5px", cursor: "pointer" }}
+            className="rt2__btn rt2__btn--start"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); void startTracking(); }}
           >
-            Započni snimanje rute
+            <span className="rt2__btn-ic rt2__btn-ic--circle" /> Započni snimanje
           </button>
         ) : (
-          <button 
+          <button
             type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowFinishConfirm(true);
-            }} 
-            style={{ background: "#dc3545", color: "white", border: "none", padding: "10px 15px", borderRadius: "5px", cursor: "pointer" }}
+            className="rt2__btn rt2__btn--stop"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowFinishConfirm(true); }}
           >
-            Završi snimanje rute
+            <span className="rt2__btn-ic rt2__btn-ic--square" /> Zaustavi snimanje
           </button>
         )}
       </div>
 
-      {showFinishConfirm && (
-        <div
-          className="nav-confirm-modal-backdrop"
-          onClick={() => setShowFinishConfirm(false)}
-        >
-          <div
-            style={{
-              background: "white",
-              borderRadius: 14,
-              padding: "18px 16px",
-              maxWidth: 420,
-              width: "100%",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: "0 0 8px 0" }}>Prekid snimanja</h3>
-            <p style={{ margin: "0 0 14px 0", color: "#4a5568" }}>
-              Da li ste sigurni da želite da završite snimanje rute?
-            </p>
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button
-                type="button"
-                onClick={() => setShowFinishConfirm(false)}
-                style={{
-                  background: "rgba(15, 23, 42, 0.08)",
-                  border: "1px solid rgba(15, 23, 42, 0.15)",
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                Nastavi snimanje
-              </button>
-              <button
-                type="button"
-                onClick={async () => {
-                  setShowFinishConfirm(false);
-                  await finalizeRoute();
-                  await stopTracking();
-                }}
-                style={{
-                  background: "#dc3545",
-                  color: "white",
-                  border: "none",
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  cursor: "pointer",
-                  fontWeight: 700,
-                }}
-              >
-                Završi i sačuvaj
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <GoogleMap
-        mapContainerClassName="route-tracker__map"
-        mapContainerStyle={{ height: "100%", width: "100%" }}
-        center={
-          routeToRender.length
-            ? routeToRender[routeToRender.length - 1]
-            : { lat: 44.8176, lng: 20.4569 }
-        }
-        zoom={15}
-      >
-        {routeToRender.length > 1 && (
-          <Polyline path={routeToRender} options={{ strokeColor: "#FF0000", strokeWeight: 4 }} />
-        )}
-        {routeToRender.length > 0 && (
-          <>
-            <Marker position={routeToRender[0]} />
-            <Marker position={routeToRender[routeToRender.length - 1]} />
-          </>
-        )}
-      </GoogleMap>
+      <ConfirmModal
+        open={showFinishConfirm}
+        icon={<span style={{ width: 12, height: 12, borderRadius: 3, background: "#f87171", display: "block" }} />}
+        title="Zaustavi snimanje?"
+        message="Ruta će biti sačuvana i moći ćeš da dodaš detalje."
+        confirmLabel="Zaustavi"
+        cancelLabel="Nastavi"
+        onCancel={() => setShowFinishConfirm(false)}
+        onConfirm={async () => {
+          setShowFinishConfirm(false);
+          await finalizeRoute();
+          await stopTracking();
+        }}
+      />
     </div>
   );
 }
