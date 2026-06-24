@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { TagIcons } from './TagDisplay';
 import '../styles/RouteCard.css';
 
 const IcMountain = () => (
@@ -72,6 +73,10 @@ export default function RouteCard({ hike, onToggleLike, onToggleBookmark, priori
         </div>
 
         <Link to={`/route/${hike.id}`} className="route-card__title">{hike.title}</Link>
+
+        {hike.tags && hike.tags.length > 0 && (
+          <div className="route-card__tags"><TagIcons tags={hike.tags} max={5} /></div>
+        )}
 
         <div className="route-card__divider" />
 

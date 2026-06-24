@@ -1,0 +1,38 @@
+/* Tag picker (create/edit), card icons, and detail chips — dark cards with
+   per-tag accent color on the icon (color applied inline from tags.jsx). */
+
+/* ── Picker (selectable chips) ── */
+.tagpick { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tagpick__chip {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 0.85rem; border-radius: 12px; cursor: pointer;
+  font-family: inherit; font-size: 0.8rem; font-weight: 600;
+  background: #141a16; border: 1px solid rgba(255, 255, 255, 0.08); color: #6b7f6d;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.tagpick__chip:hover { border-color: rgba(255, 255, 255, 0.2); }
+.tagpick__chip.is-on { border-color: rgba(80, 200, 120, 0.5); }
+.tagpick__chip svg { flex-shrink: 0; }
+.tagpick__chip .tagpick__dot { color: #50c878; font-weight: 800; margin-left: 0.1rem; }
+
+/* ── Card view: icons only ── */
+.tag-icons { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-icons__ic {
+  width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center;
+  background: #141a16; border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.tag-icons__more {
+  height: 26px; min-width: 26px; padding: 0 6px; border-radius: 8px; display: grid; place-items: center;
+  background: #141a16; border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #6b7f6d; font-size: 0.72rem; font-weight: 700;
+}
+
+/* ── Detail view: icon + label chips ── */
+.tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tag-list__item {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.45rem 0.75rem; border-radius: 12px;
+  background: #141a16; border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem; font-weight: 600; color: #e4ebe5;
+}
+.tag-list__item svg { flex-shrink: 0; }

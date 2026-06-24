@@ -4,6 +4,7 @@ import { authenticatedFetch } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
 import AppLoader from './AppLoader';
 import RouteCard from './RouteCard';
+import TagPicker from './TagPicker';
 import '../styles/Explore.css';
 
 const HERO_IMG = '/img/routes-bgd.jpg';
@@ -43,6 +44,8 @@ export const HikeRoutes = (props) => {
   const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [diff, setDiff] = useState('all');
+  const [activeTags, setActiveTags] = useState([]);
+  const [tagFilterOpen, setTagFilterOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [radius, setRadius] = useState(null);        // null | 5 | 10 | 25 | 50
   const [myRoutesOnly, setMyRoutesOnly] = useState(false);
@@ -237,7 +240,8 @@ export const HikeRoutes = (props) => {
       (r.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (r.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchDiff = diff === 'all' || diffKey(r.difficulty) === diff;
-    return matchSearch && matchDiff;
+    const matchTags = activeTags.length === 0 || activeTags.every((t) => (r.tags || []).includes(t));
+    return matchSearch && matchDiff && matchTags;
   });
 
   if (error) {
@@ -279,12 +283,26 @@ export const HikeRoutes = (props) => {
             {p.label}
           </button>
         ))}
+        <button type="button" className={`ex2-fbtn ${tagFilterOpen || activeTags.length > 0 ? 'is-active' : ''}`} onClick={() => setTagFilterOpen((v) => !v)}>
+          Karakteristike{activeTags.length > 0 && <span className="ex2-fbadge">{activeTags.length}</span>}
+        </button>
         {userIsAuthenticated && (
           <button type="button" className={`ex2-fbtn ${filtersOpen || activeFilterCount > 0 ? 'is-active' : ''}`} onClick={() => setFiltersOpen((v) => !v)}>
             Filteri{activeFilterCount > 0 && <span className="ex2-fbadge">{activeFilterCount}</span>}
           </button>
         )}
       </div>
+
+      {/* tag filter panel */}
+      {tagFilterOpen && (
+        <div className="ex2-panel">
+          <p className="ex2-panel__label">Karakteristike mesta</p>
+          <TagPicker value={activeTags} onChange={setActiveTags} />
+          {activeTags.length > 0 && (
+            <button type="button" onClick={() => setActiveTags([])} style={{ marginTop: '0.75rem', background: 'none', border: 'none', color: '#6b7f6d', cursor: 'pointer', fontSize: '0.85rem' }}>× Poništi karakteristike</button>
+          )}
+        </div>
+      )}
 
       {/* advanced filter panel */}
       {userIsAuthenticated && filtersOpen && (
@@ -333,7 +351,7 @@ export const HikeRoutes = (props) => {
         </div>
       ) : (
         <div className="ex2-empty">
-          <p>{searchTerm || diff !== 'all' ? 'Nema ruta za ovaj filter' : 'Nema dostupnih ruta'}</p>
+          <p>{searchTerm || diff !== 'all' || activeTags.length > 0 ? 'Nema ruta za ovaj filter' : 'Nema dostupnih ruta'}</p>
         </div>
       )}
 

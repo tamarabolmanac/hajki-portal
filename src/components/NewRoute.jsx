@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LocationPicker from './LocationPicker';
+import TagPicker from './TagPicker';
 import { authenticatedFetch } from '../utils/api';
 import '../styles/AddForm.css';
 
@@ -24,6 +25,7 @@ export const NewRoute = () => {
   const [difficulty, setDifficulty] = useState("");
   const [distance, setDistance] = useState("");
   const [files, setFiles] = useState([]);
+  const [tags, setTags] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(DEFAULT_LOCATION);
   const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState("");
@@ -101,6 +103,7 @@ export const NewRoute = () => {
       formData.append("hike_route[location_longitude]", selectedLocation.lng);
   
       uniqueFiles.forEach(file => formData.append("hike_route[images][]", file));
+      tags.forEach(t => formData.append("hike_route[tags][]", t));
   
       const isDevelopment = process.env.NODE_ENV === 'development';
       const url = isDevelopment ? '/new_route' : 'https://upload.hajki.com/new_route';
@@ -127,6 +130,7 @@ export const NewRoute = () => {
       setDistance("");
       setSelectedLocation(DEFAULT_LOCATION);
       setFiles([]);
+      setTags([]);
     } catch (err) {
       setMessage("Error: " + err.message);
     } finally {
@@ -205,6 +209,11 @@ export const NewRoute = () => {
               </span>
             </div>
             <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={(e) => setFiles(e.target.files)} style={{ display: 'none' }} />
+          </div>
+
+          <div className="af-field">
+            <label className="af-label">Karakteristike mesta</label>
+            <TagPicker value={tags} onChange={setTags} />
           </div>
 
           <div className="af-field">

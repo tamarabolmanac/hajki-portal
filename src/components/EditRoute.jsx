@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
+import TagPicker from './TagPicker';
 import '../styles/AddForm.css';
 
 export const EditRoute = () => {
@@ -25,6 +26,7 @@ export const EditRoute = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [existingImageIds, setExistingImageIds] = useState([]);
+  const [tags, setTags] = useState([]);
 
   // Load route data
   useEffect(() => {
@@ -43,6 +45,7 @@ export const EditRoute = () => {
             distance: data.data.distance || '',
             best_time_to_visit: data.data.best_time_to_visit || ''
           });
+          setTags(Array.isArray(data.data.tags) ? data.data.tags : []);
           
           // Set existing images
           if (data.data.image_urls && data.data.image_urls.length > 0) {
@@ -105,6 +108,13 @@ export const EditRoute = () => {
           formDataToSend.append(`hike_route[${key}]`, formData[key]);
         }
       });
+
+      // Tags — uvek šaljemo; prazan string marker omogućava brisanje svih.
+      if (tags.length === 0) {
+        formDataToSend.append('hike_route[tags][]', '');
+      } else {
+        tags.forEach((t) => formDataToSend.append('hike_route[tags][]', t));
+      }
 
       // Add new images
       selectedImages.forEach((image, index) => {
@@ -214,6 +224,11 @@ export const EditRoute = () => {
           <div className="af-field">
             <label className="af-label">Najbolje vreme za posetu</label>
             <input className="af-input" type="text" name="best_time_to_visit" value={formData.best_time_to_visit} onChange={handleInputChange} placeholder="Proleće, Leto" />
+          </div>
+
+          <div className="af-field">
+            <label className="af-label">Karakteristike mesta</label>
+            <TagPicker value={tags} onChange={setTags} />
           </div>
 
           {/* Images */}

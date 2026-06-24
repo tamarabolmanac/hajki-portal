@@ -7,6 +7,7 @@ import { getCurrentUserID } from '../utils/authHandler';
 import ElevationMap from './ElevationMap';
 import AppLoader from './AppLoader';
 import ConfirmModal from './ConfirmModal';
+import { TagBadges } from './TagDisplay';
 
 const MapPlaceholder = () => (
   <div className="map-placeholder">
@@ -240,6 +241,13 @@ export const RouteDetails = () => {
             <section className="rd-section">
               <h2 className="rd-section__title">O ruti</h2>
               <p className="rd-desc">{route.description}</p>
+            </section>
+          )}
+
+          {route.tags && route.tags.length > 0 && (
+            <section className="rd-section">
+              <h2 className="rd-section__title">Karakteristike mesta</h2>
+              <TagBadges tags={route.tags} />
             </section>
           )}
 
