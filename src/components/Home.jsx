@@ -10,12 +10,12 @@ const Mountain = ({ size = 20 }) => (
 const IcArrow = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>);
 const IcMap = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 4 6 2 6-2v14l-6 2-6-2-6 2V6z" /><path d="M9 4v14M15 6v14" /></svg>);
 const IcUsers = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3.5" /><path d="M3 21a6 6 0 0 1 12 0" /><path d="M16 5a3.5 3.5 0 0 1 0 7M22 21a6 6 0 0 0-5-5.9" /></svg>);
-const IcAward = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="9" r="6" /><path d="m8.5 14-1.5 7 5-3 5 3-1.5-7" /></svg>);
+const IcTune = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /><circle cx="9" cy="7" r="2" /><circle cx="15" cy="12" r="2" /><circle cx="8" cy="17" r="2" /></svg>);
 
 const FEATURES = [
   { icon: IcMap, title: 'GPS Praćenje', desc: 'Snimaj svaku rutu u realnom vremenu sa preciznim GPS podacima.' },
   { icon: IcUsers, title: 'Zajednica', desc: 'Podeli svoje rute i avanture sa hiljadama planinara iz Srbije.' },
-  { icon: IcAward, title: 'Dostignuća', desc: 'Osvajaj bedževe i prati napredak svojih planinarskih ciljeva.' },
+  { icon: IcTune, title: 'Rute po meri', desc: 'Pronađi staze prema svojim kriterijumima i interesovanjima — težini, karakteristikama mesta i lokaciji.' },
 ];
 
 const noop = () => {};
@@ -50,8 +50,7 @@ export const Home = () => {
         <div className="hm-hero__c">
           <span className="hm-badge"><span className="dot" /> Dobrodošli</span>
           <h1 className="hm-h1">Vreme je za<br /><span className="g">HAJKi</span></h1>
-          <p className="hm-lead">Otkrij prirodu, prati svoje rute, deli avanture</p>
-          <p className="hm-sub">Hajki je tvoj savršen pratilac za planinske avanture. Prati svoje putanje, otkrivaj nova mesta i poveži se sa zajednicom planinara.</p>
+          <p className="hm-lead">Podeli svoje avanture, pronadji mesta prema svojim željama, poveži se sa zajednicom.</p>
           <div className="hm-cta-row">
             <Link to="/routes" className="hm-btn hm-btn--primary">Počni da istražuješ <IcArrow /></Link>
           </div>
@@ -79,7 +78,7 @@ export const Home = () => {
           <div className="hm-sec-head">
             <div>
               <p className="hm-kicker">Otkrijte Srbiju</p>
-              <h2 className="hm-h2">Popularne rute</h2>
+              <h2 className="hm-h2">Poslednje zabeležene rute</h2>
             </div>
             <Link to="/routes" className="hm-seeall">Sve rute →</Link>
           </div>

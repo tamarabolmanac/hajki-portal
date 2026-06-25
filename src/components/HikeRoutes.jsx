@@ -43,9 +43,9 @@ export const HikeRoutes = (props) => {
   const [error, setError] = useState(null);
   const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [diff, setDiff] = useState('all');
   const [activeTags, setActiveTags] = useState([]);
-  const [tagFilterOpen, setTagFilterOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [radius, setRadius] = useState(null);        // null | 5 | 10 | 25 | 50
   const [myRoutesOnly, setMyRoutesOnly] = useState(false);
@@ -56,6 +56,7 @@ export const HikeRoutes = (props) => {
 
   // Broji aktivne filtere za badge
   const activeFilterCount = [radius, myRoutesOnly, followingOnly].filter(Boolean).length;
+  const totalActiveFilters = activeFilterCount + (diff !== 'all' ? 1 : 0) + activeTags.length;
   const [likeError, setLikeError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -87,6 +88,12 @@ export const HikeRoutes = (props) => {
     };
   }, []);
 
+  // Debounce search input so we don't refetch on every keystroke.
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
+    return () => clearTimeout(t);
+  }, [searchTerm]);
+
   useEffect(() => {
     const fetchRoutes = async () => {
       setLoading(true);
@@ -112,6 +119,9 @@ export const HikeRoutes = (props) => {
         } else {
           const params = new URLSearchParams({ page: 1, per_page: 20 });
           if (followingOnly) params.set('scope', 'following');
+          if (diff !== 'all') params.set('difficulty', diff);
+          if (debouncedSearch) params.set('q', debouncedSearch);
+          if (activeTags.length) params.set('tags', activeTags.join(','));
           const responseData = await authenticatedFetch(`/routes?${params.toString()}`);
           setData(responseData.data || []);
           setTotalPages(responseData.meta?.total_pages || 1);
@@ -124,7 +134,7 @@ export const HikeRoutes = (props) => {
     };
 
     fetchRoutes();
-  }, [radius, userLocation, myRoutesOnly, followingOnly]);
+  }, [radius, userLocation, myRoutesOnly, followingOnly, diff, debouncedSearch, activeTags]);
 
   const handleLoadMore = async () => {
     const nextPage = page + 1;
@@ -132,6 +142,9 @@ export const HikeRoutes = (props) => {
     try {
       const params = new URLSearchParams({ page: nextPage, per_page: 20 });
       if (followingOnly && !myRoutesOnly && !radius) params.set('scope', 'following');
+      if (diff !== 'all') params.set('difficulty', diff);
+      if (debouncedSearch) params.set('q', debouncedSearch);
+      if (activeTags.length) params.set('tags', activeTags.join(','));
 
       const responseData = await authenticatedFetch(`/routes?${params.toString()}`);
       setData((prev) => [...prev, ...(responseData.data || [])]);
@@ -229,9 +242,10 @@ export const HikeRoutes = (props) => {
     if (val && !userLocation) requestLocation();
   };
 
-  const resetFilters = () => {
+  const resetAllFilters = () => {
+    setDiff('all'); setActiveTags([]);
     setRadius(null); setMyRoutesOnly(false); setFollowingOnly(false);
-    setLocationError(null); setFiltersOpen(false);
+    setLocationError(null);
   };
 
   // search + difficulty filter
@@ -272,65 +286,61 @@ export const HikeRoutes = (props) => {
         )}
       </div>
 
-      {/* difficulty pills + advanced filter toggle */}
+      {/* single filter toggle */}
       <div className="ex2-filters">
-        <span className="ex2-flabel">
+        <button type="button" className={`ex2-fbtn ${filtersOpen || totalActiveFilters > 0 ? 'is-active' : ''}`} onClick={() => setFiltersOpen((v) => !v)}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="11" y1="18" x2="13" y2="18" /></svg>
-          Težina:
-        </span>
-        {DIFF_PILLS.map((p) => (
-          <button key={p.key} type="button" className={`ex2-pill ${diff === p.key ? 'is-active' : ''}`} onClick={() => setDiff(p.key)}>
-            {p.label}
-          </button>
-        ))}
-        <button type="button" className={`ex2-fbtn ${tagFilterOpen || activeTags.length > 0 ? 'is-active' : ''}`} onClick={() => setTagFilterOpen((v) => !v)}>
-          Karakteristike{activeTags.length > 0 && <span className="ex2-fbadge">{activeTags.length}</span>}
+          Filteri{totalActiveFilters > 0 && <span className="ex2-fbadge">{totalActiveFilters}</span>}
         </button>
-        {userIsAuthenticated && (
-          <button type="button" className={`ex2-fbtn ${filtersOpen || activeFilterCount > 0 ? 'is-active' : ''}`} onClick={() => setFiltersOpen((v) => !v)}>
-            Filteri{activeFilterCount > 0 && <span className="ex2-fbadge">{activeFilterCount}</span>}
-          </button>
-        )}
       </div>
 
-      {/* tag filter panel */}
-      {tagFilterOpen && (
+      {/* unified filter panel */}
+      {filtersOpen && (
         <div className="ex2-panel">
-          <p className="ex2-panel__label">Karakteristike mesta</p>
-          <TagPicker value={activeTags} onChange={setActiveTags} />
-          {activeTags.length > 0 && (
-            <button type="button" onClick={() => setActiveTags([])} style={{ marginTop: '0.75rem', background: 'none', border: 'none', color: '#6b7f6d', cursor: 'pointer', fontSize: '0.85rem' }}>× Poništi karakteristike</button>
-          )}
-        </div>
-      )}
-
-      {/* advanced filter panel */}
-      {userIsAuthenticated && filtersOpen && (
-        <div className="ex2-panel">
-          <p className="ex2-panel__label">Radijus pretrage</p>
+          {/* težina */}
+          <p className="ex2-panel__label">Težina</p>
           <div className="ex2-radii">
-            {[null, 5, 10, 25, 50].map((val) => (
-              <button key={val ?? 'all'} type="button" className={`ex2-pill ${radius === val ? 'is-active' : ''}`} onClick={() => handleRadiusChange(val)}>
-                {val === null ? 'Sve' : `${val} km`}
+            {DIFF_PILLS.map((p) => (
+              <button key={p.key} type="button" className={`ex2-pill ${diff === p.key ? 'is-active' : ''}`} onClick={() => setDiff(p.key)}>
+                {p.label}
               </button>
             ))}
           </div>
-          {locationLoading && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#6b7f6d' }}>📍 Tražim lokaciju...</p>}
-          {locationError && <p className="ex2-error" style={{ margin: '0.5rem 0 0' }}>{locationError}</p>}
-          {radius && userLocation && !locationLoading && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#50c878' }}>✓ Lokacija pronađena</p>}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: '1rem', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <label className="ex2-check">
-              <input type="checkbox" checked={myRoutesOnly} onChange={(e) => { setMyRoutesOnly(e.target.checked); if (e.target.checked) setFollowingOnly(false); }} />
-              Samo moje rute
-            </label>
-            <label className="ex2-check">
-              <input type="checkbox" checked={followingOnly} onChange={(e) => { setFollowingOnly(e.target.checked); if (e.target.checked) setMyRoutesOnly(false); }} />
-              Samo rute korisnika koje pratim
-            </label>
-            {activeFilterCount > 0 && (
-              <button type="button" onClick={resetFilters} style={{ alignSelf: 'flex-start', background: 'none', border: 'none', color: '#6b7f6d', cursor: 'pointer', fontSize: '0.85rem' }}>× Resetuj filtere</button>
-            )}
-          </div>
+
+          {/* karakteristike */}
+          <p className="ex2-panel__label" style={{ marginTop: '1.1rem' }}>Karakteristike mesta</p>
+          <TagPicker value={activeTags} onChange={setActiveTags} />
+
+          {/* radijus + scope (samo za prijavljene) */}
+          {userIsAuthenticated && (
+            <>
+              <p className="ex2-panel__label" style={{ marginTop: '1.1rem' }}>Radijus pretrage</p>
+              <div className="ex2-radii">
+                {[null, 5, 10, 25, 50].map((val) => (
+                  <button key={val ?? 'all'} type="button" className={`ex2-pill ${radius === val ? 'is-active' : ''}`} onClick={() => handleRadiusChange(val)}>
+                    {val === null ? 'Sve' : `${val} km`}
+                  </button>
+                ))}
+              </div>
+              {locationLoading && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#6b7f6d' }}>📍 Tražim lokaciju...</p>}
+              {locationError && <p className="ex2-error" style={{ margin: '0.5rem 0 0' }}>{locationError}</p>}
+              {radius && userLocation && !locationLoading && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#50c878' }}>✓ Lokacija pronađena</p>}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: '1rem', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <label className="ex2-check">
+                  <input type="checkbox" checked={myRoutesOnly} onChange={(e) => { setMyRoutesOnly(e.target.checked); if (e.target.checked) setFollowingOnly(false); }} />
+                  Samo moje rute
+                </label>
+                <label className="ex2-check">
+                  <input type="checkbox" checked={followingOnly} onChange={(e) => { setFollowingOnly(e.target.checked); if (e.target.checked) setMyRoutesOnly(false); }} />
+                  Samo rute korisnika koje pratim
+                </label>
+              </div>
+            </>
+          )}
+
+          {totalActiveFilters > 0 && (
+            <button type="button" onClick={resetAllFilters} style={{ marginTop: '1rem', background: 'none', border: 'none', color: '#6b7f6d', cursor: 'pointer', fontSize: '0.85rem' }}>× Resetuj sve filtere</button>
+          )}
         </div>
       )}
 

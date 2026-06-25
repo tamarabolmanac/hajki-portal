@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import Map, { Source, Layer, Marker, NavigationControl } from 'react-map-gl/maplibre';
+import Map, { Source, Layer, Marker, NavigationControl, AttributionControl } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { authenticatedFetch } from '../utils/api';
@@ -32,7 +32,7 @@ const ROUTE_LINE_PAINT = {
 export default function ElevationMap({ routeId, points = [], center = null }) {
   const [profile, setProfile] = useState([]);
   const [hoverIdx, setHoverIdx] = useState(null);
-  const [mode, setMode] = useState('terrain'); // user's choice; only applies when enriched
+  const [mode, setMode] = useState('flat'); // default flat; toggle to terrain when enriched
   const [mapReady, setMapReady] = useState(false);
   const mapObjRef = useRef(null);
 
@@ -173,6 +173,7 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
           maxPitch={75}
           onLoad={onLoad}
           cooperativeGestures
+          attributionControl={false}
           style={{ width: '100%', height: '100%' }}
         >
           {track.length > 1 && (
@@ -204,6 +205,7 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
           )}
 
           <NavigationControl position="top-right" visualizePitch />
+          <AttributionControl compact position="bottom-right" />
         </Map>
       </div>
 

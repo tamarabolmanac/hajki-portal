@@ -28,12 +28,9 @@ export const About = (props) => {
         <div className="hero-content">
           <span className="hero-badge">O nama</span>
           <div className="hero-text">
-            <h1>Vreme je za bolje planinarenje</h1>
-            <h2>Otkrij prirodu, prati svoje rute, deli avanture</h2>
-            <p>
-              Hajki je tvoj savršen pratilac za planinske avanture.
-              Prati svoje putanje, otkrivaj nove rute i poveži se sa zajednicom planinara.
-            </p>
+            <h1>Vreme je za HAJKi</h1>
+            <h2>Podeli svoje avanture, pronadji mesta prema svojim željama, poveži se sa zajednicom</h2>
+
             <div className="hero-buttons">
               <button className="btn-primary" onClick={handleExploreClick}>Počni da istražuješ</button>
               <button className="btn-secondary" onClick={handleLearnMoreClick}>Saznaj više</button>

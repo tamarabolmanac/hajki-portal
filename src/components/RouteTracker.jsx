@@ -12,6 +12,7 @@ import {
   stopNativeTracking
 } from "../tracking/nativeTracker";
 import ConfirmModal from "./ConfirmModal";
+import recordingGuard from "../utils/recordingGuard";
 import "../styles/RouteTracker.css";
 
 /** Dark MapLibre style (no API key) matching the Figma record screen. */
@@ -53,6 +54,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
   const [error, setError] = useState(null);
   const [routeToRender, setRouteToRender] = useState([]);
   const [showFinishConfirm, setShowFinishConfirm] = useState(false);
+  const [showLeavePrompt, setShowLeavePrompt] = useState(false);
   const [elapsed, setElapsed] = useState(0);
 
   const mapRef = useRef(null);
@@ -319,6 +321,12 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
       void startTracking();
     }
     return () => {
+      // Safety net: if the screen is torn down while still recording (e.g. an
+      // unguarded navigation), finalize so the route never stays stuck in the
+      // "tracking" status.
+      if (isTrackingRef.current) {
+        void finalizeRoute();
+      }
       if (watchIdRef.current !== null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
@@ -342,6 +350,35 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     if (!isTracking) return undefined;
     const t = setInterval(() => setElapsed((s) => s + 1), 1000);
     return () => clearInterval(t);
+  }, [isTracking]);
+
+  // Guard against leaving the screen mid-recording: BottomNav/links go through
+  // recordingGuard, and the hardware/browser back button + tab close are caught
+  // here. Each shows the "stop recording?" dialog instead of silently aborting.
+  useEffect(() => {
+    if (!isTracking) {
+      recordingGuard.setActive(false);
+      recordingGuard.setHandler(null);
+      return undefined;
+    }
+    recordingGuard.setActive(true);
+    recordingGuard.setHandler(() => setShowLeavePrompt(true));
+
+    window.history.pushState({ hajkiRec: true }, "");
+    const onPop = () => {
+      window.history.pushState({ hajkiRec: true }, ""); // stay put until confirmed
+      setShowLeavePrompt(true);
+    };
+    const onBeforeUnload = (e) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("popstate", onPop);
+    window.addEventListener("beforeunload", onBeforeUnload);
+
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      recordingGuard.setActive(false);
+      recordingGuard.setHandler(null);
+    };
   }, [isTracking]);
 
   // Keep the map centered on the latest GPS point.
@@ -463,6 +500,21 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
         onCancel={() => setShowFinishConfirm(false)}
         onConfirm={async () => {
           setShowFinishConfirm(false);
+          await finalizeRoute();
+          await stopTracking();
+        }}
+      />
+
+      <ConfirmModal
+        open={showLeavePrompt}
+        icon={<span style={{ width: 12, height: 12, borderRadius: 3, background: "#f87171", display: "block" }} />}
+        title="Snimanje je u toku"
+        message="Ako napustiš ekran, snimanje rute se prekida. Da li želiš da zaustaviš i sačuvaš rutu?"
+        confirmLabel="Zaustavi i sačuvaj"
+        cancelLabel="Nastavi snimanje"
+        onCancel={() => setShowLeavePrompt(false)}
+        onConfirm={async () => {
+          setShowLeavePrompt(false);
           await finalizeRoute();
           await stopTracking();
         }}

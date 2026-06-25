@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import recordingGuard from '../utils/recordingGuard';
 import '../styles/BottomNav.css';
 
 const IcHome = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5 12 3l9 7.5" /><path d="M5 9.5V21h14V9.5" /></svg>);
@@ -32,7 +33,7 @@ export default function BottomNav() {
             key={key}
             type="button"
             className={`bn__tab ${accent ? 'bn__tab--accent' : ''} ${active ? 'is-active' : ''}`}
-            onClick={() => navigate(path)}
+            onClick={() => recordingGuard.tryLeave(() => navigate(path))}
           >
             <span className={accent ? 'bn__accent' : 'bn__icon'}><Icon /></span>
             <span className="bn__label">{label}</span>
