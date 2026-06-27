@@ -4,6 +4,7 @@ import { config } from '../config';
 import { authenticatedFetch } from '../utils/api';
 import '../styles/Profile.css';
 import '../styles/UserProfile.css';
+import { useT } from '../i18n/I18nProvider';
 
 const formatDuration = (minutes) => {
   if (!minutes) return '0h 0min';
@@ -13,6 +14,7 @@ const formatDuration = (minutes) => {
 };
 
 export const UserProfile = () => {
+  const { t } = useT();
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -76,32 +78,30 @@ export const UserProfile = () => {
 
   const reportUser = async () => {
     const reasons = { '1': 'spam', '2': 'neprikladan_sadrzaj', '3': 'uznemiravanje', '4': 'ostalo' };
-    const choice = window.prompt(
-      'Prijavi ovog korisnika. Razlog:\n1 - Spam\n2 - Neprikladan sadržaj\n3 - Uznemiravanje\n4 - Ostalo\n\nUnesi broj (1-4):'
-    );
+    const choice = window.prompt(t('report.userPrompt'));
     if (!choice) return;
     const reason = reasons[choice.trim()];
-    if (!reason) { alert('Nevažeći izbor.'); return; }
-    const details = window.prompt('Dodatni opis (opciono):') || '';
+    if (!reason) { alert(t('report.invalid')); return; }
+    const details = window.prompt(t('report.details')) || '';
     try {
       await authenticatedFetch('/reports', {
         method: 'POST',
         body: JSON.stringify({ reported_user_id: id, reason, details }),
       });
-      alert('Prijava je poslata. Hvala što pomažeš da zajednica bude bezbedna.');
+      alert(t('report.sent'));
     } catch (err) {
-      alert(`Greška: ${err.message}`);
+      alert(`${t('report.errorPrefix')}${err.message}`);
     }
   };
 
   const blockUser = async () => {
-    if (!window.confirm('Blokiraj ovog korisnika? Nećeš više videti njegove rute, niti će vas dvoje moći da se pratite.')) return;
+    if (!window.confirm(t('block.confirm'))) return;
     try {
       await authenticatedFetch(`/users/${id}/block`, { method: 'POST' });
-      alert('Korisnik je blokiran.');
+      alert(t('block.done'));
       setUser((prev) => ({ ...prev, is_following: false }));
     } catch (err) {
-      alert(`Greška: ${err.message}`);
+      alert(`${t('report.errorPrefix')}${err.message}`);
     }
   };
 
@@ -117,12 +117,12 @@ export const UserProfile = () => {
     return (
       <div className="pf-page">
         <div className="pf-inner">
-          <p className="pf-greet">Profil</p>
-          <h1 className="pf-h1">Greška</h1>
+          <p className="pf-greet">{t('up.profile')}</p>
+          <h1 className="pf-h1">{t('up.error')}</h1>
           <div className="pf-card">
-            <p style={{ color: 'var(--muted)', margin: '0 0 1rem' }}>{error || 'Korisnik nije pronađen.'}</p>
+            <p style={{ color: 'var(--muted)', margin: '0 0 1rem' }}>{error || t('up.notFound')}</p>
             <Link to="/routes" className="pf-btn-ghost" style={{ display: 'inline-block' }}>
-              ← Nazad na rute
+              {t('up.back')}
             </Link>
           </div>
         </div>
@@ -135,10 +135,10 @@ export const UserProfile = () => {
   return (
     <div className="pf-page">
       <div className="pf-inner">
-        <p className="pf-greet">Profil planinara</p>
+        <p className="pf-greet">{t('up.title')}</p>
         <h1 className="pf-h1">
           {user.name}
-          {user.is_me && <span className="up-me-tag"> (ti)</span>}
+          {user.is_me && <span className="up-me-tag"> {t('up.you')}</span>}
         </h1>
 
         {/* profile header card */}
@@ -159,13 +159,13 @@ export const UserProfile = () => {
                   className={`up-btn ${user.is_following ? 'up-btn--following' : 'up-btn--follow'}`}
                   onClick={toggleFollow}
                 >
-                  {user.is_following ? 'Otprati' : 'Prati'}
+                  {user.is_following ? t('up.unfollow') : t('up.follow')}
                 </button>
                 <button type="button" className="up-btn up-btn--muted" onClick={reportUser}>
-                  ⚠️ Prijavi
+                  {t('up.report')}
                 </button>
                 <button type="button" className="up-btn up-btn--danger" onClick={blockUser}>
-                  🚫 Blokiraj
+                  {t('up.block')}
                 </button>
               </div>
             )}
@@ -176,24 +176,24 @@ export const UserProfile = () => {
         <div className="pf-stats">
           <div className="pf-stat">
             <div className="pf-stat__value pf-stat__value--green">{(user.total_distance || 0).toFixed(1)}</div>
-            <div className="pf-stat__label">km prepešačeno</div>
+            <div className="pf-stat__label">{t('up.kmWalked')}</div>
           </div>
           <div className="pf-stat">
             <div className="pf-stat__value">{formatDuration(user.total_duration || 0)}</div>
-            <div className="pf-stat__label">Vreme u prirodi</div>
+            <div className="pf-stat__label">{t('up.timeNature')}</div>
           </div>
           <div className="pf-stat">
             <div className="pf-stat__value">{user.routes_count || 0}</div>
-            <div className="pf-stat__label">Ruta</div>
+            <div className="pf-stat__label">{t('up.routes')}</div>
           </div>
         </div>
 
         {/* routes */}
         <div className="pf-card">
-          <h3 className="pf-card-title">Rute ovog planinara</h3>
+          <h3 className="pf-card-title">{t('up.routesTitle')}</h3>
 
           {!user.routes || user.routes.length === 0 ? (
-            <p className="pf-empty">Ovaj korisnik još uvek nije podelio nijednu rutu.</p>
+            <p className="pf-empty">{t('up.noRoutes')}</p>
           ) : (
             <div className="pf-routes">
               {user.routes.map((route) => (
@@ -202,7 +202,7 @@ export const UserProfile = () => {
                   <div className="pf-route__body">
                     <div className="pf-route__title">{route.title}</div>
                     <div className="pf-route__sub">
-                      {Number(route.distance || 0).toFixed(2)} km · {route.duration || 0} min · {route.points_count || 0} tačaka
+                      {Number(route.distance || 0).toFixed(2)} km · {route.duration || 0} min · {route.points_count || 0} {t('up.points')}
                     </div>
                   </div>
                 </Link>
@@ -212,7 +212,7 @@ export const UserProfile = () => {
         </div>
 
         <Link to="/routes" className="pf-btn-ghost" style={{ display: 'inline-block' }}>
-          ← Nazad na rute
+          {t('up.back')}
         </Link>
       </div>
     </div>

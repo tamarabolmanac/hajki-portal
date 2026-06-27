@@ -1,4 +1,5 @@
 import React from 'react';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/AppLoader.css';
 
 const Mountain = () => (
@@ -7,7 +8,9 @@ const Mountain = () => (
   </svg>
 );
 
-export const AppLoader = ({ title = 'Učitavanje...', subtitle = '', compact = false }) => {
+export const AppLoader = ({ title, subtitle = '', compact = false }) => {
+  const { t } = useT();
+  const titleText = title || t('loader.default');
   return (
     <div className={`hjk-loader ${compact ? 'hjk-loader--compact' : ''}`}>
       <div className="hjk-loader__card">
@@ -19,7 +22,7 @@ export const AppLoader = ({ title = 'Učitavanje...', subtitle = '', compact = f
           <Mountain />
         </div>
         <div className="hjk-loader__text">
-          <p className="hjk-loader__title">{title}</p>
+          <p className="hjk-loader__title">{titleText}</p>
           {subtitle ? <p className="hjk-loader__sub">{subtitle}</p> : null}
         </div>
       </div>

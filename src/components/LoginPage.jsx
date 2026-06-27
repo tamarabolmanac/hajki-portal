@@ -5,6 +5,7 @@ import { config } from '../config';
 import { explainUnreachableApiError } from '../utils/fetchErrors';
 import '../styles/Auth.css';
 import GoogleLoginButton from "./GoogleLoginButton";
+import { useT } from '../i18n/I18nProvider';
 import { FaEnvelope, FaLock, FaArrowRight, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const Mountain = () => (
@@ -12,6 +13,7 @@ const Mountain = () => (
 );
 
 const LoginPage = () => {
+  const { t } = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -26,7 +28,7 @@ const LoginPage = () => {
     setErrorMessage("");
     setIsLoading(true);
     if (!email || !password) {
-      setErrorMessage("Molimo vas da unesete sve podatke.");
+      setErrorMessage(t('auth.fillAll'));
       setIsLoading(false);
       return;
     }
@@ -38,26 +40,26 @@ const LoginPage = () => {
       });
       if (!response.ok) {
         let data;
-        try { data = await response.json(); } catch { throw new Error('Greška pri prijavljivanju. Pokušajte ponovo.'); }
-        let msg = 'Greška pri prijavljivanju. Pokušajte ponovo.';
+        try { data = await response.json(); } catch { throw new Error(t('auth.loginErr')); }
+        let msg = t('auth.loginErr');
         if (response.status === 401) {
           msg = data.message?.toLowerCase().includes('confirm')
-            ? 'Vaš nalog nije potvrđen. Proverite email i kliknite na link za potvrdu.'
-            : 'Pogrešna email adresa ili lozinka.';
-        } else if (response.status === 404) { msg = 'Korisnik sa ovim email-om ne postoji.'; }
-        else if (response.status === 422) { msg = 'Neispravan format email-a.'; }
-        else if (response.status === 403) { msg = 'Vaš nalog nije potvrđen. Proverite email.'; }
+            ? t('auth.notConfirmed')
+            : t('auth.badCreds');
+        } else if (response.status === 404) { msg = t('auth.noUser'); }
+        else if (response.status === 422) { msg = t('auth.badEmail'); }
+        else if (response.status === 403) { msg = t('auth.notConfirmedShort'); }
         else { msg = data.message || msg; }
         throw new Error(msg);
       }
       const data = await response.json();
-      if (!data.token) throw new Error('Došlo je do neočekivane greške. Pokušajte ponovo.');
+      if (!data.token) throw new Error(t('auth.unexpected'));
       localStorage.setItem('authToken', data.token);
       localStorage.setItem('userID', data.user_id);
       window.location.href = '/';
     } catch (error) {
       console.error('Login error:', error);
-      setErrorMessage(explainUnreachableApiError(error, config.apiUrl) || error.message || 'Greška pri prijavljivanju.');
+      setErrorMessage(explainUnreachableApiError(error, config.apiUrl) || error.message || t('auth.loginErr'));
     } finally {
       setIsLoading(false);
     }
@@ -74,35 +76,35 @@ const LoginPage = () => {
         <div className="auth__logo"><Mountain /><span>Hajki</span></div>
 
         <div className="auth__card">
-          <h1 className="auth__h1">Dobrodošli nazad</h1>
-          <p className="auth__sub">Prijavite se za nastavak</p>
+          <h1 className="auth__h1">{t('auth.loginH1')}</h1>
+          <p className="auth__sub">{t('auth.loginSub')}</p>
 
           {errorMessage && <div className="auth__err">{errorMessage}</div>}
 
           <form onSubmit={handleLogin}>
             <div className="auth__field">
               <FaEnvelope size={15} />
-              <input className="auth__input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email adresa" required />
+              <input className="auth__input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('auth.emailPh')} required />
             </div>
             <div className="auth__field">
               <FaLock size={15} />
-              <input className="auth__input" type={showPass ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Lozinka" required />
-              <button type="button" className="auth__eye" onClick={() => setShowPass((v) => !v)} aria-label="Prikaži lozinku">
+              <input className="auth__input" type={showPass ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('auth.passwordPh')} required />
+              <button type="button" className="auth__eye" onClick={() => setShowPass((v) => !v)} aria-label={t('auth.showPass')}>
                 {showPass ? <FaEyeSlash size={15} /> : <FaEye size={15} />}
               </button>
             </div>
-            <p className="auth__forgot"><Link to="/forgot-password">Zaboravili ste lozinku?</Link></p>
+            <p className="auth__forgot"><Link to="/forgot-password">{t('auth.forgot')}</Link></p>
 
             <button type="submit" className="auth__btn" disabled={isLoading}>
-              {isLoading ? 'Prijavljivanje...' : <>Prijavi se <FaArrowRight size={16} /></>}
+              {isLoading ? t('auth.signingIn') : <>{t('auth.signIn')} <FaArrowRight size={16} /></>}
             </button>
           </form>
 
-          <div className="auth__divider"><span>ili se prijavite sa</span></div>
+          <div className="auth__divider"><span>{t('auth.orSignIn')}</span></div>
           <div className="auth__google"><GoogleLoginButton onLoggedIn={handleGoogleLogin} /></div>
         </div>
 
-        <p className="auth__foot">Nemate nalog? <Link to="/register">Registrujte se</Link></p>
+        <p className="auth__foot">{t('auth.noAccount')} <Link to="/register">{t('auth.register')}</Link></p>
       </div>
     </div>
   );

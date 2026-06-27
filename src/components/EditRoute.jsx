@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import TagPicker from './TagPicker';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/AddForm.css';
 
 export const EditRoute = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useT();
   const fileInputRef = useRef(null);
 
   const [route, setRoute] = useState(null);
@@ -58,7 +60,7 @@ export const EditRoute = () => {
           }
         }
       } catch (err) {
-        setError('Failed to load route data');
+        setError(t('form.loadFailed'));
         console.error('Error loading route:', err);
       } finally {
         setLoading(false);
@@ -181,62 +183,62 @@ export const EditRoute = () => {
   return (
     <div className="af-page">
       <div className="af-inner">
-        <button type="button" className="af-back" onClick={handleCancel}>← Nazad</button>
-        <h1 className="af-h1">Izmeni rutu</h1>
+        <button type="button" className="af-back" onClick={handleCancel}>{t('form.back')}</button>
+        <h1 className="af-h1">{t('form.editTitle')}</h1>
 
         <form onSubmit={handleSubmit}>
           {error && <p className="af-msg error" style={{ marginTop: 0, marginBottom: '1rem' }}>{error}</p>}
 
           {gps && (
-            <div className="af-info">📍 Distanca i trajanje se računaju iz GPS tačaka i ne mogu se ručno menjati.</div>
+            <div className="af-info">{t('form.gpsInfo')}</div>
           )}
 
           <div className="af-field">
-            <label className="af-label">Naziv *</label>
-            <input className="af-input" type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder="Naziv rute" />
+            <label className="af-label">{t('form.name')} *</label>
+            <input className="af-input" type="text" name="title" value={formData.title} onChange={handleInputChange} required placeholder={t('form.namePh')} />
           </div>
 
           <div className="af-field">
-            <label className="af-label">Opis</label>
-            <textarea className="af-textarea" name="description" value={formData.description} onChange={handleInputChange} placeholder="Opišite rutu..." />
+            <label className="af-label">{t('form.desc')}</label>
+            <textarea className="af-textarea" name="description" value={formData.description} onChange={handleInputChange} placeholder={t('form.descPh')} />
           </div>
 
           <div className="af-field">
-            <label className="af-label">Težina</label>
+            <label className="af-label">{t('form.difficulty')}</label>
             <select className="af-select" name="difficulty" value={formData.difficulty} onChange={handleInputChange}>
-              <option value="easy">Laka</option>
-              <option value="medium">Srednja</option>
-              <option value="hard">Teška</option>
+              <option value="easy">{t('form.diffEasy')}</option>
+              <option value="medium">{t('form.diffModerate')}</option>
+              <option value="hard">{t('form.diffHard')}</option>
             </select>
           </div>
 
           <div className="af-row2">
             <div className="af-field" style={{ flex: 1 }}>
-              <label className="af-label">Trajanje (min){gps ? ' · GPS' : ''}</label>
+              <label className="af-label">{t('form.duration')} (min){gps ? ' · GPS' : ''}</label>
               <input className={`af-input ${gps ? 'af-disabled' : ''}`} type="number" name="duration" value={formData.duration} onChange={handleInputChange} min="0" placeholder="120" disabled={gps} />
             </div>
             <div className="af-field" style={{ flex: 1 }}>
-              <label className="af-label">Dužina (km){gps ? ' · GPS' : ''}</label>
+              <label className="af-label">{t('form.length')}{gps ? ' · GPS' : ''}</label>
               <input className={`af-input ${gps ? 'af-disabled' : ''}`} type="number" name="distance" value={formData.distance} onChange={handleInputChange} min="0" step="0.1" placeholder="5.2" disabled={gps} />
             </div>
           </div>
 
           <div className="af-field">
-            <label className="af-label">Najbolje vreme za posetu</label>
-            <input className="af-input" type="text" name="best_time_to_visit" value={formData.best_time_to_visit} onChange={handleInputChange} placeholder="Proleće, Leto" />
+            <label className="af-label">{t('form.bestTime')}</label>
+            <input className="af-input" type="text" name="best_time_to_visit" value={formData.best_time_to_visit} onChange={handleInputChange} placeholder={t('form.bestTimePh')} />
           </div>
 
           <div className="af-field">
-            <label className="af-label">Karakteristike mesta</label>
+            <label className="af-label">{t('form.features')}</label>
             <TagPicker value={tags} onChange={setTags} />
           </div>
 
           {/* Images */}
           <div className="af-field">
-            <label className="af-label">Slike rute</label>
+            <label className="af-label">{t('form.routeImages')}</label>
             {existingImages.length > 0 && (
               <>
-                <p className="af-subtitle">Postojeće slike</p>
+                <p className="af-subtitle">{t('form.existingImages')}</p>
                 <div className="af-imggrid" style={{ marginBottom: '0.9rem' }}>
                   {existingImages.map((imageUrl, index) => (
                     <div key={index} className="af-imgcell">
@@ -259,15 +261,15 @@ export const EditRoute = () => {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z" /><circle cx="12" cy="13" r="3.5" /></svg>
               </span>
               <span>
-                <p className="af-drop__t">Dodaj nove slike</p>
-                <p className="af-drop__s">Kliknite da izaberete slike</p>
+                <p className="af-drop__t">{t('form.addNewImages')}</p>
+                <p className="af-drop__s">{t('form.addPhotosHint')}</p>
               </span>
             </div>
             <input ref={fileInputRef} type="file" name="images" multiple accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} />
 
             {selectedImages.length > 0 && (
               <>
-                <p className="af-subtitle" style={{ marginTop: '0.9rem' }}>Nove slike</p>
+                <p className="af-subtitle" style={{ marginTop: '0.9rem' }}>{t('form.newImages')}</p>
                 <div className="af-imggrid">
                   {selectedImages.map((file, index) => (
                     <div key={index} className="af-imgcell">
@@ -281,9 +283,9 @@ export const EditRoute = () => {
           </div>
 
           <div className="af-actions">
-            <button type="button" className="af-cancel" onClick={handleCancel} disabled={saving}>Otkaži</button>
+            <button type="button" className="af-cancel" onClick={handleCancel} disabled={saving}>{t('rd.cancel')}</button>
             <button type="submit" className="af-submit" disabled={saving}>
-              {saving ? <><span className="af-spin" /> Čuvanje...</> : 'Sačuvaj izmene'}
+              {saving ? <><span className="af-spin" /> {t('form.saving')}</> : t('form.saveChanges')}
             </button>
           </div>
         </form>

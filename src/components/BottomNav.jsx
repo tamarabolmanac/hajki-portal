@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import recordingGuard from '../utils/recordingGuard';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/BottomNav.css';
 
 const IcHome = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5 12 3l9 7.5" /><path d="M5 9.5V21h14V9.5" /></svg>);
@@ -9,10 +10,10 @@ const IcPlus = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
 const IcUser = () => (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>);
 
 const TABS = [
-  { key: 'home', label: 'Početna', path: '/', icon: IcHome, match: (p) => p === '/' },
-  { key: 'explore', label: 'Istraži', path: '/routes', icon: IcCompass, match: (p) => p.startsWith('/routes') || p.startsWith('/route/') },
-  { key: 'add', label: 'Dodaj', path: '/new-route', icon: IcPlus, accent: true, match: (p) => p.startsWith('/new-route') || p.startsWith('/track-new-route') },
-  { key: 'nalog', label: 'Nalog', path: '/profile', icon: IcUser, match: (p) => p.startsWith('/profile') },
+  { key: 'home', labelKey: 'bottomnav.home', path: '/', icon: IcHome, match: (p) => p === '/' },
+  { key: 'explore', labelKey: 'bottomnav.explore', path: '/routes', icon: IcCompass, match: (p) => p.startsWith('/routes') || p.startsWith('/route/') },
+  { key: 'add', labelKey: 'bottomnav.add', path: '/new-route', icon: IcPlus, accent: true, match: (p) => p.startsWith('/new-route') || p.startsWith('/track-new-route') },
+  { key: 'nalog', labelKey: 'bottomnav.account', path: '/profile', icon: IcUser, match: (p) => p.startsWith('/profile') },
 ];
 
 const HIDE_ON = ['/login', '/register', '/forgot-password'];
@@ -20,13 +21,14 @@ const HIDE_ON = ['/login', '/register', '/forgot-password'];
 export default function BottomNav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { t } = useT();
 
   // No bottom bar on auth screens or email-confirm flow.
   if (HIDE_ON.includes(pathname) || pathname.startsWith('/confirm')) return null;
 
   return (
     <nav className="bn">
-      {TABS.map(({ key, label, path, icon: Icon, accent, match }) => {
+      {TABS.map(({ key, labelKey, path, icon: Icon, accent, match }) => {
         const active = match(pathname);
         return (
           <button
@@ -36,7 +38,7 @@ export default function BottomNav() {
             onClick={() => recordingGuard.tryLeave(() => navigate(path))}
           >
             <span className={accent ? 'bn__accent' : 'bn__icon'}><Icon /></span>
-            <span className="bn__label">{label}</span>
+            <span className="bn__label">{t(labelKey)}</span>
           </button>
         );
       })}

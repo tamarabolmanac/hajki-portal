@@ -87,3 +87,7 @@ body #menu .nav-cta {
 }
 body #menu .nav-cta:hover { background: #61d488 !important; }
 body #menu .nav-cta svg { width: 15px; height: 15px; }
+
+/* Language switcher in the navbar */
+body #menu .nav-lang-li { display: flex !important; align-items: center; margin-left: 0.35rem; }
+body #menu .nav-lang-li .lang-switch { color: #e4ebe5; }

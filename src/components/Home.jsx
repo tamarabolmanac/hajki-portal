@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { config } from '../config';
 import RouteCard from './RouteCard';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/Home.css';
 
 const Mountain = ({ size = 20 }) => (
@@ -13,14 +14,15 @@ const IcUsers = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="non
 const IcTune = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /><circle cx="9" cy="7" r="2" /><circle cx="15" cy="12" r="2" /><circle cx="8" cy="17" r="2" /></svg>);
 
 const FEATURES = [
-  { icon: IcMap, title: 'GPS Praćenje', desc: 'Snimaj svaku rutu u realnom vremenu sa preciznim GPS podacima.' },
-  { icon: IcUsers, title: 'Zajednica', desc: 'Podeli svoje rute i avanture sa hiljadama planinara iz Srbije.' },
-  { icon: IcTune, title: 'Rute po meri', desc: 'Pronađi staze prema svojim kriterijumima i interesovanjima — težini, karakteristikama mesta i lokaciji.' },
+  { icon: IcMap, titleKey: 'home.feat_gps_t', descKey: 'home.feat_gps_d' },
+  { icon: IcUsers, titleKey: 'home.feat_comm_t', descKey: 'home.feat_comm_d' },
+  { icon: IcTune, titleKey: 'home.feat_tune_t', descKey: 'home.feat_tune_d' },
 ];
 
 const noop = () => {};
 
 export const Home = () => {
+  const { t } = useT();
   const [routes, setRoutes] = useState([]);
 
   // Popular routes — only if logged in (public visitors just see the landing).
@@ -48,11 +50,11 @@ export const Home = () => {
         <img className="hm-hero__img" src="/img/hike-landing.jpg" alt="" />
         <div className="hm-hero__ov" />
         <div className="hm-hero__c">
-          <span className="hm-badge"><span className="dot" /> Dobrodošli</span>
-          <h1 className="hm-h1">Vreme je za<br /><span className="g">HAJKi</span></h1>
-          <p className="hm-lead">Podeli svoje avanture, pronadji mesta prema svojim željama, poveži se sa zajednicom.</p>
+          <span className="hm-badge"><span className="dot" /> {t('home.badge')}</span>
+          <h1 className="hm-h1">{t('home.h1_1')}<br /><span className="g">{t('home.h1_2')}</span></h1>
+          <p className="hm-lead">{t('home.lead')}</p>
           <div className="hm-cta-row">
-            <Link to="/routes" className="hm-btn hm-btn--primary">Počni da istražuješ <IcArrow /></Link>
+            <Link to="/routes" className="hm-btn hm-btn--primary">{t('home.cta_explore')} <IcArrow /></Link>
           </div>
         </div>
       </section>
@@ -60,12 +62,12 @@ export const Home = () => {
       {/* features */}
       <section className="hm-features">
         <div className="hm-features__in">
-          {FEATURES.map(({ icon: Icon, title, desc }) => (
-            <div className="hm-feat" key={title}>
+          {FEATURES.map(({ icon: Icon, titleKey, descKey }) => (
+            <div className="hm-feat" key={titleKey}>
               <div className="hm-feat__ic"><Icon /></div>
               <div>
-                <h3>{title}</h3>
-                <p>{desc}</p>
+                <h3>{t(titleKey)}</h3>
+                <p>{t(descKey)}</p>
               </div>
             </div>
           ))}
@@ -77,10 +79,10 @@ export const Home = () => {
         <section className="hm-section">
           <div className="hm-sec-head">
             <div>
-              <p className="hm-kicker">Otkrijte Srbiju</p>
-              <h2 className="hm-h2">Poslednje zabeležene rute</h2>
+              <p className="hm-kicker">{t('home.kicker')}</p>
+              <h2 className="hm-h2">{t('home.recent')}</h2>
             </div>
-            <Link to="/routes" className="hm-seeall">Sve rute →</Link>
+            <Link to="/routes" className="hm-seeall">{t('home.all_routes')}</Link>
           </div>
           <div className="route-card-grid">
             {routes.map((hike, i) => (
@@ -92,16 +94,16 @@ export const Home = () => {
 
       {/* CTA */}
       <section className="hm-cta">
-        <h2>Spremi se za <span className="g">avanturu</span></h2>
-        <p>Pridruži se zajednici planinara i počni da beležiš svoja istraživanja.</p>
-        <Link to="/register" className="hm-btn hm-btn--primary" style={{ display: 'inline-flex' }}>Registruj se besplatno</Link>
+        <h2>{t('home.cta_t1')} <span className="g">{t('home.cta_t2')}</span></h2>
+        <p>{t('home.cta_sub')}</p>
+        <Link to="/register" className="hm-btn hm-btn--primary" style={{ display: 'inline-flex' }}>{t('home.cta_register')}</Link>
       </section>
 
       {/* footer */}
       <footer className="hm-foot">
         <div className="hm-foot__in">
           <div className="hm-foot__logo"><Mountain /> Hajki</div>
-          <p>© 2026 Hajki · Srbija</p>
+          <p>{t('home.footer')}</p>
         </div>
       </footer>
     </div>

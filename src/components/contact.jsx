@@ -1,8 +1,10 @@
 import React from "react";
 import { BackgroundImage } from "./BackgroundImage";
+import { useT } from "../i18n/I18nProvider";
 import "../styles/contact.css";
 
 export const Contact = (props) => {
+  const { t } = useT();
   return (
     <div id="contact" className="contact-hero">
       <div className="contact-background">
@@ -17,24 +19,17 @@ export const Contact = (props) => {
 
       <div className="contact-container">
         <div className="contact-card">
-          <span className="contact-badge">Kontakt</span>
-          <h1 className="contact-title">Povežite se sa nama</h1>
-          <p className="contact-lead">
-            Želite da podelite svoje iskustvo ili predlog? Kontaktirajte nas -
-            tu smo da vam pomognemo u vašoj sledećoj avanturi.
-          </p>
-          <p className="contact-text">
-            Naš tim je uvek spreman da odgovori na vaša pitanja o pešačkim rutama,
-            biciklističkim stazama ili bilo čemu što se tiče aktivnog provođenja
-            vremena u prirodi.
-          </p>
+          <span className="contact-badge">{t('contact.badge')}</span>
+          <h1 className="contact-title">{t('contact.title')}</h1>
+          <p className="contact-lead">{t('contact.lead')}</p>
+          <p className="contact-text">{t('contact.text')}</p>
           <ul className="contact-list">
             <li>
               <span className="contact-list-icon" aria-hidden="true">
                 📧
               </span>
               <span>
-                Pošaljite nam email na:{" "}
+                {t('contact.emailLabel')}{" "}
                 <strong>info@hajki.rs</strong>
               </span>
             </li>
@@ -43,7 +38,7 @@ export const Contact = (props) => {
                 📱
               </span>
               <span>
-                Pozovite nas:{" "}
+                {t('contact.phoneLabel')}{" "}
                 <strong>+381 62 871 43 65</strong>
               </span>
             </li>

@@ -83,6 +83,9 @@
    (don't rely on the card's bg, in case a legacy rule overrides it) */
 .route-card__body {
   position: relative;
+  /* Grow to fill the card so a stretched grid row never exposes the card's
+     (possibly legacy-white) background below the content. */
+  flex: 1 1 auto;
   padding: 16px 18px 18px;
   background: linear-gradient(180deg, #15271b 0%, #0c130e 100%);
 }

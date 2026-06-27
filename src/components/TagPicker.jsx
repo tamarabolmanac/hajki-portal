@@ -1,9 +1,11 @@
 import React from 'react';
 import { TAGS, TagIcon } from './tags';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/Tags.css';
 
 /** Multi-select tag chips for create/edit. value = array of tag keys. */
 export default function TagPicker({ value = [], onChange }) {
+  const { t } = useT();
   const toggle = (key) => {
     const set = new Set(value);
     if (set.has(key)) set.delete(key); else set.add(key);
@@ -12,7 +14,7 @@ export default function TagPicker({ value = [], onChange }) {
 
   return (
     <div className="tagpick">
-      {TAGS.map(({ key, label, color }) => {
+      {TAGS.map(({ key, color }) => {
         const on = value.includes(key);
         return (
           <button
@@ -24,7 +26,7 @@ export default function TagPicker({ value = [], onChange }) {
             aria-pressed={on}
           >
             <TagIcon tag={key} size={14} />
-            <span>{label}</span>
+            <span>{t(`tag.${key}`)}</span>
             {on && <span className="tagpick__dot">·</span>}
           </button>
         );

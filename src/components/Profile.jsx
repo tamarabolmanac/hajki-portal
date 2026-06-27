@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import LocationTracker from './LocationTracker';
 import ConfirmModal from './ConfirmModal';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/Profile.css';
 
 const formatDuration = (minutes) => {
@@ -13,6 +15,7 @@ const formatDuration = (minutes) => {
 };
 
 export const Profile = () => {
+  const { t } = useT();
   // Učitaj iz keša odmah da ne čekamo API na mobilnom
   const cachedUser = (() => {
     try { return JSON.parse(localStorage.getItem('userDetails') || 'null'); } catch { return null; }
@@ -230,8 +233,8 @@ export const Profile = () => {
   return (
     <div className="pf-page">
       <div className="pf-inner">
-        <p className="pf-greet">Dobrodošla</p>
-        <h1 className="pf-h1">Moj nalog</h1>
+        <p className="pf-greet">{t('pf.greet')}</p>
+        <h1 className="pf-h1">{t('pf.title')}</h1>
 
         {/* profile header */}
         <div className="pf-card pf-profile">
@@ -243,7 +246,7 @@ export const Profile = () => {
             </label>
           </div>
           <div className="pf-profile__info">
-            <h2 className="pf-profile__name">{name || userDetails?.name || 'Planinar'}</h2>
+            <h2 className="pf-profile__name">{name || userDetails?.name || t('rd.hiker')}</h2>
             {userDetails?.email && <p className="pf-profile__email">{userDetails.email}</p>}
             {(city || country) && (
               <p className="pf-profile__loc">📍 {[city, country].filter(Boolean).join(', ')}</p>
@@ -259,39 +262,39 @@ export const Profile = () => {
           </div>
           <div className="pf-stat">
             <div className="pf-stat__value">{formatDuration(userDetails?.total_duration || 0)}</div>
-            <div className="pf-stat__label">Vreme</div>
+            <div className="pf-stat__label">{t('pf.time')}</div>
           </div>
           <div className="pf-stat">
             <div className="pf-stat__value">{userDetails?.routes_count || 0}</div>
-            <div className="pf-stat__label">Ruta</div>
+            <div className="pf-stat__label">{t('pf.routes')}</div>
           </div>
         </div>
 
         {/* edit form */}
         <div className="pf-card">
-          <h3 className="pf-card-title">Uredi profil</h3>
+          <h3 className="pf-card-title">{t('pf.editProfile')}</h3>
           <form onSubmit={saveProfile}>
             <div className="pf-field">
-              <label>Ime i prezime</label>
+              <label>{t('pf.name')}</label>
               <input className="pf-input" type="text" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="pf-row2">
               <div className="pf-field">
-                <label>Grad</label>
+                <label>{t('pf.city')}</label>
                 <input className="pf-input" type="text" value={city} onChange={(e) => setCity(e.target.value)} />
               </div>
               <div className="pf-field">
-                <label>Zemlja</label>
+                <label>{t('pf.country')}</label>
                 <input className="pf-input" type="text" value={country} onChange={(e) => setCountry(e.target.value)} />
               </div>
             </div>
             <div className="pf-field">
-              <label>Email</label>
+              <label>{t('pf.email')}</label>
               <div className="pf-readonly">{userDetails?.email}</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <button type="submit" className="pf-btn-primary" disabled={saving} style={{ width: 'auto', padding: '0.8rem 1.6rem' }}>
-                {saving ? 'Čuvanje...' : 'Sačuvaj'}
+                {saving ? t('pf.saving') : t('pf.save')}
               </button>
               {savedMsg && <span className="pf-saved">✓ {savedMsg}</span>}
             </div>
@@ -300,25 +303,25 @@ export const Profile = () => {
 
         {/* location */}
         <div className="pf-card">
-          <h3 className="pf-card-title">Moja lokacija</h3>
+          <h3 className="pf-card-title">{t('pf.location')}</h3>
           <LocationTracker />
         </div>
 
         {/* my routes */}
         <div className="pf-card">
           <div className="pf-card-head">
-            <h3 className="pf-card-title" style={{ margin: 0 }}>Moje rute</h3>
+            <h3 className="pf-card-title" style={{ margin: 0 }}>{t('pf.myRoutes')}</h3>
             {myRoutes === null ? (
               <button className="pf-btn-ghost" onClick={loadMyRoutes} disabled={routesLoading}>
-                {routesLoading ? 'Učitavanje...' : 'Prikaži'}
+                {routesLoading ? t('pf.loading') : t('pf.show')}
               </button>
             ) : (
-              <span className="pf-count">{myRoutes.length} ruta</span>
+              <span className="pf-count">{myRoutes.length} {t('pf.routesLabel')}</span>
             )}
           </div>
           {routesError && <p className="pf-empty">{routesError}</p>}
           {myRoutes !== null && myRoutes.length === 0 && (
-            <p className="pf-empty">Još nemaš ruta. <Link to="/new-route">Dodaj prvu →</Link></p>
+            <p className="pf-empty">{t('pf.noRoutesMy')} <Link to="/new-route">{t('pf.addFirst')}</Link></p>
           )}
           {myRoutes && myRoutes.length > 0 && (
             <div className="pf-routes">{myRoutes.map((r) => renderRoute(r, true))}</div>
@@ -328,17 +331,17 @@ export const Profile = () => {
         {/* saved routes */}
         <div className="pf-card">
           <div className="pf-card-head">
-            <h3 className="pf-card-title" style={{ margin: 0 }}>Sačuvane rute</h3>
+            <h3 className="pf-card-title" style={{ margin: 0 }}>{t('pf.savedRoutes')}</h3>
             {savedRoutes === null ? (
               <button className="pf-btn-ghost" onClick={loadSavedRoutes} disabled={savedRoutesLoading}>
-                {savedRoutesLoading ? 'Učitavanje...' : 'Prikaži'}
+                {savedRoutesLoading ? t('pf.loading') : t('pf.show')}
               </button>
             ) : (
-              <span className="pf-count">{savedRoutes.length} ruta</span>
+              <span className="pf-count">{savedRoutes.length} {t('pf.routesLabel')}</span>
             )}
           </div>
           {savedRoutes !== null && savedRoutes.length === 0 && (
-            <p className="pf-empty">Još nisi sačuvala rute. <Link to="/routes">Istraži →</Link></p>
+            <p className="pf-empty">{t('pf.noSaved')} <Link to="/routes">{t('pf.exploreLink')}</Link></p>
           )}
           {savedRoutes && savedRoutes.length > 0 && (
             <div className="pf-routes">{savedRoutes.map((r) => renderRoute(r, false))}</div>
@@ -348,37 +351,43 @@ export const Profile = () => {
         {/* admin */}
         {userDetails?.role === 'admin' && (
           <div className="pf-card">
-            <h3 className="pf-card-title">Administracija</h3>
-            <Link to="/admin" className="pf-btn-ghost" style={{ display: 'inline-block' }}>Admin panel →</Link>
+            <h3 className="pf-card-title">{t('pf.admin')}</h3>
+            <Link to="/admin" className="pf-btn-ghost" style={{ display: 'inline-block' }}>{t('pf.adminPanel')}</Link>
           </div>
         )}
+
+        {/* language */}
+        <div className="pf-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h3 className="pf-card-title" style={{ margin: 0 }}>Jezik / Language</h3>
+          <LanguageSwitcher />
+        </div>
 
         {/* logout */}
         <button className="pf-btn-logout" onClick={handleLogout}>
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5" /><path d="M21 12H9" /></svg>
-          Odjavi se
+          {t('pf.logout')}
         </button>
 
         {/* danger */}
         <div className="pf-card pf-danger">
-          <h3 className="pf-card-title">Brisanje naloga</h3>
-          <p>Brisanje naloga je trajno. Svi tvoji podaci, rute i slike biće nepovratno obrisani.</p>
+          <h3 className="pf-card-title">{t('pf.dangerTitle')}</h3>
+          <p>{t('pf.dangerText')}</p>
           <button className="pf-btn-danger" onClick={() => setShowDeleteAccount(true)} disabled={deletingAccount}>
-            🗑 Obriši nalog
+            {t('pf.deleteAccount')}
           </button>
         </div>
 
         <div className="pf-footer">
-          <Link to="/privacy-policy">Politika privatnosti</Link>
+          <Link to="/privacy-policy">{t('pf.privacy')}</Link>
         </div>
       </div>
 
       <ConfirmModal
         open={!!routeToDelete}
-        title="Obriši rutu"
-        message="Ova akcija je trajna i ne može se poništiti."
+        title={t('pf.deleteRouteTitle')}
+        message={t('pf.deleteRouteMsg')}
         detail={routeToDelete?.title ? `"${routeToDelete.title}"` : null}
-        confirmLabel={deletingId ? 'Brisanje…' : 'Obriši'}
+        confirmLabel={deletingId ? t('rd.deleting') : t('pf.delete')}
         busy={!!deletingId}
         onConfirm={confirmDeleteRoute}
         onCancel={() => setRouteToDelete(null)}
@@ -387,10 +396,10 @@ export const Profile = () => {
       <ConfirmModal
         open={showDeleteAccount}
         icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>}
-        title="Obriši nalog"
-        message="Ova akcija je trajna i ne može se poništiti. Biće obrisani svi tvoji podaci, rute i fotografije."
-        requireCheckLabel="Razumem da ovo briše moj nalog zauvek"
-        confirmLabel={deletingAccount ? 'Slanje…' : 'Obriši nalog'}
+        title={t('pf.deleteAccTitle')}
+        message={t('pf.deleteAccMsg')}
+        requireCheckLabel={t('pf.deleteAccCheck')}
+        confirmLabel={deletingAccount ? t('pf.sending') : t('pf.deleteAccBtn')}
         busy={deletingAccount}
         onConfirm={confirmDeleteAccount}
         onCancel={() => setShowDeleteAccount(false)}

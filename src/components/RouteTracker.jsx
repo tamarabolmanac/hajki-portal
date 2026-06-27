@@ -13,6 +13,7 @@ import {
 } from "../tracking/nativeTracker";
 import ConfirmModal from "./ConfirmModal";
 import recordingGuard from "../utils/recordingGuard";
+import { useT } from "../i18n/I18nProvider";
 import "../styles/RouteTracker.css";
 
 /** Dark MapLibre style (no API key) matching the Figma record screen. */
@@ -50,6 +51,7 @@ function isTrackPointSaved(response) {
 }
 
 export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop, autoStart = false }) {
+  const { t } = useT();
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState(null);
   const [routeToRender, setRouteToRender] = useState([]);
@@ -200,7 +202,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
         }
       } catch (e) {
         console.error("start_new:", e);
-        setError(e.message || "Nije moguće započeti snimanje rute.");
+        setError(e.message || t('rec.createErr'));
         return;
       }
     }
@@ -403,9 +405,9 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     <div className="rt2">
       {/* Header */}
       <div className="rt2__head">
-        <h1 className="rt2__title">Snimanje rute</h1>
+        <h1 className="rt2__title">{t('rec.title')}</h1>
         {isTracking && (
-          <span className="rt2__live"><span className="rt2__live-dot" /> UŽIVO</span>
+          <span className="rt2__live"><span className="rt2__live-dot" /> {t('rec.live')}</span>
         )}
       </div>
 
@@ -450,7 +452,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
 
         {!isTracking && (
           <div className="rt2__hint">
-            <span className="rt2__hint-dot" /> GPS spreman · Čeka na start
+            <span className="rt2__hint-dot" /> {t('rec.gpsReady')}
           </div>
         )}
       </div>
@@ -458,11 +460,11 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
       {/* Stats */}
       <div className="rt2__stats">
         <div className="rt2__stat">
-          <p className="rt2__stat-label">Vreme</p>
+          <p className="rt2__stat-label">{t('rec.time')}</p>
           <p className={`rt2__stat-value ${isTracking ? "" : "rt2__stat-value--off"}`}>{fmtElapsed(elapsed)}</p>
         </div>
         <div className="rt2__stat rt2__stat--right">
-          <p className="rt2__stat-label">Distanca</p>
+          <p className="rt2__stat-label">{t('rec.distance')}</p>
           <p className={`rt2__stat-value ${isTracking ? "" : "rt2__stat-value--off"}`}>
             {distanceKm.toFixed(2)}<span className="rt2__stat-unit">km</span>
           </p>
@@ -477,7 +479,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
             className="rt2__btn rt2__btn--start"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); void startTracking(); }}
           >
-            <span className="rt2__btn-ic rt2__btn-ic--circle" /> Započni snimanje
+            <span className="rt2__btn-ic rt2__btn-ic--circle" /> {t('rec.start')}
           </button>
         ) : (
           <button
@@ -485,7 +487,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
             className="rt2__btn rt2__btn--stop"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowFinishConfirm(true); }}
           >
-            <span className="rt2__btn-ic rt2__btn-ic--square" /> Zaustavi snimanje
+            <span className="rt2__btn-ic rt2__btn-ic--square" /> {t('rec.stop')}
           </button>
         )}
       </div>
@@ -493,10 +495,10 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
       <ConfirmModal
         open={showFinishConfirm}
         icon={<span style={{ width: 12, height: 12, borderRadius: 3, background: "#f87171", display: "block" }} />}
-        title="Zaustavi snimanje?"
-        message="Ruta će biti sačuvana i moći ćeš da dodaš detalje."
-        confirmLabel="Zaustavi"
-        cancelLabel="Nastavi"
+        title={t('rec.stopTitle')}
+        message={t('rec.stopMsg')}
+        confirmLabel={t('rec.stopConfirm')}
+        cancelLabel={t('rec.continue')}
         onCancel={() => setShowFinishConfirm(false)}
         onConfirm={async () => {
           setShowFinishConfirm(false);
@@ -508,10 +510,10 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
       <ConfirmModal
         open={showLeavePrompt}
         icon={<span style={{ width: 12, height: 12, borderRadius: 3, background: "#f87171", display: "block" }} />}
-        title="Snimanje je u toku"
-        message="Ako napustiš ekran, snimanje rute se prekida. Da li želiš da zaustaviš i sačuvaš rutu?"
-        confirmLabel="Zaustavi i sačuvaj"
-        cancelLabel="Nastavi snimanje"
+        title={t('rec.leaveTitle')}
+        message={t('rec.leaveMsg')}
+        confirmLabel={t('rec.leaveConfirm')}
+        cancelLabel={t('rec.leaveCancel')}
         onCancel={() => setShowLeavePrompt(false)}
         onConfirm={async () => {
           setShowLeavePrompt(false);

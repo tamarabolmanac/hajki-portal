@@ -5,6 +5,7 @@ import { isAuthenticated } from '../utils/auth';
 import AppLoader from './AppLoader';
 import RouteCard from './RouteCard';
 import TagPicker from './TagPicker';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/Explore.css';
 
 const HERO_IMG = '/img/routes-bgd.jpg';
@@ -14,29 +15,28 @@ const diffKey = (d) => {
   if (v.includes('eas') || v.includes('lak')) return 'easy';
   return 'medium';
 };
-const DIFF_PILLS = [
-  { key: 'all', label: 'Sve' },
-  { key: 'easy', label: 'Lako' },
-  { key: 'medium', label: 'Srednje' },
-  { key: 'hard', label: 'Teško' },
-];
+const DIFF_PILLS = ['all', 'easy', 'medium', 'hard'];
 
 // Page shell (module-level so it isn't remounted on every render → input keeps focus)
-const Shell = ({ children }) => (
-  <div className="ex2-page">
-    <div className="ex2-hero">
-      <img className="ex2-hero__img" src={HERO_IMG} alt="" />
-      <div className="ex2-hero__ov" />
-      <div className="ex2-hero__c">
-        <p className="ex2-kicker">Otkrijte Srbiju</p>
-        <h1 className="ex2-title">Pretraži rute</h1>
+const Shell = ({ children }) => {
+  const { t } = useT();
+  return (
+    <div className="ex2-page">
+      <div className="ex2-hero">
+        <img className="ex2-hero__img" src={HERO_IMG} alt="" />
+        <div className="ex2-hero__ov" />
+        <div className="ex2-hero__c">
+          <p className="ex2-kicker">{t('home.kicker')}</p>
+          <h1 className="ex2-title">{t('ex.heroTitle')}</h1>
+        </div>
       </div>
+      <div className="ex2-inner">{children}</div>
     </div>
-    <div className="ex2-inner">{children}</div>
-  </div>
-);
+  );
+};
 
 export const HikeRoutes = (props) => {
+  const { t } = useT();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -159,7 +159,7 @@ export const HikeRoutes = (props) => {
 
   const handleToggleBookmark = async (routeId, currentlyBookmarked) => {
     if (!userIsAuthenticated) {
-      setLikeError('Uloguj se da bi sačuvala rute.');
+      setLikeError(t('ex.loginBookmark'));
       return;
     }
     const optimistic = !currentlyBookmarked;
@@ -180,7 +180,7 @@ export const HikeRoutes = (props) => {
 
   const handleToggleLike = async (routeId, currentlyLiked) => {
     if (!userIsAuthenticated) {
-      setLikeError('Uloguj se da bi lajkovala rute.');
+      setLikeError(t('ex.loginLike'));
       return;
     }
 
@@ -228,12 +228,12 @@ export const HikeRoutes = (props) => {
   };
 
   const requestLocation = () => {
-    if (!navigator.geolocation) { setLocationError('Geolokacija nije podržana.'); return; }
+    if (!navigator.geolocation) { setLocationError(t('ex.locUnsupported')); return; }
     setLocationLoading(true);
     setLocationError(null);
     navigator.geolocation.getCurrentPosition(
       (pos) => { setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }); setLocationLoading(false); },
-      () => { setLocationError('Pristup lokaciji odbijen.'); setLocationLoading(false); setRadius(null); }
+      () => { setLocationError(t('ex.locDenied')); setLocationLoading(false); setRadius(null); }
     );
   };
 
@@ -263,7 +263,7 @@ export const HikeRoutes = (props) => {
   }
 
   if (loading) {
-    return <Shell><AppLoader title="Učitavanje ruta" subtitle="Pripremamo vašu avanturu..." /></Shell>;
+    return <Shell><AppLoader title={t('ex.loadingTitle')} subtitle={t('ex.loadingSub')} /></Shell>;
   }
 
   return (
@@ -274,15 +274,15 @@ export const HikeRoutes = (props) => {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg>
           <input
             type="text"
-            placeholder="Pretraži rute po nazivu ili opisu..."
+            placeholder={t('ex.searchPh')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         {userIsAuthenticated ? (
-          <Link to="/new-route" className="ex2-add">+ Dodaj rutu</Link>
+          <Link to="/new-route" className="ex2-add">{t('ex.add')}</Link>
         ) : (
-          <Link to="/login" className="ex2-add">Uloguj se</Link>
+          <Link to="/login" className="ex2-add">{t('ex.login')}</Link>
         )}
       </div>
 
@@ -290,7 +290,7 @@ export const HikeRoutes = (props) => {
       <div className="ex2-filters">
         <button type="button" className={`ex2-fbtn ${filtersOpen || totalActiveFilters > 0 ? 'is-active' : ''}`} onClick={() => setFiltersOpen((v) => !v)}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="11" y1="18" x2="13" y2="18" /></svg>
-          Filteri{totalActiveFilters > 0 && <span className="ex2-fbadge">{totalActiveFilters}</span>}
+          {t('ex.filters')}{totalActiveFilters > 0 && <span className="ex2-fbadge">{totalActiveFilters}</span>}
         </button>
       </div>
 
@@ -298,53 +298,53 @@ export const HikeRoutes = (props) => {
       {filtersOpen && (
         <div className="ex2-panel">
           {/* težina */}
-          <p className="ex2-panel__label">Težina</p>
+          <p className="ex2-panel__label">{t('ex.difficulty')}</p>
           <div className="ex2-radii">
-            {DIFF_PILLS.map((p) => (
-              <button key={p.key} type="button" className={`ex2-pill ${diff === p.key ? 'is-active' : ''}`} onClick={() => setDiff(p.key)}>
-                {p.label}
+            {DIFF_PILLS.map((key) => (
+              <button key={key} type="button" className={`ex2-pill ${diff === key ? 'is-active' : ''}`} onClick={() => setDiff(key)}>
+                {t(`diff.${key}`)}
               </button>
             ))}
           </div>
 
           {/* karakteristike */}
-          <p className="ex2-panel__label" style={{ marginTop: '1.1rem' }}>Karakteristike mesta</p>
+          <p className="ex2-panel__label" style={{ marginTop: '1.1rem' }}>{t('ex.characteristics')}</p>
           <TagPicker value={activeTags} onChange={setActiveTags} />
 
           {/* radijus + scope (samo za prijavljene) */}
           {userIsAuthenticated && (
             <>
-              <p className="ex2-panel__label" style={{ marginTop: '1.1rem' }}>Radijus pretrage</p>
+              <p className="ex2-panel__label" style={{ marginTop: '1.1rem' }}>{t('ex.radius')}</p>
               <div className="ex2-radii">
                 {[null, 5, 10, 25, 50].map((val) => (
                   <button key={val ?? 'all'} type="button" className={`ex2-pill ${radius === val ? 'is-active' : ''}`} onClick={() => handleRadiusChange(val)}>
-                    {val === null ? 'Sve' : `${val} km`}
+                    {val === null ? t('diff.all') : `${val} km`}
                   </button>
                 ))}
               </div>
-              {locationLoading && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#6b7f6d' }}>📍 Tražim lokaciju...</p>}
+              {locationLoading && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#6b7f6d' }}>{t('ex.searching')}</p>}
               {locationError && <p className="ex2-error" style={{ margin: '0.5rem 0 0' }}>{locationError}</p>}
-              {radius && userLocation && !locationLoading && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#50c878' }}>✓ Lokacija pronađena</p>}
+              {radius && userLocation && !locationLoading && <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#50c878' }}>{t('ex.locFound')}</p>}
               <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: '1rem', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <label className="ex2-check">
                   <input type="checkbox" checked={myRoutesOnly} onChange={(e) => { setMyRoutesOnly(e.target.checked); if (e.target.checked) setFollowingOnly(false); }} />
-                  Samo moje rute
+                  {t('ex.myRoutes')}
                 </label>
                 <label className="ex2-check">
                   <input type="checkbox" checked={followingOnly} onChange={(e) => { setFollowingOnly(e.target.checked); if (e.target.checked) setMyRoutesOnly(false); }} />
-                  Samo rute korisnika koje pratim
+                  {t('ex.following')}
                 </label>
               </div>
             </>
           )}
 
           {totalActiveFilters > 0 && (
-            <button type="button" onClick={resetAllFilters} style={{ marginTop: '1rem', background: 'none', border: 'none', color: '#6b7f6d', cursor: 'pointer', fontSize: '0.85rem' }}>× Resetuj sve filtere</button>
+            <button type="button" onClick={resetAllFilters} style={{ marginTop: '1rem', background: 'none', border: 'none', color: '#6b7f6d', cursor: 'pointer', fontSize: '0.85rem' }}>{t('ex.resetAll')}</button>
           )}
         </div>
       )}
 
-      <p className="ex2-count">{filteredRoutes.length} {filteredRoutes.length === 1 ? 'ruta' : 'rute'}</p>
+      <p className="ex2-count">{filteredRoutes.length} {filteredRoutes.length === 1 ? t('ex.count_one') : t('ex.count_many')}</p>
       {likeError && <p className="ex2-error">{likeError}</p>}
 
       {filteredRoutes.length > 0 ? (
@@ -361,13 +361,13 @@ export const HikeRoutes = (props) => {
         </div>
       ) : (
         <div className="ex2-empty">
-          <p>{searchTerm || diff !== 'all' || activeTags.length > 0 ? 'Nema ruta za ovaj filter' : 'Nema dostupnih ruta'}</p>
+          <p>{searchTerm || diff !== 'all' || activeTags.length > 0 ? t('ex.emptyFilter') : t('ex.empty')}</p>
         </div>
       )}
 
       {page < totalPages && !myRoutesOnly && !radius && (
         <button type="button" className="ex2-loadmore" onClick={handleLoadMore} disabled={loadingMore}>
-          {loadingMore ? 'Učitavanje...' : 'Učitaj još ruta'}
+          {loadingMore ? t('ex.loadingMore') : t('ex.loadMore')}
         </button>
       )}
     </Shell>

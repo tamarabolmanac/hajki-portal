@@ -8,13 +8,19 @@ import ElevationMap from './ElevationMap';
 import AppLoader from './AppLoader';
 import ConfirmModal from './ConfirmModal';
 import { TagBadges } from './TagDisplay';
+import { useT } from '../i18n/I18nProvider';
 
-const MapPlaceholder = () => (
-  <div className="map-placeholder">
-    <div className="loading-spinner-modern" />
-    <p style={{ marginTop: '0.75rem', color: '#9aa5a0', fontWeight: 500 }}>Učitavanje mape...</p>
-  </div>
-);
+const RD_DIFF = { hard: 'diff.hard', easy: 'diff.easy', mid: 'diff.medium' };
+
+const MapPlaceholder = () => {
+  const { t } = useT();
+  return (
+    <div className="map-placeholder">
+      <div className="loading-spinner-modern" />
+      <p style={{ marginTop: '0.75rem', color: '#9aa5a0', fontWeight: 500 }}>{t('rd.loadingMap')}</p>
+    </div>
+  );
+};
 
 const formatDuration = (minutes) => {
   const h = Math.floor((minutes || 0) / 60);
@@ -45,6 +51,7 @@ export const RouteDetails = () => {
   const [currentUserID, setCurrentUserID] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const { t } = useT();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -107,7 +114,7 @@ export const RouteDetails = () => {
   if (error) {
     return (
       <div className="rd-page" style={{ padding: 'var(--app-page-content-top, 120px) 24px 40px' }}>
-        <h2>Greška</h2>
+        <h2>{t('rd.error')}</h2>
         <p style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
       </div>
     );
@@ -116,7 +123,7 @@ export const RouteDetails = () => {
   if (loading || !route) {
     return (
       <div className="rd-page" style={{ display: 'grid', placeItems: 'center' }}>
-        <AppLoader title="Učitavanje detalja rute..." />
+        <AppLoader title={t('rd.loadingDetail')} />
       </div>
     );
   }
@@ -133,7 +140,7 @@ export const RouteDetails = () => {
       setRoute((prev) => (prev ? { ...prev, status: 'tracking' } : prev));
       navigate(`/track-new-route/${id}`);
     } catch (e) {
-      alert(e.message || 'Nije moguće pokrenuti snimanje rute.');
+      alert(e.message || t('rd.startErr'));
     }
   };
 
@@ -172,16 +179,16 @@ export const RouteDetails = () => {
 
   const handleReportRoute = async () => {
     const reasons = { '1': 'spam', '2': 'neprikladan_sadrzaj', '3': 'uznemiravanje', '4': 'netacne_informacije', '5': 'ostalo' };
-    const choice = window.prompt('Prijavi rutu. Razlog:\n1 - Spam\n2 - Neprikladan sadržaj\n3 - Uznemiravanje\n4 - Netačne informacije\n5 - Ostalo\n\nUnesi broj (1-5):');
+    const choice = window.prompt(t('report.routePrompt'));
     if (!choice) return;
     const reason = reasons[choice.trim()];
-    if (!reason) { alert('Nevažeći izbor.'); return; }
-    const details = window.prompt('Dodatni opis (opciono):') || '';
+    if (!reason) { alert(t('report.invalid')); return; }
+    const details = window.prompt(t('report.details')) || '';
     try {
       await authenticatedFetch('/reports', { method: 'POST', body: JSON.stringify({ hike_route_id: id, reason, details }) });
-      alert('Prijava je poslata. Hvala što pomažeš da zajednica bude bezbedna.');
+      alert(t('report.sent'));
     } catch (err) {
-      alert(`Greška: ${err.message}`);
+      alert(`${t('report.errorPrefix')}${err.message}`);
     }
   };
 
@@ -205,9 +212,9 @@ export const RouteDetails = () => {
             </div>
           )}
         <div className="rd-hero__overlay" />
-        <button className="rd-back" onClick={() => navigate('/routes')}>← Nazad</button>
+        <button className="rd-back" onClick={() => navigate('/routes')}>{t('rd.back')}</button>
         <div className="rd-hero__content">
-          <span className={`rd-badge rd-badge--${diff.cls}`}>{diff.label}</span>
+          <span className={`rd-badge rd-badge--${diff.cls}`}>{t(RD_DIFF[diff.cls])}</span>
           <h1 className="rd-title">{route.title}</h1>
           {route.author && (
             <div className="rd-hero__author">
@@ -224,36 +231,36 @@ export const RouteDetails = () => {
         <div className="rd-main">
           <div className="rd-stats">
             <div className="rd-stat">
-              <div className="rd-stat__label"><IcClock /> Trajanje</div>
+              <div className="rd-stat__label"><IcClock /> {t('rd.duration')}</div>
               <div className="rd-stat__value">{formatDuration(route.duration)}</div>
             </div>
             <div className="rd-stat">
-              <div className="rd-stat__label"><IcRoute /> Dužina</div>
+              <div className="rd-stat__label"><IcRoute /> {t('rd.distance')}</div>
               <div className="rd-stat__value">{route.distance} km</div>
             </div>
             <div className="rd-stat">
-              <div className="rd-stat__label"><IcUp /> Visinska razlika</div>
+              <div className="rd-stat__label"><IcUp /> {t('rd.elevation')}</div>
               <div className="rd-stat__value">{gain != null ? `${gain} m` : '—'}</div>
             </div>
           </div>
 
           {route.description && (
             <section className="rd-section">
-              <h2 className="rd-section__title">O ruti</h2>
+              <h2 className="rd-section__title">{t('rd.about')}</h2>
               <p className="rd-desc">{route.description}</p>
             </section>
           )}
 
           {route.tags && route.tags.length > 0 && (
             <section className="rd-section">
-              <h2 className="rd-section__title">Karakteristike mesta</h2>
+              <h2 className="rd-section__title">{t('rd.features')}</h2>
               <TagBadges tags={route.tags} />
             </section>
           )}
 
           {route.image_urls && route.image_urls.length > 0 && (
             <section className="rd-section">
-              <h2 className="rd-section__title">Galerija</h2>
+              <h2 className="rd-section__title">{t('rd.gallery')}</h2>
               <div className="rd-gallery">
                 {route.image_urls.map((imageUrl, index) => {
                   const filename = imageUrl.split('/').pop().split('?')[0];
@@ -264,7 +271,7 @@ export const RouteDetails = () => {
           )}
 
           <section className="rd-section">
-            <h2 className="rd-section__title">Mapa</h2>
+            <h2 className="rd-section__title">{t('rd.map')}</h2>
             <div className="rd-map">
               {hasMap
                 ? <ElevationMap routeId={id} points={routePoints} center={isValidCoordinates ? center : null} />
@@ -277,7 +284,7 @@ export const RouteDetails = () => {
         <aside className="rd-side">
           {canNavigate && (
             <button className="rd-navbtn" onClick={() => navigate(`/routes/${id}/navigate`)}>
-              ▶ Pokreni navigaciju
+              {t('rd.startNav')}
             </button>
           )}
 
@@ -287,36 +294,36 @@ export const RouteDetails = () => {
             </button>
             <button className={`rd-action ${route.bookmarked_by_current_user ? 'is-saved' : ''}`} onClick={handleToggleBookmark}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill={route.bookmarked_by_current_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
-              {route.bookmarked_by_current_user ? 'Sačuvano' : 'Sačuvaj'}
+              {route.bookmarked_by_current_user ? t('rd.saved') : t('rd.save')}
             </button>
             {isRouteOwner() ? (
               <button className="rd-action" onClick={() => navigate(`/routes/${id}/edit`)}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></svg>
-                Uredi
+                {t('rd.edit')}
               </button>
             ) : (
               <button className="rd-action" onClick={handleReportRoute}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01" /><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" /></svg>
-                Prijavi
+                {t('rd.report')}
               </button>
             )}
           </div>
 
           {isRouteOwner() && (
             <div className="rd-owner">
-              <button onClick={handleStartTracking}>🔴 Snimi rutu</button>
-              <button className="rd-danger" onClick={() => setShowDelete(true)}>🗑 Obriši</button>
+              <button onClick={handleStartTracking}>{t('rd.record')}</button>
+              <button className="rd-danger" onClick={() => setShowDelete(true)}>{t('rd.delete')}</button>
             </div>
           )}
 
           {route.author && (
             <Link to={`/user/${route.author.id}`} className="rd-card rd-author-card">
-              <div className="rd-card__label">Autor</div>
+              <div className="rd-card__label">{t('rd.author')}</div>
               <div className="rd-author-card__row">
                 <Avatar author={route.author} big />
                 <div>
                   <div className="rd-author-card__name">{route.author.name}</div>
-                  <div className="rd-author-card__sub">Planinar</div>
+                  <div className="rd-author-card__sub">{t('rd.hiker')}</div>
                 </div>
               </div>
             </Link>
@@ -326,10 +333,10 @@ export const RouteDetails = () => {
 
       <ConfirmModal
         open={showDelete}
-        title="Obriši rutu"
-        message="Ova akcija je trajna i ne može se poništiti."
+        title={t('rd.deleteTitle')}
+        message={t('rd.deleteMsg')}
         detail={route.title ? `"${route.title}"` : null}
-        confirmLabel={deleting ? 'Brisanje…' : 'Obriši'}
+        confirmLabel={deleting ? t('rd.deleting') : t('rd.confirmDelete')}
         busy={deleting}
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}

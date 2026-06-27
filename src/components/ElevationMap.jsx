@@ -3,6 +3,7 @@ import Map, { Source, Layer, Marker, NavigationControl, AttributionControl } fro
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { authenticatedFetch } from '../utils/api';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/ElevationMap.css';
 
 // Free, no-API-key sources:
@@ -30,6 +31,7 @@ const ROUTE_LINE_PAINT = {
  *  - center:   [{ lat, lng }] fallback location when the route has no track
  */
 export default function ElevationMap({ routeId, points = [], center = null }) {
+  const { t } = useT();
   const [profile, setProfile] = useState([]);
   const [hoverIdx, setHoverIdx] = useState(null);
   const [mode, setMode] = useState('flat'); // default flat; toggle to terrain when enriched
@@ -99,7 +101,7 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
         map.easeTo({ center: [cx, cy], zoom: 14, duration: 500 });
         return;
       }
-      const cam = map.cameraForBounds([sw, ne], { padding: 60, maxZoom: 16 });
+      const cam = map.cameraForBounds([sw, ne], { padding: 28, maxZoom: 16 });
       if (cam && Number.isFinite(cam.center?.lng) && Number.isFinite(cam.center?.lat) && Number.isFinite(cam.zoom)) {
         map.easeTo({ center: cam.center, zoom: cam.zoom, duration: 500 });
       } else {
@@ -119,7 +121,12 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
         type: 'raster-dem', tiles: TERRAIN_TILES, encoding: 'terrarium', tileSize: 256, maxzoom: 15,
       });
     }
+    // Ensure the map knows its real container size before fitting, otherwise the
+    // first fit is computed against a stale/smaller size and ends up too zoomed-out.
+    try { map.resize(); } catch (_) { /* ignore */ }
     fitToTrack(map);
+    // Re-fit once layout has fully settled (covers late container sizing).
+    setTimeout(() => { try { map.resize(); } catch (_) {} fitToTrack(map); }, 250);
     setMapReady(true);
   };
 
@@ -145,7 +152,7 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
             className={isTerrain ? 'is-active' : ''}
             onClick={() => hasElevation && setMode('terrain')}
           >
-            ⛰ Teren
+            {t('map.terrain')}
           </button>
           <button
             type="button"
@@ -153,18 +160,18 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
             className={!isTerrain ? 'is-active' : ''}
             onClick={() => hasElevation && setMode('flat')}
           >
-            🗺 Obična mapa
+            {t('map.flat')}
           </button>
         </div>
         <button
           type="button"
           className="elevation-map__recenter"
           onClick={() => { const m = mapObjRef.current; if (m) fitToTrack(m); }}
-          title="Centriraj rutu"
-          aria-label="Centriraj rutu"
+          title={t('map.recenterTitle')}
+          aria-label={t('map.recenterTitle')}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></svg>
-          <span>Centriraj</span>
+          <span>{t('map.recenter')}</span>
         </button>
         <Map
           mapLib={maplibregl}
@@ -218,6 +225,7 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
 
 /** Self-contained SVG area chart of elevation vs. distance. No chart library. */
 function ElevationProfile({ profile, onHover, hoverIdx }) {
+  const { t } = useT();
   const W = 600;
   const H = 140;
   const PAD = { top: 12, right: 8, bottom: 22, left: 36 };
@@ -251,7 +259,7 @@ function ElevationProfile({ profile, onHover, hoverIdx }) {
   }, [profile]);
 
   if (!stats) {
-    return <div className="elevation-map__profile elevation-map__profile--empty">Profil nadmorske visine nije dostupan za ovu rutu.</div>;
+    return <div className="elevation-map__profile elevation-map__profile--empty">{t('ele.unavailable')}</div>;
   }
 
   const handleMove = (e) => {
@@ -272,9 +280,9 @@ function ElevationProfile({ profile, onHover, hoverIdx }) {
   return (
     <div className="elevation-map__profile">
       <div className="elevation-map__stats">
-        <span>↑ <strong>{Math.round(stats.gain)} m</strong> uspon</span>
-        <span>↓ <strong>{Math.round(stats.loss)} m</strong> spust</span>
-        <span>⛰ <strong>{Math.round(stats.maxE)} m</strong> max</span>
+        <span>↑ <strong>{Math.round(stats.gain)} m</strong> {t('ele.ascent')}</span>
+        <span>↓ <strong>{Math.round(stats.loss)} m</strong> {t('ele.descent')}</span>
+        <span>⛰ <strong>{Math.round(stats.maxE)} m</strong> {t('ele.max')}</span>
         <span>📏 <strong>{km} km</strong></span>
       </div>
       <svg

@@ -3,9 +3,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Profile } from './Profile';
 import '../styles/Navigation.css';
 import { authenticatedFetch } from '../utils/api';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useT } from '../i18n/I18nProvider';
 
 export const Navigation = (props) => {
   const navigate = useNavigate();
+  const { t } = useT();
   const location = useLocation(); // Get current location
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
@@ -146,25 +149,25 @@ export const Navigation = (props) => {
                 className={`page-scroll nav-dropdown-toggle ${['/routes', '/priroda', '/preporuka', '/prirodnjacki-kviz'].includes(activeLink) ? 'active' : ''}`}
                 onClick={() => { setIsRoutesOpen(prev => !prev); setIsInfoOpen(false); setIsNalogOpen(false); }}
               >
-                Istraži <span className="nav-dropdown-arrow">{isRoutesOpen ? '▲' : '▼'}</span>
+                {t('nav.explore')} <span className="nav-dropdown-arrow">{isRoutesOpen ? '▲' : '▼'}</span>
               </button>
               <ul className="nav-dropdown-menu">
                 <li>
                   <Link to="/routes" className={`page-scroll ${activeLink === '/routes' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/routes', e)}>
-                    Pretraži rute
+                    {t('nav.searchRoutes')}
                   </Link>
                 </li>
                 {showPrirodaSrbije && (
                   <li>
                     <Link to="/priroda" className={`page-scroll ${activeLink === '/priroda' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/priroda', e)}>
-                      Priroda Srbije
+                      {t('nav.nature')}
                     </Link>
                   </li>
                 )}
                 {isLoggedIn && (
                   <li>
                     <Link to="/prirodnjacki-kviz" className={`page-scroll ${activeLink === '/prirodnjacki-kviz' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/prirodnjacki-kviz', e)}>
-                      Kviz sa prijateljem
+                      {t('nav.quizFriend')}
                     </Link>
                   </li>
                 )}
@@ -178,12 +181,12 @@ export const Navigation = (props) => {
                 className={`page-scroll nav-dropdown-toggle ${['/contact'].includes(activeLink) ? 'active' : ''}`}
                 onClick={() => { setIsInfoOpen(prev => !prev); setIsRoutesOpen(false); setIsNalogOpen(false); }}
               >
-                Info <span className="nav-dropdown-arrow">{isInfoOpen ? '▲' : '▼'}</span>
+                {t('nav.info')} <span className="nav-dropdown-arrow">{isInfoOpen ? '▲' : '▼'}</span>
               </button>
               <ul className="nav-dropdown-menu">
                 <li>
                   <Link to="/contact" className={`page-scroll ${activeLink === '/contact' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/contact', e)}>
-                    Kontakt
+                    {t('nav.contact')}
                   </Link>
                 </li>
               </ul>
@@ -196,18 +199,18 @@ export const Navigation = (props) => {
                   className={`page-scroll nav-dropdown-toggle ${['/profile'].includes(activeLink) ? 'active' : ''}`}
                   onClick={() => { setIsNalogOpen(prev => !prev); setIsRoutesOpen(false); setIsInfoOpen(false); }}
                 >
-                  <span className="nav-user-name">{user?.name?.split(' ')[0] || 'Nalog'}</span>
+                  <span className="nav-user-name">{user?.name?.split(' ')[0] || t('nav.account')}</span>
                   <span className="nav-dropdown-arrow">{isNalogOpen ? '▲' : '▼'}</span>
                 </button>
                 <ul className="nav-dropdown-menu nav-dropdown-menu--nalog">
                   <li>
                     <Link to="/profile" className={`page-scroll ${activeLink === '/profile' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/profile', e)}>
-                      Moj profil
+                      {t('nav.myProfile')}
                     </Link>
                   </li>
                   <li>
                     <a href="#" className="page-scroll nav-logout" onClick={handleLogout}>
-                      Odjavi se
+                      {t('nav.logout')}
                     </a>
                   </li>
                 </ul>
@@ -218,17 +221,17 @@ export const Navigation = (props) => {
                   className={`page-scroll nav-dropdown-toggle ${['/login', '/register'].includes(activeLink) ? 'active' : ''}`}
                   onClick={() => { setIsNalogOpen(prev => !prev); setIsRoutesOpen(false); setIsInfoOpen(false); }}
                 >
-                  Nalog <span className="nav-dropdown-arrow">{isNalogOpen ? '▲' : '▼'}</span>
+                  {t('nav.account')} <span className="nav-dropdown-arrow">{isNalogOpen ? '▲' : '▼'}</span>
                 </button>
                 <ul className="nav-dropdown-menu">
                   <li>
                     <Link to="/login" className={`page-scroll ${activeLink === '/login' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/login', e)}>
-                      Prijava
+                      {t('nav.signin')}
                     </Link>
                   </li>
                   <li>
                     <Link to="/register" className={`page-scroll ${activeLink === '/register' ? 'active' : ''}`} onClick={(e) => handleLinkClick('/register', e)}>
-                      Registracija
+                      {t('nav.signup')}
                     </Link>
                   </li>
                 </ul>
@@ -240,10 +243,12 @@ export const Navigation = (props) => {
               <li className="nav-cta-li">
                 <Link to="/new-route" className="nav-cta" onClick={(e) => handleLinkClick('/new-route', e)}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-                  Nova ruta
+                  {t('nav.newRoute')}
                 </Link>
               </li>
             )}
+
+            <li className="nav-lang-li"><LanguageSwitcher /></li>
 
           </ul>
         </div>
@@ -265,9 +270,9 @@ export const Navigation = (props) => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ margin: '0 0 8px 0' }}>Prekid snimanja rute</h3>
+            <h3 style={{ margin: '0 0 8px 0' }}>{t('nav.recTitle')}</h3>
             <p style={{ margin: '0 0 14px 0', color: '#4a5568' }}>
-              Da li zaista želite da prekinete snimanje rute?
+              {t('nav.recMsg')}
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
               <button
@@ -297,7 +302,7 @@ export const Navigation = (props) => {
                   fontWeight: 700,
                 }}
               >
-                Da, prekini
+                {t('nav.recYes')}
               </button>
               <button
                 type="button"
@@ -316,13 +321,13 @@ export const Navigation = (props) => {
                   fontWeight: 800,
                 }}
               >
-                Nastavi snimanje
+                {t('nav.recNo')}
               </button>
             </div>
           </div>
         </div>
       )}
-      
+
     </nav>
   );
 };

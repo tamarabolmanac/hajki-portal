@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { Navigation } from "./components/navigation";
 import BottomNav from "./components/BottomNav";
+import { I18nProvider } from "./i18n/I18nProvider";
 import Home from "./components/Home";
 import SplashScreen from "./components/SplashScreen";
 import { isMobileApp } from "./utils/platform";
@@ -352,9 +353,11 @@ const AppContent = () => {
 // Main App component with Router wrapper
 const App = () => {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <I18nProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </I18nProvider>
   );
 };
 

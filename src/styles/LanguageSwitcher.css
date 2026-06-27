@@ -1,0 +1,29 @@
+/* SR / EN segmented toggle. Neutral so it sits in dark profile + light/dark navbar. */
+.lang-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgba(127, 127, 127, 0.12);
+  border: 1px solid rgba(127, 127, 127, 0.22);
+}
+.lang-switch__btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  color: currentColor;
+  opacity: 0.6;
+  transition: background 0.15s ease, opacity 0.15s ease, color 0.15s ease;
+}
+.lang-switch__btn:hover { opacity: 0.9; }
+.lang-switch__btn.is-on {
+  background: #50c878;
+  color: #06210c;
+  opacity: 1;
+}

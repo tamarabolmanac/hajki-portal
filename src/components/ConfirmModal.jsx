@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/ConfirmModal.css';
 
 const IcTrash = () => (
@@ -23,14 +24,15 @@ export default function ConfirmModal({
   title,
   message,
   detail,
-  confirmLabel = 'Obriši',
-  cancelLabel = 'Otkaži',
+  confirmLabel,
+  cancelLabel,
   requireCheckLabel,
   onConfirm,
   onCancel,
   busy = false,
   accent = 'danger',
 }) {
+  const { t } = useT();
   const [checked, setChecked] = useState(false);
 
   // Reset the checkbox whenever the dialog re-opens.
@@ -58,14 +60,14 @@ export default function ConfirmModal({
           )}
 
           <div className="cm-actions">
-            <button type="button" className="cm-btn cm-btn--cancel" onClick={onCancel}>{cancelLabel}</button>
+            <button type="button" className="cm-btn cm-btn--cancel" onClick={onCancel}>{cancelLabel || t('rd.cancel')}</button>
             <button
               type="button"
               className="cm-btn cm-btn--danger"
               disabled={confirmDisabled}
               onClick={() => { if (!confirmDisabled) onConfirm(); }}
             >
-              {confirmLabel}
+              {confirmLabel || t('rd.confirmDelete')}
             </button>
           </div>
         </div>

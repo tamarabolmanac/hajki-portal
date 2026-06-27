@@ -3,8 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { config } from '../config';
 import { explainUnreachableApiError } from '../utils/fetchErrors';
 import '../styles/LoginPage.css';
+import { useT } from '../i18n/I18nProvider';
 
 export const ResetPassword = () => {
+  const { t } = useT();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [token, setToken] = useState('');
@@ -17,7 +19,7 @@ export const ResetPassword = () => {
   useEffect(() => {
     const tokenFromUrl = searchParams.get('token');
     if (!tokenFromUrl) {
-      setMessage('Nevalidan token za resetovanje lozinke');
+      setMessage(t('rp.invalid'));
       setIsTokenValid(false);
     } else {
       setToken(tokenFromUrl);
@@ -31,13 +33,13 @@ export const ResetPassword = () => {
     setMessage('');
 
     if (password !== confirmPassword) {
-      setMessage('Lozinke se ne poklapaju');
+      setMessage(t('rp.mismatch'));
       setIsLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setMessage('Lozinka mora imati najmanje 6 karaktera');
+      setMessage(t('rp.tooShort'));
       setIsLoading(false);
       return;
     }
@@ -54,10 +56,10 @@ export const ResetPassword = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Greška pri resetovanju lozinke');
+        throw new Error(data.message || t('rp.error'));
       }
 
-      setMessage('Lozinka je uspešno promenjena! Preusmeravamo vas na stranicu za prijavu...');
+      setMessage(t('rp.success'));
       
       setTimeout(() => {
         navigate('/login');
@@ -82,7 +84,7 @@ export const ResetPassword = () => {
               </span>
                 <span>Hajki</span>
               </div>
-              <h1>Proveravanje tokena...</h1>
+              <h1>{t('rp.checking')}</h1>
             </div>
           </div>
         </div>
@@ -102,11 +104,11 @@ export const ResetPassword = () => {
               </span>
                 <span>Hajki</span>
               </div>
-              <h1>Greška</h1>
+              <h1>{t('rd.error')}</h1>
               <p>{message}</p>
             </div>
             <div className="back-to-login">
-              <a href="/login">← Nazad na prijavu</a>
+              <a href="/login">{t('fp.back')}</a>
             </div>
           </div>
         </div>
@@ -125,12 +127,12 @@ export const ResetPassword = () => {
               </span>
               <span>Hajki</span>
             </div>
-            <h1>Reset Lozinke</h1>
-            <p>Unesite vašu novu lozinku</p>
+            <h1>{t('rp.title')}</h1>
+            <p>{t('rp.sub')}</p>
           </div>
-          
+
           {message && (
-            <div className={`message ${message.includes('uspešno') ? 'success' : 'error'}`}>
+            <div className={`message ${message === t('rp.success') ? 'success' : 'error'}`}>
               {message}
             </div>
           )}
@@ -144,7 +146,7 @@ export const ResetPassword = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  placeholder="Nova lozinka"
+                  placeholder={t('rp.passwordPh')}
                   minLength="6"
                 />
               </div>
@@ -158,7 +160,7 @@ export const ResetPassword = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  placeholder="Potvrdite novu lozinku"
+                  placeholder={t('rp.confirmPh')}
                   minLength="6"
                 />
               </div>
@@ -169,13 +171,13 @@ export const ResetPassword = () => {
               className="login-button"
               disabled={isLoading}
             >
-              {isLoading ? 'Čuvanje...' : 'Promeni Lozinku'}
+              {isLoading ? t('rp.saving') : t('rp.save')}
               <span className="button-icon">→</span>
             </button>
           </form>
-          
+
           <div className="back-to-login">
-            <a href="/login">← Nazad na prijavu</a>
+            <a href="/login">{t('fp.back')}</a>
           </div>
         </div>
       </div>

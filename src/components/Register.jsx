@@ -3,21 +3,23 @@ import { config } from '../config';
 import { explainUnreachableApiError } from '../utils/fetchErrors';
 import { Link } from 'react-router-dom';
 import '../styles/Auth.css';
+import { useT } from '../i18n/I18nProvider';
 
 const Mountain = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
 );
 
 const FIELDS = [
-  { key: 'name', label: 'Ime', placeholder: 'Unesi svoje ime', type: 'text' },
-  { key: 'email', label: 'Email', placeholder: 'Unesi svoj email', type: 'email' },
-  { key: 'password', label: 'Lozinka', placeholder: 'Unesi lozinku', type: 'password' },
-  { key: 'confirmPassword', label: 'Potvrda lozinke', placeholder: 'Potvrdi lozinku', type: 'password' },
-  { key: 'city', label: 'Grad', placeholder: 'Unesi grad', type: 'text' },
-  { key: 'country', label: 'Država', placeholder: 'Unesi državu', type: 'text' },
+  { key: 'name', labelKey: 'reg.name', phKey: 'reg.namePh', type: 'text' },
+  { key: 'email', labelKey: 'reg.email', phKey: 'reg.emailPh', type: 'email' },
+  { key: 'password', labelKey: 'reg.password', phKey: 'reg.passwordPh', type: 'password' },
+  { key: 'confirmPassword', labelKey: 'reg.confirm', phKey: 'reg.confirmPh', type: 'password' },
+  { key: 'city', labelKey: 'reg.city', phKey: 'reg.cityPh', type: 'text' },
+  { key: 'country', labelKey: 'reg.country', phKey: 'reg.countryPh', type: 'text' },
 ];
 
 export const Register = () => {
+  const { t } = useT();
   const [formData, setFormData] = useState({
     name: '', email: '', password: '', confirmPassword: '', role: 'user', city: '', country: ''
   });
@@ -32,15 +34,15 @@ export const Register = () => {
 
   const validateForm = () => {
     const errors = [];
-    if (!formData.name.trim()) errors.push('Ime je obavezno');
-    if (!formData.email.trim()) errors.push('Email je obavezan');
-    else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) errors.push('Neispravan email format');
-    if (!formData.password.trim()) errors.push('Lozinka je obavezna');
-    else if (formData.password.length < 8) errors.push('Lozinka mora da sadrži najmanje 8 karaktera');
-    if (!formData.confirmPassword.trim()) errors.push('Potvrda lozinke je obavezna');
-    else if (formData.password !== formData.confirmPassword) errors.push('Lozinke se ne poklapaju');
-    if (!formData.city.trim()) errors.push('Grad je obavezan');
-    if (!formData.country.trim()) errors.push('Država je obavezna');
+    if (!formData.name.trim()) errors.push(t('reg.errName'));
+    if (!formData.email.trim()) errors.push(t('reg.errEmail'));
+    else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)) errors.push(t('reg.errEmailFmt'));
+    if (!formData.password.trim()) errors.push(t('reg.errPass'));
+    else if (formData.password.length < 8) errors.push(t('reg.errPassLen'));
+    if (!formData.confirmPassword.trim()) errors.push(t('reg.errConfirm'));
+    else if (formData.password !== formData.confirmPassword) errors.push(t('reg.errMismatch'));
+    if (!formData.city.trim()) errors.push(t('reg.errCity'));
+    if (!formData.country.trim()) errors.push(t('reg.errCountry'));
     return errors;
   };
 
@@ -68,30 +70,30 @@ export const Register = () => {
         }),
       });
       if (response.ok) {
-        setMessage('Registracija je uspešna! Proverite email i kliknite na link za potvrdu da aktivirate nalog.');
+        setMessage(t('reg.success'));
         setMessageType('success');
       } else {
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
           const data = await response.json();
           if (response.status === 409) {
-            setMessage(data.message || (Array.isArray(data.errors) ? data.errors.join('\n') : 'Email je već zauzet'));
+            setMessage(data.message || (Array.isArray(data.errors) ? data.errors.join('\n') : t('reg.emailTaken')));
             setMessageType('conflict');
           } else if (response.status === 422) {
-            setMessage(Array.isArray(data.errors) ? data.errors.join('\n') : (data.message || 'Registracija neuspešna'));
+            setMessage(Array.isArray(data.errors) ? data.errors.join('\n') : (data.message || t('reg.failed')));
             setMessageType('error');
           } else {
-            setMessage(data.message || data.error || 'Registracija neuspešna');
+            setMessage(data.message || data.error || t('reg.failed'));
             setMessageType('error');
           }
         } else {
-          setMessage('Registracija neuspešna');
+          setMessage(t('reg.failed'));
           setMessageType('error');
         }
       }
     } catch (error) {
       const unreachable = explainUnreachableApiError(error, config.apiUrl);
-      setMessage(unreachable || error.message || 'Registracija neuspešna');
+      setMessage(unreachable || error.message || t('reg.failed'));
       setMessageType('error');
     } finally {
       setSubmitting(false);
@@ -104,7 +106,7 @@ export const Register = () => {
         <div className="auth__logo"><Mountain /><span>Hajki</span></div>
 
         <div className="reg-card">
-          <h1>Registracija</h1>
+          <h1>{t('reg.title')}</h1>
 
           {message && (
             <div className={messageType === 'success' ? 'auth__err' : 'reg-err'}
@@ -114,18 +116,18 @@ export const Register = () => {
           )}
 
           <form onSubmit={handleRegister}>
-            {FIELDS.map(({ key, label, placeholder, type }) => (
+            {FIELDS.map(({ key, labelKey, phKey, type }) => (
               <div className="reg-field" key={key}>
-                <label>{label}</label>
-                <input className="reg-input" type={type} name={key} value={formData[key]} onChange={handleChange} placeholder={placeholder} />
+                <label>{t(labelKey)}</label>
+                <input className="reg-input" type={type} name={key} value={formData[key]} onChange={handleChange} placeholder={t(phKey)} />
               </div>
             ))}
             <button type="submit" className="reg-btn" disabled={submitting}>
-              {submitting ? 'Registracija...' : 'Registruj se'}
+              {submitting ? t('reg.submitting') : t('reg.submit')}
             </button>
           </form>
 
-          <p className="reg-foot">Već imaš nalog? <Link to="/login">Uloguj se</Link></p>
+          <p className="reg-foot">{t('reg.haveAccount')} <Link to="/login">{t('reg.login')}</Link></p>
         </div>
       </div>
     </div>

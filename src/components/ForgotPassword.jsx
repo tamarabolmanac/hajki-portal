@@ -4,10 +4,13 @@ import { explainUnreachableApiError } from '../utils/fetchErrors';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import '../styles/LoginPage.css';
+import { useT } from '../i18n/I18nProvider';
 
 export const ForgotPassword = () => {
+  const { t } = useT();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -28,11 +31,12 @@ export const ForgotPassword = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Greška pri slanju zahteva za resetovanje lozinke');
+        throw new Error(data.message || t('fp.error'));
       }
 
-      setMessage('Link za resetovanje lozinke je poslat na vaš email');
-      
+      setMessage(t('fp.sent'));
+      setIsSuccess(true);
+
       // Stay on the same page as requested
       setTimeout(() => {
         navigate('/forgot-password');
@@ -56,12 +60,12 @@ export const ForgotPassword = () => {
               </span>
               <span>Hajki</span>
             </div>
-            <h1>Reset lozinke</h1>
-            <p>Unesite vaš email adresu da biste dobili link za resetovanje lozinke</p>
+            <h1>{t('fp.title')}</h1>
+            <p>{t('fp.sub')}</p>
           </div>
-          
+
           {message && (
-            <div className={`message ${message.includes('poslat') ? 'success' : 'error'}`}>
+            <div className={`message ${isSuccess ? 'success' : 'error'}`}>
               {message}
             </div>
           )}
@@ -75,23 +79,23 @@ export const ForgotPassword = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="Unesite vaš email"
+                  placeholder={t('fp.emailPh')}
                 />
               </div>
             </div>
-            
-            <button 
-              type="submit" 
+
+            <button
+              type="submit"
               className="login-button"
               disabled={isLoading}
             >
-              {isLoading ? 'Slanje...' : 'Pošalji link za resetovanje'}
+              {isLoading ? t('fp.sending') : t('fp.send')}
               <span className="button-icon">→</span>
             </button>
           </form>
-          
+
           <div className="back-to-login">
-            <Link to="/login">← Nazad na prijavu</Link>
+            <Link to="/login">{t('fp.back')}</Link>
           </div>
         </div>
       </div>
