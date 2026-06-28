@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Android 12+ system splash: dark brand background + green mountain mark.
-         (On A12+ the OS shows a centered masked icon for the cold-start window;
-         the full "HAJKI" wordmark splash is shown right after by the Capacitor
-         SplashScreen plugin via @drawable/splash.) -->
+    <!-- Android 12+ system splash: plain black, no icon (transparent), so the
+         full "HAJKI" wordmark splash (Capacitor splash.png + in-app React
+         splash) is the only branded splash — matching the web. -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splashBackground</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_blank</item>
         <item name="postSplashScreenTheme">@style/AppTheme.NoActionBar</item>
     </style>
 </resources>

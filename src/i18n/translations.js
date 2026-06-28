@@ -83,7 +83,7 @@ export const translations = {
     'rd.confirmDelete': 'Obriši', 'rd.cancel': 'Otkaži', 'rd.startErr': 'Nije moguće pokrenuti snimanje rute.',
 
     // map / elevation
-    'map.terrain': '⛰ Teren', 'map.flat': '🗺 Obična mapa', 'map.recenter': 'Centriraj', 'map.recenterTitle': 'Centriraj rutu',
+    'map.terrain': '⛰ Teren', 'map.flat': '🗺 Mapa', 'map.satellite': '🛰 Satelit', 'map.recenter': 'Centriraj', 'map.recenterTitle': 'Centriraj rutu',
     'ele.ascent': 'uspon', 'ele.descent': 'spust', 'ele.max': 'max',
     'ele.unavailable': 'Profil nadmorske visine nije dostupan za ovu rutu.',
 
@@ -276,7 +276,7 @@ export const translations = {
     'rd.confirmDelete': 'Delete', 'rd.cancel': 'Cancel', 'rd.startErr': 'Couldn\'t start route recording.',
 
     // map / elevation
-    'map.terrain': '⛰ Terrain', 'map.flat': '🗺 Map', 'map.recenter': 'Recenter', 'map.recenterTitle': 'Recenter route',
+    'map.terrain': '⛰ Terrain', 'map.flat': '🗺 Map', 'map.satellite': '🛰 Satellite', 'map.recenter': 'Recenter', 'map.recenterTitle': 'Recenter route',
     'ele.ascent': 'ascent', 'ele.descent': 'descent', 'ele.max': 'max',
     'ele.unavailable': 'Elevation profile is not available for this route.',
 

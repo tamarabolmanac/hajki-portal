@@ -202,7 +202,7 @@ export const UserProfile = () => {
                   <div className="pf-route__body">
                     <div className="pf-route__title">{route.title}</div>
                     <div className="pf-route__sub">
-                      {Number(route.distance || 0).toFixed(2)} km · {route.duration || 0} min · {route.points_count || 0} {t('up.points')}
+                      {Number(route.distance || 0).toFixed(2)} km · {formatDuration(route.duration || 0)} · {route.points_count || 0} {t('up.points')}
                     </div>
                   </div>
                 </Link>

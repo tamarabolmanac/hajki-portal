@@ -13,10 +13,14 @@ const MAP_STYLE = 'https://tiles.openfreemap.org/styles/liberty';
 const TERRAIN_TILES = [
   'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
 ];
+// Esri World Imagery (satellite) — free, no API key. Attribution required.
+const SATELLITE_TILES = [
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+];
 
 const ROUTE_LINE_PAINT = {
-  'line-color': '#FF0000',
-  'line-width': 4,
+  'line-color': '#FF7A00',
+  'line-width': 4.5,
 };
 
 /**
@@ -55,8 +59,10 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
 
   // "Enriched" = the route's points actually have elevation values.
   const hasElevation = useMemo(() => profile.some((p) => p.elevation != null), [profile]);
-  const effectiveMode = hasElevation ? mode : 'flat'; // not enriched → forced flat
-  const isTerrain = effectiveMode === 'terrain';
+  // Two modes: "Mapa" (flat vector) and "Teren" (= 3D satellite).
+  const isTerrain = mode === 'terrain';          // "Teren" = satellite + 3D
+  const isSatellite = isTerrain;                 // satellite overlay shown in Teren mode
+  const terrainOn = isTerrain && hasElevation;   // 3D only when the route has elevation
 
   // Track to draw: profile (has elevation) → raw points → single center point.
   // Filter out any non-finite coords so the map never gets a NaN LngLat.
@@ -135,10 +141,10 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
     const map = mapObjRef.current;
     if (!map || !mapReady) return;
     try {
-      map.setTerrain(isTerrain ? { source: 'terrainSource', exaggeration: 1.4 } : null);
+      map.setTerrain(terrainOn ? { source: 'terrainSource', exaggeration: 1.4 } : null);
     } catch (_) { /* source not ready yet */ }
-    map.easeTo({ pitch: isTerrain ? 60 : 0, duration: 450 });
-  }, [isTerrain, mapReady]);
+    map.easeTo({ pitch: terrainOn ? 60 : 0, duration: 450 });
+  }, [terrainOn, mapReady]);
 
   const hoverPoint = hoverIdx != null ? track[hoverIdx] : null;
 
@@ -148,17 +154,15 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
         <div className="elevation-map__toggle" role="group" aria-label="Vrsta mape">
           <button
             type="button"
-            disabled={!hasElevation}
             className={isTerrain ? 'is-active' : ''}
-            onClick={() => hasElevation && setMode('terrain')}
+            onClick={() => setMode('terrain')}
           >
             {t('map.terrain')}
           </button>
           <button
             type="button"
-            disabled={!hasElevation}
             className={!isTerrain ? 'is-active' : ''}
-            onClick={() => hasElevation && setMode('flat')}
+            onClick={() => setMode('flat')}
           >
             {t('map.flat')}
           </button>
@@ -183,6 +187,11 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
           attributionControl={false}
           style={{ width: '100%', height: '100%' }}
         >
+          {/* Satellite imagery overlay (covers the vector base when active). */}
+          <Source id="satellite" type="raster" tiles={SATELLITE_TILES} tileSize={256} attribution="Esri, Maxar, Earthstar Geographics">
+            <Layer id="satellite-layer" type="raster" layout={{ visibility: isSatellite ? 'visible' : 'none' }} />
+          </Source>
+
           {track.length > 1 && (
             <Source id="route" type="geojson" data={lineGeoJSON}>
               <Layer id="route-line" type="line" paint={ROUTE_LINE_PAINT}

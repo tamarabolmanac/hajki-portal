@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { TagIcons } from './TagDisplay';
 import { useT } from '../i18n/I18nProvider';
+import { formatDuration } from '../utils/format';
 import '../styles/RouteCard.css';
 
 const DIFF_KEY = { hard: 'diff.hard', easy: 'diff.easy', mid: 'diff.medium' };
@@ -85,7 +86,7 @@ export default function RouteCard({ hike, onToggleLike, onToggleBookmark, priori
         <div className="route-card__divider" />
 
         <div className="route-card__stats">
-          {hike.duration != null && <span className="route-card__stat"><IcClock /> {hike.duration} min</span>}
+          {hike.duration != null && <span className="route-card__stat"><IcClock /> {formatDuration(hike.duration)}</span>}
           {hike.distance != null && <span className="route-card__stat"><IcRoute /> {hike.distance} km</span>}
           <button
             type="button"

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
-import LocationTracker from './LocationTracker';
 import ConfirmModal from './ConfirmModal';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useT } from '../i18n/I18nProvider';
@@ -214,7 +213,7 @@ export const Profile = () => {
         <div className="pf-route__sub">
           {route.distance != null ? `${Number(route.distance ?? route.distance_km).toFixed(1)} km` : ''}
           {(route.distance != null) && (route.duration != null || route.duration_minutes != null) ? ' · ' : ''}
-          {route.duration != null ? `${route.duration} min` : (route.duration_minutes ? formatDuration(route.duration_minutes) : '')}
+          {route.duration != null ? formatDuration(route.duration) : (route.duration_minutes ? formatDuration(route.duration_minutes) : '')}
         </div>
       </div>
       {withDelete && (
@@ -299,12 +298,6 @@ export const Profile = () => {
               {savedMsg && <span className="pf-saved">✓ {savedMsg}</span>}
             </div>
           </form>
-        </div>
-
-        {/* location */}
-        <div className="pf-card">
-          <h3 className="pf-card-title">{t('pf.location')}</h3>
-          <LocationTracker />
         </div>
 
         {/* my routes */}
