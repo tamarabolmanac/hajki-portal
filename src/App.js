@@ -20,6 +20,7 @@ import { Gallery } from "./components/gallery";
 import { Testimonials } from "./components/testimonials";
 import { Team } from "./components/Team";
 import { NewRoute } from "./components/NewRoute";
+import { ImportGpx } from "./components/ImportGpx";
 import { MyRoutes } from "./components/MyRoutes";
 import { Contact } from "./components/contact";
 import RouteTracker from "./components/RouteTracker";
@@ -187,6 +188,16 @@ const AppContent = () => {
                 <PrivateRoute>
                   <div className="content-container">
                     <NewRoute />
+                  </div>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/import-gpx"
+              element={
+                <PrivateRoute>
+                  <div className="content-container">
+                    <ImportGpx />
                   </div>
                 </PrivateRoute>
               }

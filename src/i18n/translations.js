@@ -109,6 +109,15 @@ export const translations = {
     'choose.recordDesc': 'Uključite GPS praćenje i idite na planinarenje. Aplikacija će automatski snimiti vašu putanju.',
     'choose.manualTitle': 'Kreiraj rutu bez snimanja putanje',
     'choose.manualDesc': 'Unesite informacije o ruti ručno — naziv, opis, lokaciju i fotografije.',
+    'choose.gpxTitle': 'Uvezi GPX rutu',
+    'choose.gpxDesc': 'Otpremi .gpx fajl — distanca, trajanje i nadmorske visine se računaju automatski.',
+
+    // import gpx
+    'gpx.title': 'Uvezi GPX rutu', 'gpx.file': 'GPX fajl', 'gpx.pick': 'Izaberi .gpx fajl',
+    'gpx.pickHint': 'Kliknite da izaberete fajl', 'gpx.titleOpt': 'Naziv (opciono)',
+    'gpx.titlePh': 'Ako ostaviš prazno, uzima se iz GPX-a',
+    'gpx.autoNote': '📊 Distanca, trajanje i nadmorske visine se računaju automatski.',
+    'gpx.import': 'Uvezi rutu', 'gpx.importing': 'Uvoz...', 'gpx.noFile': 'Izaberi GPX fajl.', 'gpx.failed': 'Uvoz nije uspeo.',
 
     // record screen
     'rec.title': 'Snimanje rute', 'rec.live': 'UŽIVO', 'rec.gpsReady': 'GPS spreman · Čeka na start',
@@ -302,6 +311,15 @@ export const translations = {
     'choose.recordDesc': 'Turn on GPS tracking and go hiking. The app records your track automatically.',
     'choose.manualTitle': 'Create a route without tracking',
     'choose.manualDesc': 'Enter the route details manually — name, description, location and photos.',
+    'choose.gpxTitle': 'Import a GPX route',
+    'choose.gpxDesc': 'Upload a .gpx file — distance, duration and elevation are computed automatically.',
+
+    // import gpx
+    'gpx.title': 'Import GPX route', 'gpx.file': 'GPX file', 'gpx.pick': 'Choose a .gpx file',
+    'gpx.pickHint': 'Click to choose a file', 'gpx.titleOpt': 'Name (optional)',
+    'gpx.titlePh': 'If left empty, taken from the GPX',
+    'gpx.autoNote': '📊 Distance, duration and elevation are computed automatically.',
+    'gpx.import': 'Import route', 'gpx.importing': 'Importing...', 'gpx.noFile': 'Choose a GPX file.', 'gpx.failed': 'Import failed.',
 
     // record screen
     'rec.title': 'Recording route', 'rec.live': 'LIVE', 'rec.gpsReady': 'GPS ready · Waiting to start',
