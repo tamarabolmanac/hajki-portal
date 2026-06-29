@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useT } from '../i18n/I18nProvider';
+import { authenticatedFetch } from '../utils/api';
 import '../styles/AddChoose.css';
 
 const IcCompass = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2 5-5 2 2-5z" /></svg>);
@@ -10,6 +11,16 @@ const IcUpload = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="no
 export const ChoseRouteCreationType = () => {
   const navigate = useNavigate();
   const { t } = useT();
+  // Uvoz GPX je samo za admine — rolu potvrđujemo sa servera (kao AdminRoute).
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    authenticatedFetch('/user_data')
+      .then((data) => { if (active) setIsAdmin(data?.role === 'admin'); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
 
   // Ne kreiramo rutu ovde — samo otvaramo tracker. Rekord rute se kreira tek
   // kada korisnik stvarno pritisne "Započni snimanje rute" (RouteTracker).
@@ -42,14 +53,16 @@ export const ChoseRouteCreationType = () => {
           <button className="ac-btn ac-btn--ghost" onClick={handleCreateManually}>{t('choose.manualTitle')}</button>
         </div>
 
-        <div className="ac-card">
-          <div className="ac-card__head">
-            <div className="ac-card__ic ac-card__ic--muted"><IcUpload /></div>
-            <h2 className="ac-card__title">{t('choose.gpxTitle')}</h2>
+        {isAdmin && (
+          <div className="ac-card">
+            <div className="ac-card__head">
+              <div className="ac-card__ic ac-card__ic--muted"><IcUpload /></div>
+              <h2 className="ac-card__title">{t('choose.gpxTitle')}</h2>
+            </div>
+            <p className="ac-card__desc">{t('choose.gpxDesc')}</p>
+            <button className="ac-btn ac-btn--ghost" onClick={handleImportGpx}>{t('choose.gpxTitle')}</button>
           </div>
-          <p className="ac-card__desc">{t('choose.gpxDesc')}</p>
-          <button className="ac-btn ac-btn--ghost" onClick={handleImportGpx}>{t('choose.gpxTitle')}</button>
-        </div>
+        )}
       </div>
     </div>
   );

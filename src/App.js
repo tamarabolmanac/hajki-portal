@@ -195,11 +195,11 @@ const AppContent = () => {
             <Route
               path="/import-gpx"
               element={
-                <PrivateRoute>
+                <AdminRoute>
                   <div className="content-container">
                     <ImportGpx />
                   </div>
-                </PrivateRoute>
+                </AdminRoute>
               }
             />
             <Route
