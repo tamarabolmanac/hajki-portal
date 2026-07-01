@@ -8,7 +8,11 @@ import ElevationMap from './ElevationMap';
 import AppLoader from './AppLoader';
 import ConfirmModal from './ConfirmModal';
 import { TagBadges } from './TagDisplay';
+import ImageLightbox from './ImageLightbox';
 import { useT } from '../i18n/I18nProvider';
+
+// Gallery thumbnails reconstruct a stable cdn.hajki.com URL from the filename.
+const cdnImageUrl = (url) => `https://cdn.hajki.com/${url.split('/').pop().split('?')[0]}`;
 
 const RD_DIFF = { hard: 'diff.hard', easy: 'diff.easy', mid: 'diff.medium' };
 
@@ -51,6 +55,7 @@ export const RouteDetails = () => {
   const [currentUserID, setCurrentUserID] = useState(null);
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(null);
   const { t } = useT();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -131,6 +136,7 @@ export const RouteDetails = () => {
   const center = { lat: Number(route.location_latitude), lng: Number(route.location_longitude) };
   const diff = diffMeta(route.difficulty);
   const heroImg = route.image_urls && route.image_urls[0];
+  const galleryImages = (route.image_urls || []).map(cdnImageUrl);
   const hasMap = routePoints.length > 0 || isValidCoordinates;
   const canNavigate = routePoints.length > 1 || isValidCoordinates;
 
@@ -142,6 +148,21 @@ export const RouteDetails = () => {
     } catch (e) {
       alert(e.message || t('rd.startErr'));
     }
+  };
+
+  const handleAddWaypoint = async ({ kind, label, lat, lng }) => {
+    const data = await authenticatedFetch(`/routes/${id}/waypoints`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind, label, lat, lng }),
+    });
+    const wp = data?.data;
+    if (wp) setRoute((prev) => (prev ? { ...prev, waypoints: [...(prev.waypoints || []), wp] } : prev));
+  };
+
+  const handleDeleteWaypoint = async (wpId) => {
+    await authenticatedFetch(`/routes/${id}/waypoints/${wpId}`, { method: 'DELETE' });
+    setRoute((prev) => (prev ? { ...prev, waypoints: (prev.waypoints || []).filter((w) => w.id !== wpId) } : prev));
   };
 
   const handleDelete = async () => {
@@ -205,7 +226,7 @@ export const RouteDetails = () => {
       {/* hero */}
       <div className="rd-hero">
         {heroImg
-          ? <img className="rd-hero__img" src={heroImg} alt={route.title} />
+          ? <img className="rd-hero__img rd-hero__img--zoom" src={heroImg} alt={route.title} onClick={() => galleryImages.length && setLightboxIndex(0)} />
           : (
             <div className="rd-hero__img rd-hero__noimg" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="72" height="72"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
@@ -262,19 +283,35 @@ export const RouteDetails = () => {
             <section className="rd-section">
               <h2 className="rd-section__title">{t('rd.gallery')}</h2>
               <div className="rd-gallery">
-                {route.image_urls.map((imageUrl, index) => {
-                  const filename = imageUrl.split('/').pop().split('?')[0];
-                  return <img key={index} src={`https://cdn.hajki.com/${filename}`} alt={`Ruta ${index + 1}`} loading="lazy" />;
-                })}
+                {galleryImages.map((imageUrl, index) => (
+                  <button
+                    type="button"
+                    key={index}
+                    className="rd-gallery__item"
+                    onClick={() => setLightboxIndex(index)}
+                    aria-label={`Otvori sliku ${index + 1}`}
+                  >
+                    <img src={imageUrl} alt={`Ruta ${index + 1}`} loading="lazy" />
+                  </button>
+                ))}
               </div>
             </section>
           )}
 
           <section className="rd-section">
             <h2 className="rd-section__title">{t('rd.map')}</h2>
+            {isRouteOwner() && hasMap && <p className="rd-map-hint">📍 {t('wp.hint')}</p>}
             <div className="rd-map">
               {hasMap
-                ? <ElevationMap routeId={id} points={routePoints} center={isValidCoordinates ? center : null} />
+                ? <ElevationMap
+                    routeId={id}
+                    points={routePoints}
+                    center={isValidCoordinates ? center : null}
+                    waypoints={route.waypoints || []}
+                    editable={isRouteOwner()}
+                    onAddWaypoint={handleAddWaypoint}
+                    onDeleteWaypoint={handleDeleteWaypoint}
+                  />
                 : <MapPlaceholder />}
             </div>
           </section>
@@ -340,6 +377,13 @@ export const RouteDetails = () => {
         busy={deleting}
         onConfirm={handleDelete}
         onCancel={() => setShowDelete(false)}
+      />
+
+      <ImageLightbox
+        images={galleryImages}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onIndexChange={setLightboxIndex}
       />
     </div>
   );

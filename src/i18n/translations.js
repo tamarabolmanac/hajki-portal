@@ -84,6 +84,8 @@ export const translations = {
 
     // map / elevation
     'map.terrain': '⛰ Teren', 'map.flat': '🗺 Mapa', 'map.satellite': '🛰 Satelit', 'map.recenter': 'Centriraj', 'map.recenterTitle': 'Centriraj rutu',
+    'wp.add': 'Dodaj oznaku', 'wp.placing': 'Klikni na mapu', 'wp.save': 'Sačuvaj', 'wp.cancel': 'Otkaži', 'wp.delete': 'Obriši oznaku', 'wp.labelPh': 'Opis (opciono)',
+    'wp.hint': 'Klikni „Dodaj oznaku“ pa na mapu da označiš zanimljiva mesta (vidikovac, izvor, parking…).',
     'ele.ascent': 'uspon', 'ele.descent': 'spust', 'ele.max': 'max',
     'ele.unavailable': 'Profil nadmorske visine nije dostupan za ovu rutu.',
 
@@ -286,6 +288,8 @@ export const translations = {
 
     // map / elevation
     'map.terrain': '⛰ Terrain', 'map.flat': '🗺 Map', 'map.satellite': '🛰 Satellite', 'map.recenter': 'Recenter', 'map.recenterTitle': 'Recenter route',
+    'wp.add': 'Add marker', 'wp.placing': 'Click the map', 'wp.save': 'Save', 'wp.cancel': 'Cancel', 'wp.delete': 'Delete marker', 'wp.labelPh': 'Note (optional)',
+    'wp.hint': 'Tap “Add marker”, then the map, to pin points of interest (viewpoint, spring, parking…).',
     'ele.ascent': 'ascent', 'ele.descent': 'descent', 'ele.max': 'max',
     'ele.unavailable': 'Elevation profile is not available for this route.',
 

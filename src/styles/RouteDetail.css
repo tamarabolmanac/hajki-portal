@@ -116,7 +116,21 @@
 
 /* gallery */
 .rd-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 10px; }
-.rd-gallery img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; }
+.rd-gallery__item { padding: 0; border: 0; background: none; cursor: pointer; border-radius: 12px; overflow: hidden; display: block; line-height: 0; }
+.rd-gallery__item img { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; display: block; transition: transform 0.25s ease; }
+.rd-gallery__item:hover img { transform: scale(1.05); }
+.rd-gallery__item:focus-visible { outline: 2px solid #38ef7d; outline-offset: 2px; }
+.rd-hero__img--zoom { cursor: zoom-in; }
+.rd-map-hint {
+  margin: -4px 0 10px;
+  font-size: 0.85rem;
+  color: #9aa5a0;
+  background: rgba(17, 153, 142, 0.1);
+  border: 1px solid rgba(56, 239, 125, 0.18);
+  border-radius: 10px;
+  padding: 8px 12px;
+  line-height: 1.35;
+}
 
 /* sidebar */
 .rd-side { display: flex; flex-direction: column; gap: 16px; }

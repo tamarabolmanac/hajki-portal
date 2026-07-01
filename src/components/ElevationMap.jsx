@@ -4,6 +4,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { authenticatedFetch } from '../utils/api';
 import { useT } from '../i18n/I18nProvider';
+import { WAYPOINT_KINDS, WAYPOINT_MAP, WaypointIcon } from './waypoints';
 import '../styles/ElevationMap.css';
 
 // Free, no-API-key sources:
@@ -34,13 +35,73 @@ const ROUTE_LINE_PAINT = {
  *  - points:   [{ lat, lng }] GPS track to draw
  *  - center:   [{ lat, lng }] fallback location when the route has no track
  */
-export default function ElevationMap({ routeId, points = [], center = null }) {
+export default function ElevationMap({
+  routeId,
+  points = [],
+  center = null,
+  waypoints = [],
+  editable = false,
+  onAddWaypoint,
+  onDeleteWaypoint,
+}) {
   const { t } = useT();
   const [profile, setProfile] = useState([]);
   const [hoverIdx, setHoverIdx] = useState(null);
   const [mode, setMode] = useState('flat'); // default flat; toggle to terrain when enriched
   const [mapReady, setMapReady] = useState(false);
   const mapObjRef = useRef(null);
+
+  // Waypoint UI state.
+  const [addMode, setAddMode] = useState(false);     // owner is placing a marker
+  const [pending, setPending] = useState(null);       // { lng, lat } awaiting kind+label
+  const [pendingKind, setPendingKind] = useState(WAYPOINT_KINDS[0].key);
+  const [pendingLabel, setPendingLabel] = useState('');
+  const [openWp, setOpenWp] = useState(null);          // id of waypoint whose popup is open
+  const [saving, setSaving] = useState(false);
+
+  const handleMapClick = (e) => {
+    if (!editable || !addMode) return;
+    const { lng, lat } = e.lngLat;
+    setOpenWp(null);
+    setPending({ lng, lat });
+    setPendingLabel('');
+    setPendingKind(WAYPOINT_KINDS[0].key);
+  };
+
+  const cancelPending = () => { setPending(null); setAddMode(false); };
+
+  const savePending = async () => {
+    if (!pending || !onAddWaypoint) return;
+    setSaving(true);
+    try {
+      await onAddWaypoint({ kind: pendingKind, label: pendingLabel.trim(), lat: pending.lat, lng: pending.lng });
+      setPending(null);
+      setAddMode(false);
+    } catch (err) {
+      alert(err.message || 'Greška pri čuvanju oznake.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // MapLibre markers swallow mousedown/touchstart (for map drag) before the
+  // input can focus — stop those events on the popup/form so it stays interactive.
+  const stopAll = {
+    onMouseDown: (e) => e.stopPropagation(),
+    onPointerDown: (e) => e.stopPropagation(),
+    onTouchStart: (e) => e.stopPropagation(),
+    onClick: (e) => e.stopPropagation(),
+  };
+
+  const deleteWp = async (id) => {
+    if (!onDeleteWaypoint) return;
+    try {
+      await onDeleteWaypoint(id);
+      setOpenWp(null);
+    } catch (err) {
+      alert(err.message || 'Greška pri brisanju oznake.');
+    }
+  };
 
   useEffect(() => {
     if (!routeId) return;
@@ -177,12 +238,25 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></svg>
           <span>{t('map.recenter')}</span>
         </button>
+        {editable && (
+          <button
+            type="button"
+            className={`elevation-map__addwp ${addMode ? 'is-active' : ''}`}
+            onClick={() => { setOpenWp(null); setPending(null); setAddMode((v) => !v); }}
+            title={t('wp.add')}
+          >
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11Z" /><path d="M12 8v5M9.5 10.5h5" /></svg>
+            <span>{addMode ? t('wp.placing') : t('wp.add')}</span>
+          </button>
+        )}
         <Map
           mapLib={maplibregl}
           initialViewState={initialViewState}
           mapStyle={MAP_STYLE}
           maxPitch={75}
           onLoad={onLoad}
+          onClick={handleMapClick}
+          cursor={addMode ? 'crosshair' : 'grab'}
           cooperativeGestures
           attributionControl={false}
           style={{ width: '100%', height: '100%' }}
@@ -191,6 +265,43 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
           <Source id="satellite" type="raster" tiles={SATELLITE_TILES} tileSize={256} attribution="Esri, Maxar, Earthstar Geographics">
             <Layer id="satellite-layer" type="raster" layout={{ visibility: isSatellite ? 'visible' : 'none' }} />
           </Source>
+
+          {/* Automatic OSM POIs from the basemap's vector tiles (OpenMapTiles
+              schema). Hidden in satellite mode to avoid clutter. */}
+          <Layer
+            id="osm-peaks"
+            type="symbol"
+            source="openmaptiles"
+            source-layer="mountain_peak"
+            minzoom={10}
+            layout={{
+              visibility: isSatellite ? 'none' : 'visible',
+              'text-field': ['concat', '▲ ', ['coalesce', ['get', 'name'], '']],
+              'text-font': ['Noto Sans Regular'],
+              'text-size': 11,
+              'text-anchor': 'top',
+              'text-max-width': 8,
+            }}
+            paint={{ 'text-color': '#b45309', 'text-halo-color': '#fff', 'text-halo-width': 1.4 }}
+          />
+          <Layer
+            id="osm-poi"
+            type="symbol"
+            source="openmaptiles"
+            source-layer="poi"
+            minzoom={13}
+            filter={['in', ['get', 'class'], ['literal', ['viewpoint', 'spring', 'drinking_water', 'cave_entrance', 'picnic_site', 'shelter', 'waterfall']]]}
+            layout={{
+              visibility: isSatellite ? 'none' : 'visible',
+              'text-field': ['get', 'name'],
+              'text-font': ['Noto Sans Regular'],
+              'text-size': 10.5,
+              'text-anchor': 'top',
+              'text-offset': [0, 0.6],
+              'text-max-width': 8,
+            }}
+            paint={{ 'text-color': '#0f766e', 'text-halo-color': '#fff', 'text-halo-width': 1.4 }}
+          />
 
           {track.length > 1 && (
             <Source id="route" type="geojson" data={lineGeoJSON}>
@@ -214,6 +325,51 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
             </Marker>
           )}
 
+          {/* Saved waypoint markers (place pins). */}
+          {waypoints.map((wp) => {
+            const meta = WAYPOINT_MAP[wp.kind];
+            if (!Number.isFinite(wp.lng) || !Number.isFinite(wp.lat)) return null;
+            return (
+              <Marker key={wp.id} longitude={wp.lng} latitude={wp.lat} anchor="bottom">
+                <div className="wp-marker-wrap">
+                  <button
+                    type="button"
+                    className="wp-marker"
+                    style={{ '--wp-color': meta?.color || '#38ef7d' }}
+                    onClick={(e) => { e.stopPropagation(); setPending(null); setOpenWp(openWp === wp.id ? null : wp.id); }}
+                    aria-label={meta?.label || wp.kind}
+                  >
+                    <WaypointIcon kind={wp.kind} size={15} />
+                  </button>
+                  {openWp === wp.id && (
+                    <div className="wp-popup" {...stopAll}>
+                      <div className="wp-popup__title" style={{ color: meta?.color }}>
+                        <WaypointIcon kind={wp.kind} size={14} />
+                        <span>{meta?.label || wp.kind}</span>
+                      </div>
+                      {wp.label && <div className="wp-popup__note">{wp.label}</div>}
+                      {editable && (
+                        <button type="button" className="wp-popup__del" onClick={() => deleteWp(wp.id)}>
+                          {t('wp.delete')}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </Marker>
+            );
+          })}
+
+          {/* Pending marker being placed (owner add-mode) — just the pin; the
+              form is an overlay outside the map so its input can be focused. */}
+          {pending && (
+            <Marker longitude={pending.lng} latitude={pending.lat} anchor="bottom">
+              <div className="wp-marker wp-marker--pending" style={{ '--wp-color': WAYPOINT_MAP[pendingKind]?.color }}>
+                <WaypointIcon kind={pendingKind} size={15} />
+              </div>
+            </Marker>
+          )}
+
           {hoverPoint && (
             <Marker longitude={hoverPoint.lng} latitude={hoverPoint.lat} anchor="center">
               <div className="elevation-map__cursor" />
@@ -223,6 +379,42 @@ export default function ElevationMap({ routeId, points = [], center = null }) {
           <NavigationControl position="top-right" visualizePitch />
           <AttributionControl compact position="bottom-right" />
         </Map>
+
+        {/* Waypoint form — overlay in the map container (NOT inside a Marker), so
+            the note input can receive focus (MapLibre markers preventDefault mousedown). */}
+        {pending && (
+          <div className="wp-sheet">
+            <div className="wp-form__kinds">
+              {WAYPOINT_KINDS.map((k) => (
+                <button
+                  type="button"
+                  key={k.key}
+                  className={`wp-form__kind ${pendingKind === k.key ? 'is-on' : ''}`}
+                  style={{ '--wp-color': k.color }}
+                  onClick={() => setPendingKind(k.key)}
+                  title={k.label}
+                >
+                  <WaypointIcon kind={k.key} size={16} />
+                </button>
+              ))}
+            </div>
+            <input
+              className="wp-form__input"
+              type="text"
+              value={pendingLabel}
+              onChange={(e) => setPendingLabel(e.target.value)}
+              placeholder={t('wp.labelPh')}
+              maxLength={120}
+              autoFocus
+            />
+            <div className="wp-form__actions">
+              <button type="button" className="wp-form__cancel" onClick={cancelPending}>{t('wp.cancel')}</button>
+              <button type="button" className="wp-form__save" onClick={savePending} disabled={saving}>
+                {saving ? '…' : t('wp.save')}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {hasElevation && (
