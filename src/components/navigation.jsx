@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Profile } from './Profile';
 import '../styles/Navigation.css';
 import { authenticatedFetch } from '../utils/api';
+import recordingGuard from '../utils/recordingGuard';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useT } from '../i18n/I18nProvider';
 
@@ -14,8 +15,6 @@ export const Navigation = (props) => {
   const [user, setUser] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState(location.pathname); // State for active link
-  const [confirmLeave, setConfirmLeave] = useState(false);
-  const [pendingPath, setPendingPath] = useState(null);
   const [isRoutesOpen, setIsRoutesOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isNalogOpen, setIsNalogOpen] = useState(false);
@@ -84,16 +83,11 @@ export const Navigation = (props) => {
     setIsNalogOpen(false);
   };
 
+  // Dok traje snimanje rute, recordingGuard presreće navigaciju i RouteTracker
+  // prikazuje "prekini snimanje?" dijalog (isti mehanizam kao BottomNav).
   const handleLinkClick = (path, e) => {
-    const isTrackingScreen = location.pathname.startsWith('/track-new-route/');
-    const activeRouteId = localStorage.getItem('tracking:active_route_id');
-    const startedKey = activeRouteId ? `tracking:route:${activeRouteId}:started` : null;
-    const started = startedKey ? localStorage.getItem(startedKey) === '1' : false;
-
-    if (isTrackingScreen && activeRouteId && started && path !== location.pathname) {
+    if (path !== location.pathname && recordingGuard.tryLeave()) {
       if (e?.preventDefault) e.preventDefault();
-      setPendingPath(path);
-      setConfirmLeave(true);
       closeMenu();
       return;
     }
@@ -101,19 +95,22 @@ export const Navigation = (props) => {
     closeMenu();
   };
 
-  const handleLogout = () => {
+  const handleLogout = (e) => {
+    if (recordingGuard.tryLeave()) {
+      if (e?.preventDefault) e.preventDefault();
+      closeMenu();
+      return;
+    }
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     setIsLoggedIn(false);
     setUser(null);
-    handleLinkClick('/');
+    setActiveLink('/');
+    closeMenu();
     navigate('/');
   };
 
-  const handleHomeClick = () => {
-    setActiveLink('/');
-    closeMenu();
-  };
+  const handleHomeClick = (e) => handleLinkClick('/', e);
 
   return (
     <nav id="menu" className="navbar navbar-default navbar-fixed-top">
@@ -253,80 +250,6 @@ export const Navigation = (props) => {
           </ul>
         </div>
       </div>
-
-      {confirmLeave && (
-        <div
-          className="nav-confirm-modal-backdrop"
-          onClick={() => setConfirmLeave(false)}
-        >
-          <div
-            style={{
-              background: '#fff',
-              borderRadius: 14,
-              padding: '18px 16px',
-              maxWidth: 520,
-              width: '100%',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.35)',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 8px 0' }}>{t('nav.recTitle')}</h3>
-            <p style={{ margin: '0 0 14px 0', color: '#4a5568' }}>
-              {t('nav.recMsg')}
-            </p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-              <button
-                type="button"
-                onClick={async () => {
-                  // DA: prekini i SAČUVAJ (finalize), pa idi dalje
-                  const rid = localStorage.getItem('tracking:active_route_id');
-                  try {
-                    if (rid) {
-                      await authenticatedFetch(`/routes/${rid}/finalize`, { method: 'POST' });
-                    }
-                  } catch (e) {
-                    console.error('Greška pri finalizaciji rute:', e);
-                  } finally {
-                    if (rid) localStorage.removeItem(`tracking:route:${rid}:started`);
-                    localStorage.removeItem('tracking:active_route_id');
-                    setConfirmLeave(false);
-                    if (pendingPath) navigate(pendingPath);
-                  }
-                }}
-                style={{
-                  background: 'rgba(15, 23, 42, 0.08)',
-                  border: '1px solid rgba(15, 23, 42, 0.15)',
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                }}
-              >
-                {t('nav.recYes')}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  // Nastavi snimanje: ostani na ekranu i zatvori modal
-                  setConfirmLeave(false);
-                  setPendingPath(null);
-                }}
-                style={{
-                  background: '#dc3545',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  cursor: 'pointer',
-                  fontWeight: 800,
-                }}
-              >
-                {t('nav.recNo')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </nav>
   );

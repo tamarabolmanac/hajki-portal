@@ -21,8 +21,6 @@ export const translations = {
     'nav.myProfile': 'Moj profil',
     'nav.signin': 'Prijava',
     'nav.signup': 'Registracija',
-    'nav.recTitle': 'Prekid snimanja rute', 'nav.recMsg': 'Da li zaista želite da prekinete snimanje rute?',
-    'nav.recYes': 'Da, prekini', 'nav.recNo': 'Nastavi snimanje',
 
     // bottom nav (mobile)
     'bottomnav.home': 'Početna',
@@ -225,8 +223,6 @@ export const translations = {
     'nav.myProfile': 'My profile',
     'nav.signin': 'Sign in',
     'nav.signup': 'Sign up',
-    'nav.recTitle': 'Stop route recording', 'nav.recMsg': 'Do you really want to stop recording the route?',
-    'nav.recYes': 'Yes, stop', 'nav.recNo': 'Keep recording',
 
     // bottom nav (mobile)
     'bottomnav.home': 'Home',

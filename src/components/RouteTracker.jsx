@@ -11,6 +11,7 @@ import {
   startNativeTracking,
   stopNativeTracking
 } from "../tracking/nativeTracker";
+import { App } from "@capacitor/app";
 import ConfirmModal from "./ConfirmModal";
 import recordingGuard from "../utils/recordingGuard";
 import { useT } from "../i18n/I18nProvider";
@@ -73,6 +74,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
   const currentRouteIdRef = useRef(routeId);
   /** Android: tačke na server šalje HajkiTrackingService; web flush isključen da nema duplikata */
   const nativeBackgroundRef = useRef(false);
+  const nativeBackBtnRef = useRef(null);
 
   const startedKey = routeId ? `tracking:route:${routeId}:started` : null;
 
@@ -361,6 +363,10 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     if (!isTracking) {
       recordingGuard.setActive(false);
       recordingGuard.setHandler(null);
+      if (nativeBackBtnRef.current) {
+        nativeBackBtnRef.current.remove();
+        nativeBackBtnRef.current = null;
+      }
       return undefined;
     }
     recordingGuard.setActive(true);
@@ -368,18 +374,29 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
 
     window.history.pushState({ hajkiRec: true }, "");
     const onPop = () => {
-      window.history.pushState({ hajkiRec: true }, ""); // stay put until confirmed
+      window.history.pushState({ hajkiRec: true }, "");
       setShowLeavePrompt(true);
     };
     const onBeforeUnload = (e) => { e.preventDefault(); e.returnValue = ""; };
     window.addEventListener("popstate", onPop);
     window.addEventListener("beforeunload", onBeforeUnload);
 
+    // Android hardware back button / swipe-back gesture fires Capacitor's
+    // backButton event, not browser popstate — register it explicitly.
+    if (Capacitor.isNativePlatform()) {
+      App.addListener("backButton", () => setShowLeavePrompt(true))
+        .then((handle) => { nativeBackBtnRef.current = handle; });
+    }
+
     return () => {
       window.removeEventListener("popstate", onPop);
       window.removeEventListener("beforeunload", onBeforeUnload);
       recordingGuard.setActive(false);
       recordingGuard.setHandler(null);
+      if (nativeBackBtnRef.current) {
+        nativeBackBtnRef.current.remove();
+        nativeBackBtnRef.current = null;
+      }
     };
   }, [isTracking]);
 
