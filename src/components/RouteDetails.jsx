@@ -4,6 +4,8 @@ import '../styles/RouteDetails.css';
 import '../styles/RouteDetail.css';
 import { authenticatedFetch } from '../utils/api';
 import { getCurrentUserID } from '../utils/authHandler';
+import { Capacitor } from '@capacitor/core';
+import { Share } from '@capacitor/share';
 import ElevationMap from './ElevationMap';
 import AppLoader from './AppLoader';
 import ConfirmModal from './ConfirmModal';
@@ -213,6 +215,29 @@ export const RouteDetails = () => {
     }
   };
 
+  const handleShare = async () => {
+    const shareUrl = `https://hajki.com/route/${id}`;
+    const title = route.title || 'Hajki ruta';
+    const text = `${title} — ${route.distance ? `${route.distance} km` : 'planinarska ruta'} na Hajki`;
+    try {
+      if (Capacitor.isNativePlatform()) {
+        await Share.share({ title, text, url: shareUrl, dialogTitle: t('rd.shareVia') });
+      } else if (navigator.share) {
+        await navigator.share({ title, text, url: shareUrl });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        alert(t('rd.linkCopied'));
+      }
+    } catch (err) {
+      // User closed the share sheet — not an error.
+      if (err?.name === 'AbortError' || /cancel/i.test(err?.message || '')) return;
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert(t('rd.linkCopied'));
+      } catch { /* clipboard unavailable */ }
+    }
+  };
+
   const Avatar = ({ author, big }) => (
     <span className={`rd-avatar ${big ? 'rd-avatar--lg' : ''}`}>
       {author?.avatar_url
@@ -319,19 +344,28 @@ export const RouteDetails = () => {
 
         {/* sidebar */}
         <aside className="rd-side">
-          {canNavigate && (
-            <button className="rd-navbtn" onClick={() => navigate(`/routes/${id}/navigate`)}>
-              {t('rd.startNav')}
-            </button>
-          )}
-
-          <div className="rd-actions">
-            <button className={`rd-action ${route.liked_by_current_user ? 'is-on' : ''}`} onClick={handleToggleLike}>
+          <div className="rd-navrow">
+            {canNavigate && (
+              <button className="rd-navbtn" onClick={() => navigate(`/routes/${id}/navigate`)}>
+                {t('rd.startNav')}
+              </button>
+            )}
+            <button
+              className={`rd-action rd-action--like ${route.liked_by_current_user ? 'is-on' : ''}`}
+              onClick={handleToggleLike}
+            >
               <span className="rd-heart">♥</span> {route.likes_count || 0}
             </button>
+          </div>
+
+          <div className="rd-actions">
             <button className={`rd-action ${route.bookmarked_by_current_user ? 'is-saved' : ''}`} onClick={handleToggleBookmark}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill={route.bookmarked_by_current_user ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" /></svg>
               {route.bookmarked_by_current_user ? t('rd.saved') : t('rd.save')}
+            </button>
+            <button className="rd-action" onClick={handleShare}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 10.6 6.8-4.2M8.6 13.4l6.8 4.2" /></svg>
+              {t('rd.share')}
             </button>
             {isRouteOwner() ? (
               <button className="rd-action" onClick={() => navigate(`/routes/${id}/edit`)}>

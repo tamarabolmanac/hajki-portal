@@ -73,6 +73,7 @@ export const translations = {
     // route detail
     'rd.back': '← Nazad', 'rd.startNav': '▶ Pokreni navigaciju', 'rd.save': 'Sačuvaj', 'rd.saved': 'Sačuvano',
     'rd.edit': 'Uredi', 'rd.report': 'Prijavi', 'rd.record': '🔴 Snimi rutu', 'rd.delete': '🗑 Obriši',
+    'rd.share': 'Podeli', 'rd.shareVia': 'Podeli rutu', 'rd.linkCopied': 'Link je kopiran!',
     'rd.author': 'Autor', 'rd.hiker': 'Planinar', 'rd.duration': 'Trajanje', 'rd.distance': 'Dužina',
     'rd.elevation': 'Visinska razlika', 'rd.about': 'O ruti', 'rd.gallery': 'Galerija',
     'rd.features': 'Karakteristike mesta', 'rd.map': 'Mapa', 'rd.loadingMap': 'Učitavanje mape...',
@@ -275,6 +276,7 @@ export const translations = {
     // route detail
     'rd.back': '← Back', 'rd.startNav': '▶ Start navigation', 'rd.save': 'Save', 'rd.saved': 'Saved',
     'rd.edit': 'Edit', 'rd.report': 'Report', 'rd.record': '🔴 Record route', 'rd.delete': '🗑 Delete',
+    'rd.share': 'Share', 'rd.shareVia': 'Share route', 'rd.linkCopied': 'Link copied!',
     'rd.author': 'Author', 'rd.hiker': 'Hiker', 'rd.duration': 'Duration', 'rd.distance': 'Distance',
     'rd.elevation': 'Elevation gain', 'rd.about': 'About', 'rd.gallery': 'Gallery',
     'rd.features': 'Place features', 'rd.map': 'Map', 'rd.loadingMap': 'Loading map...',

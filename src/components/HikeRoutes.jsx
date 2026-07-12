@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import { isAuthenticated } from '../utils/auth';
+import { isMobileApp } from '../utils/platform';
 import AppLoader from './AppLoader';
 import RouteCard from './RouteCard';
 import TagPicker from './TagPicker';
@@ -279,8 +280,9 @@ export const HikeRoutes = (props) => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        {/* Mobile app already has the ADD tab in the bottom nav — web keeps the button. */}
         {userIsAuthenticated ? (
-          <Link to="/new-route" className="ex2-add">{t('ex.add')}</Link>
+          !isMobileApp() && <Link to="/new-route" className="ex2-add">{t('ex.add')}</Link>
         ) : (
           <Link to="/login" className="ex2-add">{t('ex.login')}</Link>
         )}

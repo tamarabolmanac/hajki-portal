@@ -81,7 +81,11 @@
   max-width: 1200px; margin: 0 auto; padding: 28px 24px 0;
   display: grid; grid-template-columns: 1fr 340px; gap: 28px;
 }
-@media (max-width: 900px) { .rd-body { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+  .rd-body { grid-template-columns: 1fr; gap: 14px; }
+  /* The elevation profile is the last block before the sidebar CTA — keep them close. */
+  .rd-main .rd-section:last-child { margin-bottom: 8px; }
+}
 
 /* stat cards */
 .rd-stats {
@@ -134,6 +138,16 @@
 
 /* sidebar */
 .rd-side { display: flex; flex-direction: column; gap: 16px; }
+
+/* Start navigation + like share the first row */
+.rd-navrow { display: flex; gap: 10px; align-items: stretch; }
+.rd-navrow .rd-navbtn { flex: 1; }
+.rd-action--like {
+  min-width: 76px;
+  justify-content: center;
+  padding: 10px 14px;
+}
+
 .rd-navbtn {
   display: flex; align-items: center; justify-content: center; gap: 0.6rem;
   background: linear-gradient(135deg, #7ce787, #5bd06a);
