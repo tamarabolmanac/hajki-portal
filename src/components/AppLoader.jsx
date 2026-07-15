@@ -1,12 +1,9 @@
 import React from 'react';
 import { useT } from '../i18n/I18nProvider';
+import HajkiMark from './HajkiMark';
 import '../styles/AppLoader.css';
 
-const Mountain = () => (
-  <svg className="hjk-loader__mtn" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
-  </svg>
-);
+const Mountain = () => <HajkiMark className="hjk-loader__mtn" />;
 
 export const AppLoader = ({ title, subtitle = '', compact = false }) => {
   const { t } = useT();

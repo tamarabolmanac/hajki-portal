@@ -4,10 +4,9 @@ import { explainUnreachableApiError } from '../utils/fetchErrors';
 import { Link } from 'react-router-dom';
 import '../styles/Auth.css';
 import { useT } from '../i18n/I18nProvider';
+import HajkiMark from './HajkiMark';
 
-const Mountain = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
-);
+const Mountain = () => <HajkiMark size={22} />;
 
 const FIELDS = [
   { key: 'name', labelKey: 'reg.name', phKey: 'reg.namePh', type: 'text' },
@@ -128,6 +127,7 @@ export const Register = () => {
           </form>
 
           <p className="reg-foot">{t('reg.haveAccount')} <Link to="/login">{t('reg.login')}</Link></p>
+          <p className="reg-foot reg-foot--privacy"><Link to="/privacy-policy">{t('pf.privacy')}</Link></p>
         </div>
       </div>
     </div>

@@ -2,13 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useT } from '../i18n/I18nProvider';
 import '../styles/SplashScreen.css';
 
-const Mountain = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="56" height="56">
-    <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
-  </svg>
-);
-
-/** Launch splash (Figma): topo bg, mountain mark, HAJKI wordmark, tagline, progress bar. */
+/** Launch splash: topo bg, logo image (mark + HAJKI wordmark), tagline, progress bar. */
 export default function SplashScreen({ onDone }) {
   const { t } = useT();
   const [progress, setProgress] = useState(0);
@@ -39,8 +33,7 @@ export default function SplashScreen({ onDone }) {
         ))}
       </svg>
 
-      <div className="splash__mark"><Mountain /></div>
-      <h1 className="splash__word">Hajki</h1>
+      <img className="splash__logo" src="/img/hajki-logo.png" alt="Hajki" width="220" height="220" />
       <p className="splash__tag">{t('splash.tag')}</p>
       <div className="splash__bar"><div className="splash__fill" style={{ width: `${progress * 100}%` }} /></div>
     </div>

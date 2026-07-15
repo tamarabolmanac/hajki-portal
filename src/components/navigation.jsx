@@ -5,6 +5,7 @@ import '../styles/Navigation.css';
 import { authenticatedFetch } from '../utils/api';
 import recordingGuard from '../utils/recordingGuard';
 import LanguageSwitcher from './LanguageSwitcher';
+import HajkiMark from './HajkiMark';
 import { useT } from '../i18n/I18nProvider';
 
 export const Navigation = (props) => {
@@ -116,7 +117,7 @@ export const Navigation = (props) => {
     <nav id="menu" className="navbar navbar-default navbar-fixed-top">
       <div className="navbar-inner">
         <Link className="navbar-brand nav-brand2" to="/" onClick={handleHomeClick}>
-          <svg className="nav-brand2__ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
+          <HajkiMark className="nav-brand2__ic" />
           <span className="nav-brand2__txt">Hajki</span>
         </Link>
         <button

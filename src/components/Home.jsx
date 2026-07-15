@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import { config } from '../config';
 import RouteCard from './RouteCard';
 import { useT } from '../i18n/I18nProvider';
+import HajkiMark from './HajkiMark';
 import '../styles/Home.css';
 
-const Mountain = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
-);
+const Mountain = ({ size = 20 }) => <HajkiMark size={size} />;
 const IcArrow = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 5l7 7-7 7" /></svg>);
 const IcMap = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 4 6 2 6-2v14l-6 2-6-2-6 2V6z" /><path d="M9 4v14M15 6v14" /></svg>);
 const IcUsers = () => (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3.5" /><path d="M3 21a6 6 0 0 1 12 0" /><path d="M16 5a3.5 3.5 0 0 1 0 7M22 21a6 6 0 0 0-5-5.9" /></svg>);

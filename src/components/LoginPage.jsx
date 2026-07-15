@@ -7,10 +7,9 @@ import '../styles/Auth.css';
 import GoogleLoginButton from "./GoogleLoginButton";
 import { useT } from '../i18n/I18nProvider';
 import { FaEnvelope, FaLock, FaArrowRight, FaEye, FaEyeSlash } from 'react-icons/fa';
+import HajkiMark from './HajkiMark';
 
-const Mountain = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
-);
+const Mountain = () => <HajkiMark size={28} />;
 
 const LoginPage = () => {
   const { t } = useT();
@@ -105,6 +104,7 @@ const LoginPage = () => {
         </div>
 
         <p className="auth__foot">{t('auth.noAccount')} <Link to="/register">{t('auth.register')}</Link></p>
+        <p className="auth__foot auth__foot--privacy"><Link to="/privacy-policy">{t('pf.privacy')}</Link></p>
       </div>
     </div>
   );

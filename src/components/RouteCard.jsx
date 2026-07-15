@@ -3,13 +3,10 @@ import { Link } from 'react-router-dom';
 import { TagIcons } from './TagDisplay';
 import { useT } from '../i18n/I18nProvider';
 import { formatDuration } from '../utils/format';
+import HajkiMark from './HajkiMark';
 import '../styles/RouteCard.css';
 
 const DIFF_KEY = { hard: 'diff.hard', easy: 'diff.easy', mid: 'diff.medium' };
-
-const IcMountain = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="40" height="40"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
-);
 
 const difficultyMeta = (d) => {
   const v = (d || '').toLowerCase();
@@ -51,7 +48,7 @@ export default function RouteCard({ hike, onToggleLike, onToggleBookmark, priori
             decoding="async"
           />
         ) : (
-          <div className="route-card__noimg" aria-hidden="true"><IcMountain /></div>
+          <div className="route-card__noimg" aria-hidden="true"><HajkiMark size={56} strokeWidth={1.6} /></div>
         )}
         <span className={`route-card__badge route-card__badge--${diff.cls}`}>{t(DIFF_KEY[diff.cls])}</span>
         <button

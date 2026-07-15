@@ -80,3 +80,9 @@
 .reg-foot { text-align: center; margin-top: 1.25rem; color: #52b788; font-size: 0.9rem; }
 .reg-foot a, .reg-foot button { color: #2d6a4f; font-weight: 700; background: none; border: none; cursor: pointer; text-decoration: none; font-size: 0.9rem; }
 .reg-err { background: #fde8e8; border: 1px solid #f5b5b5; color: #c0392b; border-radius: 12px; padding: 0.7rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; }
+
+/* Privacy-policy link under the auth footers — quieter than the main CTA link */
+.auth__foot--privacy { margin-top: 0.5rem; }
+.auth__foot--privacy a { color: #6b7f6d; font-weight: 500; font-size: 0.8rem; text-decoration: underline; }
+.reg-foot--privacy { margin-top: 0.5rem; }
+.reg-foot--privacy a { color: #6b7f6d; font-weight: 500; font-size: 0.8rem; text-decoration: underline; }

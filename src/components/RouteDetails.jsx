@@ -11,6 +11,7 @@ import AppLoader from './AppLoader';
 import ConfirmModal from './ConfirmModal';
 import { TagBadges } from './TagDisplay';
 import ImageLightbox from './ImageLightbox';
+import HajkiMark from './HajkiMark';
 import { useT } from '../i18n/I18nProvider';
 
 // Gallery thumbnails reconstruct a stable cdn.hajki.com URL from the filename.
@@ -254,7 +255,7 @@ export const RouteDetails = () => {
           ? <img className="rd-hero__img rd-hero__img--zoom" src={heroImg} alt={route.title} onClick={() => galleryImages.length && setLightboxIndex(0)} />
           : (
             <div className="rd-hero__img rd-hero__noimg" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="72" height="72"><path d="m8 3 4 8 5-5 5 15H2L8 3z" /></svg>
+              <HajkiMark size={72} strokeWidth={1.6} />
             </div>
           )}
         <div className="rd-hero__overlay" />

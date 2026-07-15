@@ -36,6 +36,11 @@
   background: #1a1d1a;
   overflow: hidden;
 }
+/* Single-column phone layout: a full-width square is overwhelming — use a
+   shorter fixed ratio there (still identical across all cards). */
+@media (max-width: 600px) {
+  .route-card__media { padding-bottom: 72%; }
+}
 .route-card__media img {
   position: absolute;
   inset: 0;
