@@ -4,7 +4,7 @@ import React from 'react';
  * Simplified line version of the Hajki logo mark (mountains + trail, no
  * wordmark). Inherits color via currentColor so each context can tint it.
  */
-export default function HajkiMark({ size = 24, strokeWidth = 2, className = '' }) {
+export default function HajkiMark({ size = 24, strokeWidth = 2, className = '', style }) {
   return (
     <svg
       width={size}
@@ -16,6 +16,7 @@ export default function HajkiMark({ size = 24, strokeWidth = 2, className = '' }
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
+      style={style}
       aria-hidden="true"
     >
       <path d="M2.5 19h19" />

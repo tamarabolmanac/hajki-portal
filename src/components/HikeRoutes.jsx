@@ -18,6 +18,12 @@ const diffKey = (d) => {
 };
 const DIFF_PILLS = ['all', 'easy', 'medium', 'hard'];
 
+const FILTERS_STORAGE_KEY = 'explore:filters';
+const readSavedFilters = () => {
+  try { return JSON.parse(sessionStorage.getItem(FILTERS_STORAGE_KEY) || 'null') || {}; }
+  catch { return {}; }
+};
+
 // Page shell (module-level so it isn't remounted on every render → input keeps focus)
 const Shell = ({ children }) => {
   const { t } = useT();
@@ -43,14 +49,17 @@ export const HikeRoutes = (props) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [userIsAuthenticated, setUserIsAuthenticated] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [diff, setDiff] = useState('all');
-  const [activeTags, setActiveTags] = useState([]);
+  // Filteri prežive odlazak na detalje rute i povratak (sessionStorage);
+  // gube se tek zatvaranjem taba/aplikacije.
+  const [saved] = useState(readSavedFilters);
+  const [searchTerm, setSearchTerm] = useState(saved.searchTerm || '');
+  const [debouncedSearch, setDebouncedSearch] = useState((saved.searchTerm || '').trim());
+  const [diff, setDiff] = useState(saved.diff || 'all');
+  const [activeTags, setActiveTags] = useState(saved.activeTags || []);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [radius, setRadius] = useState(null);        // null | 5 | 10 | 25 | 50
-  const [myRoutesOnly, setMyRoutesOnly] = useState(false);
-  const [followingOnly, setFollowingOnly] = useState(false);
+  const [radius, setRadius] = useState(saved.radius ?? null); // null | 5 | 10 | 25 | 50
+  const [myRoutesOnly, setMyRoutesOnly] = useState(!!saved.myRoutesOnly);
+  const [followingOnly, setFollowingOnly] = useState(!!saved.followingOnly);
   const [userLocation, setUserLocation] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState(null);
@@ -94,6 +103,21 @@ export const HikeRoutes = (props) => {
     const t = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
     return () => clearTimeout(t);
   }, [searchTerm]);
+
+  // Persist filters so they survive route-detail → back navigation.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify({
+        searchTerm, diff, activeTags, radius, myRoutesOnly, followingOnly,
+      }));
+    } catch { /* storage unavailable */ }
+  }, [searchTerm, diff, activeTags, radius, myRoutesOnly, followingOnly]);
+
+  // Restored radius filter needs the location re-acquired after remount.
+  useEffect(() => {
+    if (radius && !userLocation && !locationLoading) requestLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const fetchRoutes = async () => {
@@ -244,9 +268,11 @@ export const HikeRoutes = (props) => {
   };
 
   const resetAllFilters = () => {
+    setSearchTerm(''); setDebouncedSearch('');
     setDiff('all'); setActiveTags([]);
     setRadius(null); setMyRoutesOnly(false); setFollowingOnly(false);
     setLocationError(null);
+    try { sessionStorage.removeItem(FILTERS_STORAGE_KEY); } catch { /* ignore */ }
   };
 
   // search + difficulty filter
@@ -294,6 +320,11 @@ export const HikeRoutes = (props) => {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="6" x2="20" y2="6" /><line x1="8" y1="12" x2="16" y2="12" /><line x1="11" y1="18" x2="13" y2="18" /></svg>
           {t('ex.filters')}{totalActiveFilters > 0 && <span className="ex2-fbadge">{totalActiveFilters}</span>}
         </button>
+        {(totalActiveFilters > 0 || searchTerm) && (
+          <button type="button" className="ex2-freset" onClick={resetAllFilters}>
+            {t('ex.resetAll')}
+          </button>
+        )}
       </div>
 
       {/* unified filter panel */}

@@ -4,6 +4,7 @@ import { explainUnreachableApiError } from '../utils/fetchErrors';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import '../styles/LoginPage.css';
+import HajkiMark from './HajkiMark';
 import { useT } from '../i18n/I18nProvider';
 
 export const ForgotPassword = () => {
@@ -56,7 +57,7 @@ export const ForgotPassword = () => {
           <div className="login-logo">
             <div className="logo-text">
               <span className="logo-icon">
-                <img src="/img/beaver_image.png" alt="Hajki Beaver" style={{width: "40px", height: "60px", borderRadius: "50%"}} />
+                <HajkiMark size={34} style={{ color: "#50C878" }} />
               </span>
               <span>Hajki</span>
             </div>

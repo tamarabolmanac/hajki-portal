@@ -74,3 +74,11 @@
   border: 1px solid rgba(80,200,120,0.35); color: var(--g); border-radius: 999px;
   padding: 0.7rem 1.8rem; font-family: inherit; font-weight: 700; cursor: pointer;
 }
+
+/* Reset-filters button next to the Filters toggle (visible when anything is active) */
+.ex2-freset {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  background: none; border: 1px solid rgba(248, 113, 113, 0.35); color: #fca5a5;
+  border-radius: 999px; padding: 0.42rem 1rem; font-family: inherit; font-size: 0.76rem; cursor: pointer;
+}
+.ex2-freset:hover { background: rgba(248, 113, 113, 0.12); }

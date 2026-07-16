@@ -52,7 +52,13 @@ const LoginPage = () => {
         throw new Error(msg);
       }
       const data = await response.json();
-      if (!data.token) throw new Error(t('auth.unexpected'));
+      if (!data.token) {
+        // Older backend replies HTTP 200 with the error only in the body.
+        const bodyMsg = (data.message || '').toLowerCase();
+        if (bodyMsg.includes('confirm')) throw new Error(t('auth.notConfirmed'));
+        if (bodyMsg.includes('invalid') || data.status === 401) throw new Error(t('auth.badCreds'));
+        throw new Error(t('auth.unexpected'));
+      }
       localStorage.setItem('authToken', data.token);
       localStorage.setItem('userID', data.user_id);
       window.location.href = '/';

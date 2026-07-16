@@ -1,15 +1,25 @@
-/* Shared confirm dialog — dark Figma design (delete route / account / stop recording). */
+/* Shared confirm dialog — dark Figma design (delete route / account / stop recording).
+   Uses only long-supported CSS (no `inset`, no grid place-items) so it renders
+   correctly in older Android WebViews too. */
 .cm-backdrop {
-  position: fixed; inset: 0; z-index: 2000;
-  display: grid; place-items: center; padding: 0 24px;
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 2000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
   background: rgba(0, 0, 0, 0.65);
   -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
   animation: cm-fade 0.15s ease;
 }
 .cm-card {
-  position: relative; width: 100%; max-width: 384px;
+  position: relative;
+  width: 100%; max-width: 384px;
+  max-height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
   background: #141a16; border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px; overflow: hidden;
+  border-radius: 24px; overflow-x: hidden;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
   font-family: Arial, Helvetica, sans-serif;
   animation: cm-slide 0.22s cubic-bezier(0.34, 1.2, 0.64, 1) both;
@@ -31,7 +41,10 @@
 .cm-msg .cm-em { color: #f87171; font-weight: 600; }
 .cm-detail { font-size: 0.9rem; color: rgba(228, 235, 229, 0.8); font-weight: 600; margin: 4px 0 0; }
 
-.cm-check { display: flex; gap: 12px; align-items: flex-start; margin: 20px 0 4px; cursor: pointer; }
+/* float:none guards against the legacy global `label { float: left }` in
+   public/css/style.css — a floated label squeezes the flex actions row into
+   the leftover sliver beside it. */
+.cm-check { display: flex; float: none; width: 100%; gap: 12px; align-items: flex-start; margin: 20px 0 4px; cursor: pointer; }
 .cm-checkbox {
   width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; margin-top: 2px;
   border: 2px solid rgba(255, 255, 255, 0.18); background: #0b0f0d;
@@ -41,9 +54,10 @@
 .cm-checkbox--on { background: #ef4444; border-color: #ef4444; }
 .cm-check span { font-size: 0.88rem; color: rgba(228, 235, 229, 0.8); line-height: 1.4; }
 
-.cm-actions { display: flex; gap: 12px; margin-top: 28px; }
+.cm-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 .cm-btn {
-  flex: 1; padding: 14px; border-radius: 12px; border: none; cursor: pointer;
+  flex: 1 1 40%; min-width: 0; box-sizing: border-box;
+  padding: 14px; border-radius: 12px; border: none; cursor: pointer;
   font-family: inherit; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.82rem;
   transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease;
 }
