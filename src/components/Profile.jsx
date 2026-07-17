@@ -14,7 +14,7 @@ const formatDuration = (minutes) => {
 };
 
 export const Profile = () => {
-  const { t } = useT();
+  const { t, lang } = useT();
   // Učitaj iz keša odmah da ne čekamo API na mobilnom
   const cachedUser = (() => {
     try { return JSON.parse(localStorage.getItem('userDetails') || 'null'); } catch { return null; }
@@ -120,11 +120,14 @@ export const Profile = () => {
     if (!userId) return;
     setDeletingAccount(true);
     try {
-      await authenticatedFetch(`/users/${userId}/request_deletion`, { method: 'POST' });
+      await authenticatedFetch(`/users/${userId}/request_deletion`, {
+        method: 'POST',
+        body: JSON.stringify({ locale: lang }),
+      });
       setShowDeleteAccount(false);
-      alert('Email za potvrdu brisanja naloga je poslat. Proveri inbox i klikni na link da potvrdiš.');
+      alert(t('pf.deleteAccSent'));
     } catch (err) {
-      alert(`Greška: ${err.message}`);
+      alert(`${t('pf.errPrefix')}${err.message}`);
     } finally {
       setDeletingAccount(false);
     }

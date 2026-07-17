@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { TagIcons } from './TagDisplay';
 import { useT } from '../i18n/I18nProvider';
 import { formatDuration } from '../utils/format';
-import HajkiMark from './HajkiMark';
 import '../styles/RouteCard.css';
 
 const DIFF_KEY = { hard: 'diff.hard', easy: 'diff.easy', mid: 'diff.medium' };
@@ -40,16 +39,13 @@ export default function RouteCard({ hike, onToggleLike, onToggleBookmark, priori
   return (
     <article className="route-card">
       <Link to={`/route/${hike.id}`} className="route-card__media">
-        {hike.thumbnail_url ? (
-          <img
-            src={hike.thumbnail_url}
-            alt={hike.title}
-            loading={priority ? 'eager' : 'lazy'}
-            decoding="async"
-          />
-        ) : (
-          <div className="route-card__noimg" aria-hidden="true"><HajkiMark size={56} strokeWidth={1.6} /></div>
-        )}
+        <img
+          src={hike.thumbnail_url || '/img/route-default.png'}
+          alt={hike.title}
+          loading={priority ? 'eager' : 'lazy'}
+          decoding="async"
+          className={hike.thumbnail_url ? '' : 'route-card__img--default'}
+        />
         <span className={`route-card__badge route-card__badge--${diff.cls}`}>{t(DIFF_KEY[diff.cls])}</span>
         <button
           type="button"

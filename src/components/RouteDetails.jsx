@@ -255,7 +255,7 @@ export const RouteDetails = () => {
           ? <img className="rd-hero__img rd-hero__img--zoom" src={heroImg} alt={route.title} onClick={() => galleryImages.length && setLightboxIndex(0)} />
           : (
             <div className="rd-hero__img rd-hero__noimg" aria-hidden="true">
-              <HajkiMark size={72} strokeWidth={1.6} />
+              <HajkiMark size={72} />
             </div>
           )}
         <div className="rd-hero__overlay" />
