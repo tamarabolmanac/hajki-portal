@@ -18,6 +18,19 @@ export async function stopNativeTracking() {
   await HajkiTracker.stopTracking();
 }
 
+/**
+ * Na uređajima sa battery saverom (MIUI/Xiaomi…) pozadinski GPS biva gušen.
+ * Ovo otvara sistemski dijalog „radi bez ograničenja u pozadini" (jednom tapom),
+ * osim ako je izuzeće već dato. Bezopasno na ne-Android/web.
+ */
+export async function requestBatteryExemption() {
+  try {
+    return await HajkiTracker.requestBatteryOptimizationExemption();
+  } catch (e) {
+    return { granted: false, requested: false, error: String(e) };
+  }
+}
+
 export async function addNativeLocationListener(callback) {
   return HajkiTracker.addListener("locationUpdate", callback);
 }

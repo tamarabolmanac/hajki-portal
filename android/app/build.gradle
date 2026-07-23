@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+// Signing secrets live in android/keystore.properties (gitignored), not in this
+// committed file. Copy keystore.properties.example and fill it in to build a release.
+def keystorePropsFile = rootProject.file("keystore.properties")
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) {
+    keystoreProps.load(new FileInputStream(keystorePropsFile))
+}
+
 android {
     namespace "com.hajki"
     compileSdk rootProject.ext.compileSdkVersion
@@ -18,15 +26,21 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file('../hajki-release-key.keystore')
-            storePassword 'hajki123'
-            keyAlias 'hajki-key'
-            keyPassword 'hajki123'
+            if (keystorePropsFile.exists()) {
+                storeFile rootProject.file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
         }
     }
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            // Only sign with the release key when keystore.properties is present;
+            // otherwise fall back so debug/CI builds without secrets still work.
+            if (keystorePropsFile.exists()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

@@ -9,7 +9,8 @@ import {
   addNativeLocationListener,
   addNativeRouteIdListener,
   startNativeTracking,
-  stopNativeTracking
+  stopNativeTracking,
+  requestBatteryExemption
 } from "../tracking/nativeTracker";
 import { App } from "@capacitor/app";
 import ConfirmModal from "./ConfirmModal";
@@ -19,6 +20,18 @@ import "../styles/RouteTracker.css";
 
 /** Dark MapLibre style (no API key) matching the Figma record screen. */
 const DARK_MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+
+/** Slučajan v4 UUID; fallback ako WebView nema crypto.randomUUID. */
+const genUuid = () => {
+  try {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+  } catch (_) { /* fall through */ }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
 
 const fmtElapsed = (s) => {
   const h = Math.floor(s / 3600);
@@ -84,6 +97,9 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
       lng: Number(point.lng),
       accuracy: point.accuracy,
       timestamp: point.timestamp || new Date().toISOString(),
+      // Slučajan ID po tački (jednom) → isti kroz sve retry-jeve → server odbija
+      // duplikat. Koristi se samo za web slanje; native servis ima svoj client_uuid.
+      client_uuid: genUuid(),
     };
 
     if (!Number.isFinite(renderedPoint.lat) || !Number.isFinite(renderedPoint.lng)) return;
@@ -121,6 +137,7 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
             longitude: p.lng,
             accuracy: p.accuracy,
             timestamp: p.timestamp,
+            client_uuid: p.client_uuid,
           }),
         });
 
@@ -218,6 +235,10 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
 
     if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === "android") {
       try {
+        // Traži izuzeće od battery optimizacija (jednom) — inače battery saver
+        // guši pozadinski GPS i ruta ima rupe. Ne blokira snimanje ako se odbije.
+        try { await requestBatteryExemption(); } catch (_) { /* best effort */ }
+
         await startNativeTracking({
           routeId: currentRouteIdRef.current != null ? String(currentRouteIdRef.current) : "",
           apiBaseUrl: config.apiUrl.replace(/\/$/, ""),
