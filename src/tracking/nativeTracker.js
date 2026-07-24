@@ -19,6 +19,18 @@ export async function stopNativeTracking() {
 }
 
 /**
+ * Pošalji zaostale (offline) tačke sa diska i finalizuj rute koje čekaju.
+ * Zove se pri otvaranju app-a i posle stop-a, sa SVEŽIM tokenom (da radi i ako
+ * je stari istekao offline). Vraća { uploaded, remaining, finalized }.
+ */
+export async function syncPendingTracking(opts) {
+  return HajkiTracker.syncPending({
+    apiBaseUrl: (opts.apiBaseUrl || "").replace(/\/$/, ""),
+    authToken: opts.authToken || "",
+  });
+}
+
+/**
  * Na uređajima sa battery saverom (MIUI/Xiaomi…) pozadinski GPS biva gušen.
  * Ovo otvara sistemski dijalog „radi bez ograničenja u pozadini" (jednom tapom),
  * osim ako je izuzeće već dato. Bezopasno na ne-Android/web.

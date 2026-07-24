@@ -141,6 +141,35 @@ public class HajkiTrackerPlugin extends Plugin {
         call.resolve();
     }
 
+    /**
+     * Pošalji zaostale (offline) tačke i finalizuj rute koje čekaju. Poziva se pri
+     * otvaranju app-a sa SVEŽIM tokenom iz localStorage-a (da radi i ako je stari
+     * token istekao dok si bila offline). Bezbedno pozvati bilo kad — ako nema
+     * ničega zaostalog, samo brzo vrati nule.
+     */
+    @PluginMethod
+    public void syncPending(PluginCall call) {
+        String apiBase = call.getString("apiBaseUrl", "");
+        if (apiBase == null || apiBase.isEmpty()) {
+            call.reject("apiBaseUrl je obavezan");
+            return;
+        }
+        final String base = apiBase.replaceAll("/+$", "");
+        final String token = call.getString("authToken", "");
+        new Thread(() -> {
+            try {
+                PointSync.Result r = PointSync.syncAll(getContext(), base, token != null ? token : "");
+                JSObject ret = new JSObject();
+                ret.put("uploaded", r.uploaded);
+                ret.put("remaining", r.remaining);
+                ret.put("finalized", r.finalized);
+                call.resolve(ret);
+            } catch (Exception e) {
+                call.reject("sync failed: " + e.getMessage());
+            }
+        }).start();
+    }
+
     @PermissionCallback
     private void permissionsCallback(PluginCall call) {
         PluginCall saved = getSavedCall();

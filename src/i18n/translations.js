@@ -127,6 +127,7 @@ export const translations = {
     'rec.stopConfirm': 'Zaustavi', 'rec.continue': 'Nastavi', 'rec.leaveTitle': 'Snimanje je u toku',
     'rec.leaveMsg': 'Ako napustiš ekran, snimanje rute se prekida. Da li želiš da zaustaviš i sačuvaš rutu?',
     'rec.leaveConfirm': 'Zaustavi i sačuvaj', 'rec.leaveCancel': 'Nastavi snimanje',
+    'rec.savedOffline': 'Nema mreže — ruta je sačuvana na telefonu i otpremiće se automatski čim budeš online.',
     'rec.createErr': 'Nije moguće započeti snimanje rute.',
 
     // profile
@@ -332,6 +333,7 @@ export const translations = {
     'rec.stopConfirm': 'Stop', 'rec.continue': 'Continue', 'rec.leaveTitle': 'Recording in progress',
     'rec.leaveMsg': 'If you leave this screen, recording stops. Do you want to stop and save the route?',
     'rec.leaveConfirm': 'Stop and save', 'rec.leaveCancel': 'Keep recording',
+    'rec.savedOffline': 'No connection — your route is saved on the phone and will upload automatically once you are online.',
     'rec.createErr': 'Couldn\'t start recording.',
 
     // profile

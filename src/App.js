@@ -6,6 +6,9 @@ import { I18nProvider } from "./i18n/I18nProvider";
 import Home from "./components/Home";
 import SplashScreen from "./components/SplashScreen";
 import { isMobileApp } from "./utils/platform";
+import { Capacitor } from "@capacitor/core";
+import { App as CapacitorApp } from "@capacitor/app";
+import { syncPendingTracking } from "./tracking/nativeTracker";
 import "./styles/WebNav.css";
 import { HikeRoutes } from "./components/HikeRoutes";
 import { RouteDetails } from "./components/RouteDetails";
@@ -69,6 +72,27 @@ const AppContent = () => {
     // Set navigate function for auth handler
     setNavigate(navigate);
   }, [navigate]);
+
+  // Native: pri otvaranju i pri povratku iz pozadine, otpremi zaostale (offline)
+  // GPS tačke sa diska i finalizuj rute koje čekaju — svežim tokenom. Ovo je
+  // "sync pri otvaranju" (opcija B): ako si snimala bez signala i zatvorila app,
+  // ruta se automatski dovrši čim se app otvori online. Jeftino kad nema ničega.
+  useEffect(() => {
+    if (!Capacitor?.isNativePlatform?.()) return undefined;
+    const runSync = () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+      syncPendingTracking({ apiBaseUrl: config.apiUrl, authToken: token })
+        .then((r) => { if (r && (r.uploaded || r.finalized)) console.log("Pending tracking sync:", r); })
+        .catch((e) => console.warn("Pending tracking sync failed:", e));
+    };
+    runSync();
+    let handle;
+    CapacitorApp.addListener("appStateChange", ({ isActive }) => { if (isActive) runSync(); })
+      .then((h) => { handle = h; })
+      .catch(() => {});
+    return () => { if (handle) handle.remove(); };
+  }, []);
 
   // Posebna stranica za snimanje postojeće rute po ID-ju
   const TrackRoutePage = () => {

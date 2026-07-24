@@ -23,31 +23,24 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Foreground servis beleži GPS tačke i šalje ih na {@code POST /routes/track_point}.
+ * Foreground servis beleži GPS tačke. Svaka tačka se ODMAH upisuje u lokalni
+ * SQLite ({@link PointStore}) — nezavisno od mreže. Slanje na server
+ * ({@link PointSync}) ih briše tek na potvrđen 200.
  *
- * Tačke idu u red čekanja (queue) i šalju se preko jednog worker threada. Ako
- * POST padne (slaba mreža, Doze, prekid) tačka OSTAJE u redu i ponovo se
- * pokušava — na sledeću lokaciju i periodično na svakih {@link #RETRY_INTERVAL_MS}.
- * Tako se izgubljene tačke dopošalju čim se veza vrati (nema rupa na ruti).
+ * Zato ništa nije izgubljeno ni kad nema signala celu turu: tačke ostaju na
+ * disku, a otpremaju se čim se mreža vrati (live tokom snimanja, ili preko
+ * sync-a pri otvaranju app-a). Na stop se ruta označi "čeka finalize", pa se
+ * finalizuje tek kad su sve njene tačke otpremljene.
  */
 public class HajkiTrackingService extends Service implements LocationListener {
 
@@ -57,10 +50,8 @@ public class HajkiTrackingService extends Service implements LocationListener {
     public static final String EXTRA_AUTH_TOKEN = "auth_token";
 
     private static final String CHANNEL_ID = "hajki_tracking_channel";
-    /** Periodični pokušaj slanja zaostalih tačaka (kad nema nove lokacije, a mreža se vratila). */
+    /** Periodični pokušaj slanja zaostalih tačaka (kad se mreža vratila, a nema nove lokacije). */
     private static final long RETRY_INTERVAL_MS = 15_000L;
-    /** Zaštita od neograničenog rasta reda ako je server nedostupan celu turu. */
-    private static final int MAX_QUEUE = 50_000;
 
     private volatile String routeId = "";
     private volatile String apiBase = "";
@@ -69,15 +60,13 @@ public class HajkiTrackingService extends Service implements LocationListener {
     private LocationManager locationManager;
     private boolean started = false;
 
-    /** Neposlate tačke (FIFO). Thread-safe za paralelni add (lokacija) + poll (sender). */
-    private final ConcurrentLinkedQueue<JSONObject> pending = new ConcurrentLinkedQueue<>();
     /** Jedan thread serijalizuje slanje — nikad dva POST-a u paraleli. */
     private ExecutorService sender;
     private Handler retryHandler;
     private final Runnable retryRunnable = new Runnable() {
         @Override
         public void run() {
-            scheduleFlush();
+            scheduleUpload();
             if (retryHandler != null) retryHandler.postDelayed(this, RETRY_INTERVAL_MS);
         }
     };
@@ -157,15 +146,31 @@ public class HajkiTrackingService extends Service implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "Lokacija: " + location.getLatitude() + "," + location.getLongitude());
+        String ts = formatIsoUtc(location.getTime());
+
         HajkiTrackerPlugin.emitLocationUpdate(
                 location.getLatitude(),
                 location.getLongitude(),
                 location.getAccuracy(),
-                formatIsoUtc(location.getTime()),
+                ts,
                 routeId
         );
-        enqueuePoint(location);
-        scheduleFlush();
+
+        // Upiši na disk ODMAH (client_uuid stabilan za idempotentno slanje),
+        // pa pokušaj da otpremiš. Tačka je bezbedna i bez mreže.
+        try {
+            PointStore.get(this).insertPoint(
+                    routeId,
+                    location.getLatitude(),
+                    location.getLongitude(),
+                    location.getAccuracy(),
+                    ts,
+                    UUID.randomUUID().toString()
+            );
+        } catch (Exception e) {
+            Log.e(TAG, "insertPoint: " + e.getMessage());
+        }
+        scheduleUpload();
     }
 
     @Override
@@ -180,124 +185,16 @@ public class HajkiTrackingService extends Service implements LocationListener {
     public void onProviderDisabled(String provider) {
     }
 
-    /** Napravi JSON tačku i stavi je u red. route_id se ubacuje pri slanju (može se
-     *  promeniti kad server vrati id za novu rutu). */
-    private void enqueuePoint(Location loc) {
-        if (pending.size() >= MAX_QUEUE) {
-            Log.w(TAG, "Queue pun (" + MAX_QUEUE + "); preskačem tačku");
-            return;
-        }
-        try {
-            JSONObject body = new JSONObject();
-            body.put("latitude", loc.getLatitude());
-            body.put("longitude", loc.getLongitude());
-            body.put("accuracy", loc.getAccuracy());
-            body.put("timestamp", formatIsoUtc(loc.getTime()));
-            // Slučajan ID po tački, generisan JEDNOM ovde. Ostaje isti kroz sve
-            // retry-jeve → server odbija duplikat (idempotentno slanje).
-            body.put("client_uuid", java.util.UUID.randomUUID().toString());
-            pending.add(body);
-        } catch (Exception e) {
-            Log.e(TAG, "enqueuePoint: " + e.getMessage());
-        }
-    }
-
-    /** Zakaži pokušaj pražnjenja reda na worker threadu (serijalizovano). */
-    private void scheduleFlush() {
-        ExecutorService ex = sender;
+    /** Zakaži slanje zaostalih tačaka na worker threadu (serijalizovano). */
+    private void scheduleUpload() {
+        final ExecutorService ex = sender;
         if (ex == null || ex.isShutdown()) return;
-        try {
-            ex.submit(this::flush);
-        } catch (Exception ignored) {
-            // executor u gašenju
-        }
-    }
-
-    /** Šalje tačke sa čela reda dok ne padne (tada staje i ostavlja ostatak za sledeći put). */
-    private void flush() {
-        JSONObject head;
-        while ((head = pending.peek()) != null) {
-            boolean ok = postPoint(head);
-            if (ok) {
-                pending.poll(); // uspešno → skini sa reda
-            } else {
-                break; // neuspeh → ostavi u redu, pokušaj kasnije
-            }
-        }
-    }
-
-    /** Jedan POST. Vraća true ako je tačka prihvaćena (HTTP 2xx). */
-    private boolean postPoint(JSONObject point) {
         final String base = apiBase;
         final String token = authToken;
-        final String rid = routeId;
-
-        HttpURLConnection conn = null;
         try {
-            // route_id se dodaje ovde da uvek koristi najsvežiji (server ga vrati za novu rutu)
-            if (rid != null && !rid.isEmpty()) {
-                try {
-                    point.put("route_id", Integer.parseInt(rid));
-                } catch (NumberFormatException e) {
-                    point.put("route_id", rid);
-                }
-            } else {
-                point.put("route_id", JSONObject.NULL);
-            }
-
-            URL url = new URL(base + "/routes/track_point");
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(10_000);
-            conn.setReadTimeout(15_000);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            conn.setRequestProperty("Accept", "application/json");
-            if (token != null && !token.isEmpty()) {
-                conn.setRequestProperty("Authorization", "Bearer " + token);
-            }
-            conn.setDoOutput(true);
-
-            byte[] bytes = point.toString().getBytes(StandardCharsets.UTF_8);
-            OutputStream os = conn.getOutputStream();
-            os.write(bytes);
-            os.close();
-
-            int code = conn.getResponseCode();
-            InputStream is = code >= 400 ? conn.getErrorStream() : conn.getInputStream();
-            String resp = is != null ? readStream(is) : "";
-
-            if (code >= 200 && code < 300) {
-                if (resp.length() > 0) {
-                    try {
-                        JSONObject json = new JSONObject(resp);
-                        if (json.has("route_id") && !json.isNull("route_id")) {
-                            String newRid = String.valueOf(json.get("route_id"));
-                            if (!newRid.equals(routeId)) {
-                                routeId = newRid;
-                                HajkiTrackerPlugin.emitRouteIdUpdate(routeId);
-                            }
-                        }
-                    } catch (Exception parseEx) {
-                        Log.w(TAG, "Parsiranje odgovora: " + parseEx.getMessage());
-                    }
-                }
-                return true;
-            }
-
-            // 4xx (osim auth/mreže) — tačka je verovatno trajno neprihvatljiva; ne zaglavljuj red.
-            if (code >= 400 && code < 500 && code != 401 && code != 408 && code != 429) {
-                Log.w(TAG, "track_point HTTP " + code + " (odbačeno): " + resp);
-                return true; // "uspeh" u smislu skidanja sa reda da ne blokira ostale
-            }
-
-            Log.w(TAG, "track_point HTTP " + code + " (retry): " + resp);
-            return false;
-        } catch (Exception e) {
-            // mrežna greška → zadrži tačku za ponovni pokušaj
-            Log.e(TAG, "Greška track_point (retry): " + e.getMessage());
-            return false;
-        } finally {
-            if (conn != null) conn.disconnect();
+            ex.submit(() -> PointSync.uploadPending(getApplicationContext(), base, token));
+        } catch (Exception ignored) {
+            // executor u gašenju
         }
     }
 
@@ -305,14 +202,6 @@ public class HajkiTrackingService extends Service implements LocationListener {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(new Date(epochMs));
-    }
-
-    private static String readStream(InputStream is) throws java.io.IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) sb.append(line);
-        return sb.toString();
     }
 
     private void createNotificationChannel() {
@@ -347,12 +236,23 @@ public class HajkiTrackingService extends Service implements LocationListener {
             }
             locationManager = null;
         }
-        // Poslednji pokušaj da se zaostale tačke pošalju pre gašenja.
+
+        // Stop pritisnut: označi rutu "čeka finalize" i pokušaj pun sync (upload +
+        // finalize). Ako nema mreže — ništa se ne gubi: tačke i "finalize" flag su
+        // na disku, a sync pri sledećem otvaranju app-a to dovrši.
+        final String base = apiBase;
+        final String token = authToken;
+        final String rid = routeId;
+        try {
+            PointStore.get(this).markFinalize(rid);
+        } catch (Exception e) {
+            Log.e(TAG, "markFinalize: " + e.getMessage());
+        }
         if (sender != null) {
             try {
-                sender.submit(this::flush);
+                sender.submit(() -> PointSync.syncAll(getApplicationContext(), base, token));
                 sender.shutdown();
-                sender.awaitTermination(3, TimeUnit.SECONDS);
+                sender.awaitTermination(4, TimeUnit.SECONDS);
             } catch (Exception ignored) {
             }
             sender = null;

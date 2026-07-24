@@ -10,7 +10,8 @@ import {
   addNativeRouteIdListener,
   startNativeTracking,
   stopNativeTracking,
-  requestBatteryExemption
+  requestBatteryExemption,
+  syncPendingTracking
 } from "../tracking/nativeTracker";
 import { App } from "@capacitor/app";
 import ConfirmModal from "./ConfirmModal";
@@ -307,21 +308,41 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     const rid = currentRouteIdRef.current;
     if (!rid && routeRef.current.length === 0) return;
 
-    if (!nativeBackgroundRef.current) {
-      for (let attempt = 0; attempt < 30; attempt += 1) {
-        const before = lastSyncedIndexRef.current;
-        await performFlush(true);
-        if (lastSyncedIndexRef.current >= routeRef.current.length - 1) break;
-        if (lastSyncedIndexRef.current === before) {
-          await new Promise((r) => setTimeout(r, 300));
+    // Native: tačke su na disku (SQLite), a native servis je već označio rutu za
+    // finalize. Pokušaj ODMAH da otpremiš + finalizuješ (svež token). Ako nema
+    // mreže — ništa se ne gubi: ostaje na disku i sinkuje se pri sledećem
+    // otvaranju app-a. Ne zavisi od krhkog WebView-a jer finalize radi native.
+    if (nativeBackgroundRef.current) {
+      try {
+        const res = await syncPendingTracking({
+          apiBaseUrl: config.apiUrl,
+          authToken: localStorage.getItem("authToken") || "",
+        });
+        if (res && Number(res.remaining) > 0) {
+          alert(t("rec.savedOffline"));
         }
+      } catch (e) {
+        console.warn("syncPending on stop:", e);
+        alert(t("rec.savedOffline"));
+      } finally {
+        if (startedKey) localStorage.removeItem(startedKey);
+        localStorage.removeItem("tracking:active_route_id");
       }
+      return;
+    }
 
-      if (lastSyncedIndexRef.current < routeRef.current.length - 1) {
-        setError("Neki GPS podaci nisu uspeli da se sačuvaju pre završetka. Proveri mrežu i pokušaj ponovo.");
+    // Web (browser) put: flush pa /finalize (kao pre).
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      const before = lastSyncedIndexRef.current;
+      await performFlush(true);
+      if (lastSyncedIndexRef.current >= routeRef.current.length - 1) break;
+      if (lastSyncedIndexRef.current === before) {
+        await new Promise((r) => setTimeout(r, 300));
       }
-    } else {
-      await new Promise((r) => setTimeout(r, 1000));
+    }
+
+    if (lastSyncedIndexRef.current < routeRef.current.length - 1) {
+      setError("Neki GPS podaci nisu uspeli da se sačuvaju pre završetka. Proveri mrežu i pokušaj ponovo.");
     }
 
     if (!currentRouteIdRef.current) {
