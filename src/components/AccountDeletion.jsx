@@ -33,6 +33,8 @@ const CONTENT = {
     ),
     whatTitle: 'Šta se briše',
     what: 'Brisanjem naloga trajno se uklanjaju: tvoji podaci naloga (ime, email, profilna slika), sve tvoje rute i GPS tačke, i sve tvoje fotografije. Ova akcija je nepovratna i podaci se ne mogu vratiti.',
+    partialTitle: 'Brisanje pojedinačnih podataka',
+    partial: 'Ne moraš da obrišeš ceo nalog. U aplikaciji u bilo kom trenutku možeš da obrišeš pojedinačne rute (otvori rutu → Obriši) i fotografije, dok ti nalog ostaje aktivan.',
     whenTitle: 'Kada',
     when: 'Nalog i svi povezani podaci brišu se odmah po potvrdi zahteva.',
   },
@@ -54,6 +56,8 @@ const CONTENT = {
     ),
     whatTitle: 'What gets deleted',
     what: 'Deleting your account permanently removes: your account data (name, email, profile picture), all your routes and GPS points, and all your photos. This action is irreversible and the data cannot be recovered.',
+    partialTitle: 'Deleting individual data',
+    partial: 'You do not have to delete your whole account. In the app you can delete individual routes (open a route → Delete) and photos at any time, while keeping your account active.',
     whenTitle: 'When',
     when: 'Your account and all associated data are deleted immediately once the request is confirmed.',
   },
@@ -86,6 +90,7 @@ const AccountDeletion = () => {
           <Section title={c.inAppTitle}>{c.inApp}</Section>
           <Section title={c.emailTitle}>{c.email}</Section>
           <Section title={c.whatTitle}>{c.what}</Section>
+          <Section title={c.partialTitle}>{c.partial}</Section>
           <Section title={c.whenTitle}>{c.when}</Section>
 
           <div style={{
