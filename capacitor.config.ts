@@ -41,13 +41,16 @@ const config: CapacitorConfig = {
   server,
   plugins: {
     SplashScreen: {
-      launchShowDuration: 2500,
+      // Splash se skloni iz JS-a čim se app učita (App.js → SplashScreen.hide()).
+      // launchShowDuration je samo sigurnosni maksimum ako JS ne stigne da pozove hide.
+      launchShowDuration: 1500,
       launchAutoHide: true,
       backgroundColor: '#0B0F0D',
       androidScaleType: 'CENTER_INSIDE',
       showSpinner: false,
       splashFullScreen: true,
       splashImmersive: false,
+      fadeOutDuration: 200,
     },
   },
 };

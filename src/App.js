@@ -8,6 +8,7 @@ import SplashScreen from "./components/SplashScreen";
 import { isMobileApp } from "./utils/platform";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
+import { SplashScreen as NativeSplashScreen } from "@capacitor/splash-screen";
 import { syncPendingTracking } from "./tracking/nativeTracker";
 import "./styles/WebNav.css";
 import { HikeRoutes } from "./components/HikeRoutes";
@@ -73,6 +74,13 @@ const AppContent = () => {
     // Set navigate function for auth handler
     setNavigate(navigate);
   }, [navigate]);
+
+  // Native: skloni splash čim je app renderovana (useEffect ide posle prvog paint-a),
+  // umesto da čeka fiksnih 1.5s. Uklanja onaj kratki crni ekran na svakom otvaranju.
+  useEffect(() => {
+    if (!Capacitor?.isNativePlatform?.()) return;
+    NativeSplashScreen.hide({ fadeOutDuration: 200 }).catch(() => {});
+  }, []);
 
   // Native: pri otvaranju i pri povratku iz pozadine, otpremi zaostale (offline)
   // GPS tačke sa diska i finalizuj rute koje čekaju — svežim tokenom. Ovo je
