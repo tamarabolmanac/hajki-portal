@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -59,6 +60,10 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Traži izuzeće od battery optimizacija da GPS ne bude gušen u pozadini (MIUI/Xiaomi…) -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- App ne koristi advertising ID; uklanjaju se dozvole koje Play Services SDK sam ubaci,
+         da bi Data safety ("nema device ID-jeva") bio tačan i deklaracija usklađena. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" tools:node="remove" />
 
     <uses-feature android:name="android.hardware.location" android:required="true" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />

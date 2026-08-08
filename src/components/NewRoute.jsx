@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LocationPicker from './LocationPicker';
 import TagPicker from './TagPicker';
+import ActivityToggle from './ActivityToggle';
 import { authenticatedFetch } from '../utils/api';
 import { useT } from '../i18n/I18nProvider';
 import '../styles/AddForm.css';
@@ -21,6 +22,7 @@ export const NewRoute = () => {
   const { t } = useT();
   const fileInputRef = useRef(null);
   const [title, setTitle] = useState("");
+  const [activityType, setActivityType] = useState("hike");
   const [description, setDescription] = useState("");
   const [hours, setHours] = useState("");
   const [minutes, setMinutes] = useState("");
@@ -100,6 +102,7 @@ export const NewRoute = () => {
       }
       formData.append("hike_route[duration]", h * 60 + mRaw);
       formData.append("hike_route[difficulty]", difficulty);
+      formData.append("hike_route[activity_type]", activityType);
       formData.append("hike_route[distance]", parseFloat(normalizeDecimal(distance)).toFixed(2));
       formData.append("hike_route[location_latitude]", selectedLocation.lat);
       formData.append("hike_route[location_longitude]", selectedLocation.lng);
@@ -149,6 +152,16 @@ export const NewRoute = () => {
         <h1 className="af-h1">{t('form.newTitle')}</h1>
 
         <form onSubmit={handleSubmit}>
+          <div className="af-field">
+            <label className="af-label">{t('form.activity')}</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <ActivityToggle value={activityType} onChange={setActivityType} />
+              <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.95rem' }}>
+                {t(activityType === 'bike' ? 'form.bike' : 'form.hike')}
+              </span>
+            </div>
+          </div>
+
           <div className="af-field">
             <label className="af-label">{t('form.name')}</label>
             <input className="af-input" type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('form.namePh')} required />

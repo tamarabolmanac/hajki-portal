@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { authenticatedFetch } from '../utils/api';
 import TagPicker from './TagPicker';
+import ActivityToggle from './ActivityToggle';
 import { useT } from '../i18n/I18nProvider';
 import '../styles/AddForm.css';
 
@@ -22,7 +23,8 @@ export const EditRoute = () => {
     difficulty: 'easy',
     duration: '',
     distance: '',
-    best_time_to_visit: ''
+    best_time_to_visit: '',
+    activity_type: 'hike'
   });
   
   const [selectedImages, setSelectedImages] = useState([]);
@@ -45,7 +47,8 @@ export const EditRoute = () => {
             difficulty: data.data.difficulty || 'easy',
             duration: data.data.duration || '',
             distance: data.data.distance || '',
-            best_time_to_visit: data.data.best_time_to_visit || ''
+            best_time_to_visit: data.data.best_time_to_visit || '',
+            activity_type: data.data.activity_type || 'hike'
           });
           setTags(Array.isArray(data.data.tags) ? data.data.tags : []);
           
@@ -192,6 +195,19 @@ export const EditRoute = () => {
           {gps && (
             <div className="af-info">{t('form.gpsInfo')}</div>
           )}
+
+          <div className="af-field">
+            <label className="af-label">{t('form.activity')}</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <ActivityToggle
+                value={formData.activity_type}
+                onChange={(v) => setFormData((prev) => ({ ...prev, activity_type: v }))}
+              />
+              <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.95rem' }}>
+                {t(formData.activity_type === 'bike' ? 'form.bike' : 'form.hike')}
+              </span>
+            </div>
+          </div>
 
           <div className="af-field">
             <label className="af-label">{t('form.name')} *</label>

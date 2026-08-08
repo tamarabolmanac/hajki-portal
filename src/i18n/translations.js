@@ -90,6 +90,7 @@ export const translations = {
 
     // add / edit form
     'form.newTitle': 'Dodaj novu rutu', 'form.editTitle': 'Izmeni rutu', 'form.name': 'Naziv', 'form.namePh': 'Naziv rute',
+    'form.activity': 'Tip aktivnosti', 'form.hike': 'Pešačenje', 'form.bike': 'Biciklizam',
     'form.desc': 'Opis', 'form.descPh': 'Opišite rutu...', 'form.duration': 'Trajanje', 'form.hours': 'časova',
     'form.minutes': 'minuta', 'form.total': 'Ukupno', 'form.difficulty': 'Težina', 'form.diffPick': 'Izaberi težinu',
     'form.diffEasy': 'Laka', 'form.diffModerate': 'Srednja', 'form.diffHard': 'Teška', 'form.diffExpert': 'Napredna',
@@ -127,8 +128,10 @@ export const translations = {
     'rec.stopConfirm': 'Zaustavi', 'rec.continue': 'Nastavi', 'rec.leaveTitle': 'Snimanje je u toku',
     'rec.leaveMsg': 'Ako napustiš ekran, snimanje rute se prekida. Da li želiš da zaustaviš i sačuvaš rutu?',
     'rec.leaveConfirm': 'Zaustavi i sačuvaj', 'rec.leaveCancel': 'Nastavi snimanje',
-    'rec.savedOffline': 'Nema mreže — ruta je sačuvana na telefonu i otpremiće se automatski čim budeš online.',
+    'rec.savedOffline': 'Nema mreže — ruta je sačuvana na telefonu i otpremiće se automatski čim budeš online. Distanca i vreme će biti izračunati nakon sinhronizacije.',
     'rec.createErr': 'Nije moguće započeti snimanje rute.',
+    'sync.pendingBanner': 'Neke rute čekaju sinhronizaciju — biće poslate automatski čim se vratiš na internet. Distanca i vreme se izračunavaju nakon sinhronizacije.',
+    'sync.pendingBadge': 'Čeka sinhronizaciju',
 
     // profile
     'pf.greet': 'Dobrodošla', 'pf.title': 'Moj nalog', 'pf.editProfile': 'Uredi profil', 'pf.name': 'Ime',
@@ -296,6 +299,7 @@ export const translations = {
 
     // add / edit form
     'form.newTitle': 'Add a new route', 'form.editTitle': 'Edit route', 'form.name': 'Name', 'form.namePh': 'Route name',
+    'form.activity': 'Activity type', 'form.hike': 'Hiking', 'form.bike': 'Cycling',
     'form.desc': 'Description', 'form.descPh': 'Describe the route...', 'form.duration': 'Duration', 'form.hours': 'hours',
     'form.minutes': 'minutes', 'form.total': 'Total', 'form.difficulty': 'Difficulty', 'form.diffPick': 'Select difficulty',
     'form.diffEasy': 'Easy', 'form.diffModerate': 'Moderate', 'form.diffHard': 'Hard', 'form.diffExpert': 'Expert',
@@ -333,8 +337,10 @@ export const translations = {
     'rec.stopConfirm': 'Stop', 'rec.continue': 'Continue', 'rec.leaveTitle': 'Recording in progress',
     'rec.leaveMsg': 'If you leave this screen, recording stops. Do you want to stop and save the route?',
     'rec.leaveConfirm': 'Stop and save', 'rec.leaveCancel': 'Keep recording',
-    'rec.savedOffline': 'No connection — your route is saved on the phone and will upload automatically once you are online.',
+    'rec.savedOffline': 'No connection — your route is saved on the phone and will upload automatically once you are online. Distance and time will be calculated after syncing.',
     'rec.createErr': 'Couldn\'t start recording.',
+    'sync.pendingBanner': 'Some routes are waiting to sync — they will upload automatically once you are back online. Distance and time are calculated after syncing.',
+    'sync.pendingBadge': 'Waiting to sync',
 
     // profile
     'pf.greet': 'Welcome', 'pf.title': 'My account', 'pf.editProfile': 'Edit profile', 'pf.name': 'Name',

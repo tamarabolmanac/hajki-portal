@@ -116,6 +116,18 @@ public class PointStore extends SQLiteOpenHelper {
         try { return c.moveToFirst() ? c.getInt(0) : 0; } finally { c.close(); }
     }
 
+    /** Svi route_id-jevi koji imaju bar jednu neposlatu tačku (distinct). Za UI oznaku. */
+    public synchronized Set<String> routeIdsWithPendingPoints() {
+        Set<String> out = new HashSet<>();
+        Cursor c = getReadableDatabase().rawQuery("SELECT DISTINCT route_id FROM " + T_POINTS, null);
+        try {
+            while (c.moveToNext()) out.add(c.getString(0));
+        } finally {
+            c.close();
+        }
+        return out;
+    }
+
     // --- Rute koje čekaju finalize (stop je pritisnut, ali upload/finalize još nije prošao) ---
 
     public synchronized void markFinalize(String routeId) {

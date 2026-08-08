@@ -6,6 +6,7 @@ import { isMobileApp } from '../utils/platform';
 import AppLoader from './AppLoader';
 import RouteCard from './RouteCard';
 import TagPicker from './TagPicker';
+import ActivityIcon from './ActivityIcon';
 import { useT } from '../i18n/I18nProvider';
 import '../styles/Explore.css';
 
@@ -60,12 +61,17 @@ export const HikeRoutes = (props) => {
   const [radius, setRadius] = useState(saved.radius ?? null); // null | 5 | 10 | 25 | 50
   const [myRoutesOnly, setMyRoutesOnly] = useState(!!saved.myRoutesOnly);
   const [followingOnly, setFollowingOnly] = useState(!!saved.followingOnly);
+  // Tip aktivnosti — oba čekirana (default) = prikaži sve; samo jedan = filtriraj.
+  const [activityHike, setActivityHike] = useState(saved.activityHike !== false);
+  const [activityBike, setActivityBike] = useState(saved.activityBike !== false);
   const [userLocation, setUserLocation] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState(null);
 
   // Broji aktivne filtere za badge
-  const activeFilterCount = [radius, myRoutesOnly, followingOnly].filter(Boolean).length;
+  // hike-only ili bike-only kad je čekiran tačno jedan; inače null (prikaži sve).
+  const activityParam = activityHike && !activityBike ? 'hike' : activityBike && !activityHike ? 'bike' : null;
+  const activeFilterCount = [radius, myRoutesOnly, followingOnly, activityParam].filter(Boolean).length;
   const totalActiveFilters = activeFilterCount + (diff !== 'all' ? 1 : 0) + activeTags.length;
   const [likeError, setLikeError] = useState(null);
   const [page, setPage] = useState(1);
@@ -108,10 +114,10 @@ export const HikeRoutes = (props) => {
   useEffect(() => {
     try {
       sessionStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify({
-        searchTerm, diff, activeTags, radius, myRoutesOnly, followingOnly,
+        searchTerm, diff, activeTags, radius, myRoutesOnly, followingOnly, activityHike, activityBike,
       }));
     } catch { /* storage unavailable */ }
-  }, [searchTerm, diff, activeTags, radius, myRoutesOnly, followingOnly]);
+  }, [searchTerm, diff, activeTags, radius, myRoutesOnly, followingOnly, activityHike, activityBike]);
 
   // Restored radius filter needs the location re-acquired after remount.
   useEffect(() => {
@@ -135,11 +141,14 @@ export const HikeRoutes = (props) => {
           const responseData = await authenticatedFetch(`/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radius=${radius}`);
           let routes = responseData.data || [];
           if (myRoutesOnly && currentUserId) routes = routes.filter(r => r.user_id === currentUserId || r.author?.id === currentUserId);
+          if (activityParam) routes = routes.filter(r => (r.activity_type || 'hike') === activityParam);
           setData(routes);
           setTotalPages(1);
         } else if (myRoutesOnly) {
           const responseData = await authenticatedFetch('/my_routes');
-          setData(Array.isArray(responseData) ? responseData : (responseData.data || []));
+          let routes = Array.isArray(responseData) ? responseData : (responseData.data || []);
+          if (activityParam) routes = routes.filter(r => (r.activity_type || 'hike') === activityParam);
+          setData(routes);
           setTotalPages(1);
         } else {
           const params = new URLSearchParams({ page: 1, per_page: 20 });
@@ -147,6 +156,7 @@ export const HikeRoutes = (props) => {
           if (diff !== 'all') params.set('difficulty', diff);
           if (debouncedSearch) params.set('q', debouncedSearch);
           if (activeTags.length) params.set('tags', activeTags.join(','));
+          if (activityParam) params.set('activity', activityParam);
           const responseData = await authenticatedFetch(`/routes?${params.toString()}`);
           setData(responseData.data || []);
           setTotalPages(responseData.meta?.total_pages || 1);
@@ -159,7 +169,7 @@ export const HikeRoutes = (props) => {
     };
 
     fetchRoutes();
-  }, [radius, userLocation, myRoutesOnly, followingOnly, diff, debouncedSearch, activeTags]);
+  }, [radius, userLocation, myRoutesOnly, followingOnly, diff, debouncedSearch, activeTags, activityParam]);
 
   const handleLoadMore = async () => {
     const nextPage = page + 1;
@@ -170,6 +180,7 @@ export const HikeRoutes = (props) => {
       if (diff !== 'all') params.set('difficulty', diff);
       if (debouncedSearch) params.set('q', debouncedSearch);
       if (activeTags.length) params.set('tags', activeTags.join(','));
+      if (activityParam) params.set('activity', activityParam);
 
       const responseData = await authenticatedFetch(`/routes?${params.toString()}`);
       setData((prev) => [...prev, ...(responseData.data || [])]);
@@ -271,6 +282,7 @@ export const HikeRoutes = (props) => {
     setSearchTerm(''); setDebouncedSearch('');
     setDiff('all'); setActiveTags([]);
     setRadius(null); setMyRoutesOnly(false); setFollowingOnly(false);
+    setActivityHike(true); setActivityBike(true);
     setLocationError(null);
     try { sessionStorage.removeItem(FILTERS_STORAGE_KEY); } catch { /* ignore */ }
   };
@@ -338,6 +350,23 @@ export const HikeRoutes = (props) => {
                 {t(`diff.${key}`)}
               </button>
             ))}
+          </div>
+
+          {/* tip aktivnosti */}
+          <p className="ex2-panel__label" style={{ marginTop: '1.1rem' }}>{t('form.activity')}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <label className="ex2-check">
+              <input type="checkbox" checked={activityHike} onChange={(e) => setActivityHike(e.target.checked)} />
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                <ActivityIcon type="hike" size={16} /> {t('form.hike')}
+              </span>
+            </label>
+            <label className="ex2-check">
+              <input type="checkbox" checked={activityBike} onChange={(e) => setActivityBike(e.target.checked)} />
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                <ActivityIcon type="bike" size={16} /> {t('form.bike')}
+              </span>
+            </label>
           </div>
 
           {/* karakteristike */}

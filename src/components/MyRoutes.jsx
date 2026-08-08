@@ -6,17 +6,23 @@ import { isAuthenticated } from '../utils/auth';
 import { config } from '../config';
 import { BackgroundImage } from './BackgroundImage';
 import AppLoader from './AppLoader';
+import { Capacitor } from '@capacitor/core';
+import { getPendingSyncStatus } from '../tracking/nativeTracker';
+import { useT } from '../i18n/I18nProvider';
 import '../styles/MyRoutes.css';
 import '../styles/RoutesList.css';
 
 export const MyRoutes = () => {
   const navigate = useNavigate();
+  const { t } = useT();
   const [routes, setRoutes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  // Rute koje čekaju sinhronizaciju (neposlate offline tačke u lokalnoj SQLite bazi).
+  const [pendingSync, setPendingSync] = useState({ routeIds: [], totalPoints: 0 });
   const userIsAuthenticated = isAuthenticated();
 
   useEffect(() => {
@@ -47,6 +53,14 @@ export const MyRoutes = () => {
 
     fetchMyRoutes();
   }, [userIsAuthenticated]);
+
+  // Učitaj koje rute čekaju sinhronizaciju (offline tačke na disku). Samo native.
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+    let cancelled = false;
+    getPendingSyncStatus().then((s) => { if (!cancelled) setPendingSync(s); });
+    return () => { cancelled = true; };
+  }, []);
 
   const handleEditRoute = (routeId) => {
     navigate(`/routes/${routeId}/edit`);
@@ -133,8 +147,12 @@ export const MyRoutes = () => {
     );
   }
 
+  // Rute koje čekaju sinhronizaciju (poređenje kao string jer native vraća string id-jeve).
+  const pendingIdSet = new Set(pendingSync.routeIds);
+  const hasPendingSync = pendingSync.routeIds.length > 0 || pendingSync.totalPoints > 0;
+
   // Filter routes based on search term
-  const filteredRoutes = routes.filter(route => 
+  const filteredRoutes = routes.filter(route =>
     route.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (route.description && route.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
@@ -151,6 +169,17 @@ export const MyRoutes = () => {
       </div>
       
       <div className="glass-card">
+        {hasPendingSync && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '0.6rem',
+            background: 'rgba(17,153,142,0.15)', border: '1px solid rgba(56,239,125,0.4)',
+            borderRadius: '12px', padding: '0.85rem 1rem', marginBottom: '1.25rem',
+            color: '#e8fdf2', fontSize: '0.9rem', lineHeight: 1.5,
+          }}>
+            <span style={{ fontSize: '1.2rem', flexShrink: 0 }}>⏳</span>
+            <span>{t('sync.pendingBanner')}</span>
+          </div>
+        )}
         <div className="header-with-button">
           <Link to="/new-route" className="btn-primary-modern" style={{ borderRadius: '8px' }}>
             + Dodaj novu rutu
@@ -217,6 +246,14 @@ export const MyRoutes = () => {
                   <span className="route-difficulty">{route.difficulty}</span>
                 </div>
                 <div className="route-card-content">
+                  {pendingIdSet.has(String(route.id)) && (
+                    <span style={{
+                      display: 'inline-block', marginBottom: '0.6rem',
+                      background: 'rgba(255,193,7,0.18)', border: '1px solid rgba(255,193,7,0.5)',
+                      color: '#ffd54a', borderRadius: '999px', padding: '0.15rem 0.6rem',
+                      fontSize: '0.72rem', fontWeight: 600,
+                    }}>⏳ {t('sync.pendingBadge')}</span>
+                  )}
                   <p className="route-description">{route.description}</p>
                   <div className="route-stats">
                     <span className="route-duration">

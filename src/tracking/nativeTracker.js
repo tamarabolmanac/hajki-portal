@@ -43,6 +43,24 @@ export async function requestBatteryExemption() {
   }
 }
 
+/**
+ * Pročita pending stanje iz lokalne baze (bez slanja na server). Za UI oznaku
+ * „ruta čeka sinhronizaciju". Vraća { totalPoints, routeIds: string[], finalizeIds: string[] }.
+ * Na webu / ne-native platformi metoda ne postoji → vraća prazno.
+ */
+export async function getPendingSyncStatus() {
+  try {
+    const r = await HajkiTracker.getPendingStatus();
+    return {
+      totalPoints: (r && r.totalPoints) || 0,
+      routeIds: r && Array.isArray(r.routeIds) ? r.routeIds.map(String) : [],
+      finalizeIds: r && Array.isArray(r.finalizeIds) ? r.finalizeIds.map(String) : [],
+    };
+  } catch (e) {
+    return { totalPoints: 0, routeIds: [], finalizeIds: [] };
+  }
+}
+
 export async function addNativeLocationListener(callback) {
   return HajkiTracker.addListener("locationUpdate", callback);
 }

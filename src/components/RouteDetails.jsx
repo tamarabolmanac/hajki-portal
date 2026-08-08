@@ -12,6 +12,7 @@ import ConfirmModal from './ConfirmModal';
 import { TagBadges } from './TagDisplay';
 import ImageLightbox from './ImageLightbox';
 import HajkiMark from './HajkiMark';
+import ActivityIcon from './ActivityIcon';
 import { useT } from '../i18n/I18nProvider';
 
 // Gallery thumbnails reconstruct a stable cdn.hajki.com URL from the filename.
@@ -261,7 +262,18 @@ export const RouteDetails = () => {
         <div className="rd-hero__overlay" />
         <button className="rd-back" onClick={() => navigate('/routes')}>{t('rd.back')}</button>
         <div className="rd-hero__content">
-          <span className={`rd-badge rd-badge--${diff.cls}`}>{t(RD_DIFF[diff.cls])}</span>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <span className={`rd-badge rd-badge--${diff.cls}`}>{t(RD_DIFF[diff.cls])}</span>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.35rem',
+              background: 'rgba(56,239,125,0.15)', border: '1px solid rgba(56,239,125,0.4)',
+              color: '#cbf7dd', borderRadius: '999px', padding: '0.2rem 0.6rem',
+              fontSize: '0.8rem', fontWeight: 600,
+            }}>
+              <ActivityIcon type={route.activity_type} size={15} />
+              {t(route.activity_type === 'bike' ? 'form.bike' : 'form.hike')}
+            </span>
+          </div>
           <h1 className="rd-title">{route.title}</h1>
           {route.author && (
             <div className="rd-hero__author">

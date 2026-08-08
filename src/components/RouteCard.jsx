@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { TagIcons } from './TagDisplay';
+import ActivityIcon from './ActivityIcon';
 import { useT } from '../i18n/I18nProvider';
 import { formatDuration } from '../utils/format';
 import '../styles/RouteCard.css';
@@ -79,6 +80,11 @@ export default function RouteCard({ hike, onToggleLike, onToggleBookmark, priori
         <div className="route-card__divider" />
 
         <div className="route-card__stats">
+          <span className="route-card__stat" style={{ color: '#38ef7d' }}
+                title={t(hike.activity_type === 'bike' ? 'form.bike' : 'form.hike')}
+                aria-label={t(hike.activity_type === 'bike' ? 'form.bike' : 'form.hike')}>
+            <ActivityIcon type={hike.activity_type} size={15} />
+          </span>
           {hike.duration != null && <span className="route-card__stat"><IcClock /> {formatDuration(hike.duration)}</span>}
           {hike.distance != null && <span className="route-card__stat"><IcRoute /> {hike.distance} km</span>}
           <button

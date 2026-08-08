@@ -11,6 +11,7 @@ import android.provider.Settings;
 
 import androidx.core.content.ContextCompat;
 
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -21,6 +22,8 @@ import com.getcapacitor.annotation.Permission;
 import com.getcapacitor.annotation.PermissionCallback;
 
 import java.lang.ref.WeakReference;
+import java.util.HashSet;
+import java.util.Set;
 
 @CapacitorPlugin(
     name = "HajkiTracker",
@@ -168,6 +171,34 @@ public class HajkiTrackerPlugin extends Plugin {
                 call.reject("sync failed: " + e.getMessage());
             }
         }).start();
+    }
+
+    /**
+     * Pročitaj pending stanje iz lokalne baze BEZ mreže — za UI oznaku „ruta čeka
+     * sinhronizaciju". Ne šalje ništa; samo prebroji šta je zaostalo na disku.
+     * Vraća { totalPoints, routeIds: [...], finalizeIds: [...] } (route_id-jevi kao stringovi).
+     */
+    @PluginMethod
+    public void getPendingStatus(PluginCall call) {
+        try {
+            PointStore store = PointStore.get(getContext());
+            Set<String> finalizes = store.pendingFinalizes();
+            Set<String> all = new HashSet<>(store.routeIdsWithPendingPoints());
+            all.addAll(finalizes);
+
+            JSArray routeIds = new JSArray();
+            for (String s : all) routeIds.put(s);
+            JSArray finalizeIds = new JSArray();
+            for (String s : finalizes) finalizeIds.put(s);
+
+            JSObject ret = new JSObject();
+            ret.put("totalPoints", store.totalCount());
+            ret.put("routeIds", routeIds);
+            ret.put("finalizeIds", finalizeIds);
+            call.resolve(ret);
+        } catch (Exception e) {
+            call.reject("getPendingStatus failed: " + e.getMessage());
+        }
     }
 
     @PermissionCallback
