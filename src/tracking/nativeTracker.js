@@ -61,6 +61,20 @@ export async function getPendingSyncStatus() {
   }
 }
 
+/**
+ * Neposlate (offline) tačke jedne rute iz lokalne baze — za crtanje cele putanje
+ * dok se ne sinhronizuje. Vraća [{ lat, lng, timestamp, client_uuid }] hronološki.
+ * Na webu / ne-native → prazan niz.
+ */
+export async function getPendingPointsForRoute(routeId) {
+  try {
+    const r = await HajkiTracker.getPendingPoints({ routeId: String(routeId) });
+    return Array.isArray(r && r.points) ? r.points : [];
+  } catch (e) {
+    return [];
+  }
+}
+
 export async function addNativeLocationListener(callback) {
   return HajkiTracker.addListener("locationUpdate", callback);
 }

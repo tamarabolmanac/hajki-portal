@@ -201,6 +201,32 @@ public class HajkiTrackerPlugin extends Plugin {
         }
     }
 
+    /**
+     * Vrati neposlate (offline) tačke jedne rute iz lokalne baze — za crtanje cele
+     * putanje dok se ne sinhronizuje. Ne šalje ništa na mrežu.
+     * Vraća { points: [ { lat, lng, timestamp, client_uuid }, ... ] } hronološki.
+     */
+    @PluginMethod
+    public void getPendingPoints(PluginCall call) {
+        String routeId = call.getString("routeId", "");
+        try {
+            JSArray points = new JSArray();
+            for (PointStore.Row r : PointStore.get(getContext()).pointsForRoute(routeId)) {
+                JSObject o = new JSObject();
+                o.put("lat", r.lat);
+                o.put("lng", r.lng);
+                o.put("timestamp", r.ts);
+                o.put("client_uuid", r.uuid);
+                points.put(o);
+            }
+            JSObject ret = new JSObject();
+            ret.put("points", points);
+            call.resolve(ret);
+        } catch (Exception e) {
+            call.reject("getPendingPoints failed: " + e.getMessage());
+        }
+    }
+
     @PermissionCallback
     private void permissionsCallback(PluginCall call) {
         PluginCall saved = getSavedCall();

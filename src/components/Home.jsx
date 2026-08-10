@@ -4,6 +4,7 @@ import { config } from '../config';
 import RouteCard from './RouteCard';
 import { useT } from '../i18n/I18nProvider';
 import HajkiMark from './HajkiMark';
+import { pickRandomHero } from '../utils/homeHero';
 import '../styles/Home.css';
 
 const Mountain = ({ size = 20 }) => <HajkiMark size={size} />;
@@ -23,6 +24,15 @@ const noop = () => {};
 export const Home = () => {
   const { t } = useT();
   const [routes, setRoutes] = useState([]);
+
+  // Nasumična hero slika pri svakom ulasku na Home (izbegava ponavljanje iste zaredom).
+  const [heroSrc] = useState(() => {
+    let last = null;
+    try { last = localStorage.getItem('homeHeroLast'); } catch { /* storage unavailable */ }
+    const pick = pickRandomHero(last);
+    try { if (pick) localStorage.setItem('homeHeroLast', pick); } catch { /* ignore */ }
+    return pick;
+  });
 
   // Popular routes — only if logged in (public visitors just see the landing).
   useEffect(() => {
@@ -46,7 +56,7 @@ export const Home = () => {
     <div className="hm-page">
       {/* hero */}
       <section className="hm-hero">
-        <img className="hm-hero__img" src="/img/hike-landing.jpg" alt="" />
+        <img className="hm-hero__img" src={heroSrc || '/img/hike-landing.jpg'} alt="" />
         <div className="hm-hero__ov" />
         <div className="hm-hero__c">
           <span className="hm-badge"><span className="dot" /> {t('home.badge')}</span>

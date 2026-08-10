@@ -33,3 +33,10 @@ yarn-error.log*
 /backend/node_modules/
 /backend/users.db
 /assets/
+
+# Home-hero originals (backup only — optimizovane verzije se commit-uju)
+src/assets/home-hero/_originals/
+
+# Lokalni backup fajlovi — nikad u git
+.env.bak
+*.orig-bak

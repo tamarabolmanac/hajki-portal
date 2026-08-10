@@ -13,10 +13,27 @@ import { TagBadges } from './TagDisplay';
 import ImageLightbox from './ImageLightbox';
 import HajkiMark from './HajkiMark';
 import ActivityIcon from './ActivityIcon';
+import { getPendingSyncStatus, getPendingPointsForRoute } from '../tracking/nativeTracker';
 import { useT } from '../i18n/I18nProvider';
 
 // Gallery thumbnails reconstruct a stable cdn.hajki.com URL from the filename.
 const cdnImageUrl = (url) => `https://cdn.hajki.com/${url.split('/').pop().split('?')[0]}`;
+
+/** Ukupna distanca (km) preko tačaka, Haversine — za lokalni prikaz dok se ne sinhronizuje. */
+const haversineKm = (pts) => {
+  if (!pts || pts.length < 2) return 0;
+  const R = 6371;
+  let km = 0;
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    const dLat = (b.lat - a.lat) * Math.PI / 180;
+    const dLng = (b.lng - a.lng) * Math.PI / 180;
+    const la1 = a.lat * Math.PI / 180, la2 = b.lat * Math.PI / 180;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLng / 2) ** 2;
+    km += 2 * R * Math.asin(Math.sqrt(h));
+  }
+  return km;
+};
 
 const RD_DIFF = { hard: 'diff.hard', easy: 'diff.easy', mid: 'diff.medium' };
 
@@ -60,6 +77,9 @@ export const RouteDetails = () => {
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  // Ruta ima neposlate (offline) tačke u lokalnoj bazi → indikator + crtanje iz lokalne baze.
+  const [pendingLocal, setPendingLocal] = useState(false);
+  const [localDistanceKm, setLocalDistanceKm] = useState(null);
   const { t } = useT();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -83,8 +103,32 @@ export const RouteDetails = () => {
       try {
         const data = await authenticatedFetch(`/routes/${id}`);
         setRoute(data.data);
-        if (data.data.points?.length > 0) {
-          setRoutePoints(data.data.points.map((p) => ({ lat: p.lat, lng: p.lng })));
+
+        // Serverske tačke (sinhronizovane)
+        let pts = (data.data.points || []).map((p) => ({ lat: p.lat, lng: p.lng, timestamp: p.timestamp }));
+
+        // Native: dopuni neposlatim tačkama iz lokalne baze da se vidi CELA putanja
+        // dok se ne sinhronizuje (server ih još nema). Union + hronološko sortiranje.
+        if (Capacitor.isNativePlatform()) {
+          try {
+            const status = await getPendingSyncStatus();
+            const isPending = status.routeIds.includes(String(id)) || status.finalizeIds.includes(String(id));
+            if (isPending) {
+              const local = await getPendingPointsForRoute(id);
+              const seen = new Set(pts.map((p) => `${p.lat},${p.lng},${p.timestamp}`));
+              for (const p of local) {
+                const key = `${p.lat},${p.lng},${p.timestamp}`;
+                if (!seen.has(key)) { pts.push({ lat: p.lat, lng: p.lng, timestamp: p.timestamp }); seen.add(key); }
+              }
+              pts.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+              setPendingLocal(true);
+              setLocalDistanceKm(haversineKm(pts));
+            }
+          } catch { /* lokalne tačke nisu presudne — nastavi sa serverskim */ }
+        }
+
+        if (pts.length > 0) {
+          setRoutePoints(pts.map((p) => ({ lat: p.lat, lng: p.lng })));
         }
       } catch (e) {
         setError(e.message);
@@ -288,6 +332,17 @@ export const RouteDetails = () => {
       {/* body */}
       <div className="rd-body">
         <div className="rd-main">
+          {pendingLocal && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '0.6rem',
+              background: 'rgba(255,193,7,0.12)', border: '1px solid rgba(255,193,7,0.45)',
+              borderRadius: '12px', padding: '0.8rem 1rem', marginBottom: '1rem',
+              color: '#ffe08a', fontSize: '0.88rem', lineHeight: 1.5,
+            }}>
+              <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>⏳</span>
+              <span>{t('sync.notFullySynced')}</span>
+            </div>
+          )}
           <div className="rd-stats">
             <div className="rd-stat">
               <div className="rd-stat__label"><IcClock /> {t('rd.duration')}</div>
@@ -295,7 +350,9 @@ export const RouteDetails = () => {
             </div>
             <div className="rd-stat">
               <div className="rd-stat__label"><IcRoute /> {t('rd.distance')}</div>
-              <div className="rd-stat__value">{route.distance} km</div>
+              <div className="rd-stat__value">
+                {pendingLocal && localDistanceKm != null ? `~${localDistanceKm.toFixed(2)} km` : `${route.distance} km`}
+              </div>
             </div>
             <div className="rd-stat">
               <div className="rd-stat__label"><IcUp /> {t('rd.elevation')}</div>

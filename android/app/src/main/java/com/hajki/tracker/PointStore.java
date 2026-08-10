@@ -116,6 +116,27 @@ public class PointStore extends SQLiteOpenHelper {
         try { return c.moveToFirst() ? c.getInt(0) : 0; } finally { c.close(); }
     }
 
+    /** Sve neposlate tačke jedne rute, hronološki (za crtanje putanje iz lokalne baze). */
+    public synchronized List<Row> pointsForRoute(String routeId) {
+        List<Row> out = new ArrayList<>();
+        Cursor c = getReadableDatabase().query(
+            T_POINTS,
+            new String[]{"id", "route_id", "lat", "lng", "accuracy", "ts", "uuid"},
+            "route_id = ?", new String[]{routeId}, null, null, "id ASC"
+        );
+        try {
+            while (c.moveToNext()) {
+                out.add(new Row(
+                    c.getLong(0), c.getString(1), c.getDouble(2), c.getDouble(3),
+                    c.getDouble(4), c.getString(5), c.getString(6)
+                ));
+            }
+        } finally {
+            c.close();
+        }
+        return out;
+    }
+
     /** Svi route_id-jevi koji imaju bar jednu neposlatu tačku (distinct). Za UI oznaku. */
     public synchronized Set<String> routeIdsWithPendingPoints() {
         Set<String> out = new HashSet<>();

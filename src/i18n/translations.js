@@ -132,6 +132,7 @@ export const translations = {
     'rec.createErr': 'Nije moguće započeti snimanje rute.',
     'sync.pendingBanner': 'Neke rute čekaju sinhronizaciju — biće poslate automatski čim se vratiš na internet. Distanca i vreme se izračunavaju nakon sinhronizacije.',
     'sync.pendingBadge': 'Čeka sinhronizaciju',
+    'sync.notFullySynced': 'Nije sve sinhronizovano — putanja i distanca su iz lokalne memorije; otpremiće se kad se vratiš online.',
 
     // profile
     'pf.greet': 'Dobrodošla', 'pf.title': 'Moj nalog', 'pf.editProfile': 'Uredi profil', 'pf.name': 'Ime',
@@ -341,6 +342,7 @@ export const translations = {
     'rec.createErr': 'Couldn\'t start recording.',
     'sync.pendingBanner': 'Some routes are waiting to sync — they will upload automatically once you are back online. Distance and time are calculated after syncing.',
     'sync.pendingBadge': 'Waiting to sync',
+    'sync.notFullySynced': 'Not fully synced — the track and distance are from local storage; they will upload when you are back online.',
 
     // profile
     'pf.greet': 'Welcome', 'pf.title': 'My account', 'pf.editProfile': 'Edit profile', 'pf.name': 'Name',
