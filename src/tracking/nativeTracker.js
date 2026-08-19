@@ -44,6 +44,23 @@ export async function requestBatteryExemption() {
 }
 
 /**
+ * Pre-check pre snimanja: da li je dozvola za lokaciju data i da li je GPS
+ * (Location Services) uključen na telefonu. Na webu / ne-native vraća oba true
+ * (ne blokira). locationEnabled je false SAMO ako native eksplicitno vrati false.
+ */
+export async function checkLocationStatus() {
+  try {
+    const r = await HajkiTracker.checkLocationStatus();
+    return {
+      permissionGranted: !!(r && r.permissionGranted),
+      locationEnabled: !(r && r.locationEnabled === false),
+    };
+  } catch (e) {
+    return { permissionGranted: true, locationEnabled: true };
+  }
+}
+
+/**
  * Pročita pending stanje iz lokalne baze (bez slanja na server). Za UI oznaku
  * „ruta čeka sinhronizaciju". Vraća { totalPoints, routeIds: string[], finalizeIds: string[] }.
  * Na webu / ne-native platformi metoda ne postoji → vraća prazno.

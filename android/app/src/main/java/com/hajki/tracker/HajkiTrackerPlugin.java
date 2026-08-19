@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PowerManager;
@@ -134,6 +135,36 @@ public class HajkiTrackerPlugin extends Plugin {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Pre-check pre pokretanja snimanja: da li je dozvola za lokaciju data i da li je
+     * Location Services (GPS) uključen na telefonu. Bez uključenog GPS-a servis se
+     * pokrene ali ne dobija nijedan fix — pa unapred proverimo i obavestimo korisnika.
+     * Vraća { permissionGranted, locationEnabled }.
+     */
+    @PluginMethod
+    public void checkLocationStatus(PluginCall call) {
+        boolean permission = getPermissionState("location") == PermissionState.GRANTED
+            || getPermissionState("coarse") == PermissionState.GRANTED;
+        boolean enabled = true;
+        try {
+            LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+            if (lm != null) {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    enabled = lm.isLocationEnabled();
+                } else {
+                    enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                        || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                }
+            }
+        } catch (Exception e) {
+            enabled = true; // ako ne možemo da proverimo, ne blokiraj snimanje
+        }
+        JSObject ret = new JSObject();
+        ret.put("permissionGranted", permission);
+        ret.put("locationEnabled", enabled);
+        call.resolve(ret);
     }
 
     @PluginMethod

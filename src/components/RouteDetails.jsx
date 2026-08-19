@@ -102,6 +102,12 @@ export const RouteDetails = () => {
     (async () => {
       try {
         const data = await authenticatedFetch(`/routes/${id}`);
+        if (!data?.data) {
+          // Ruta više ne postoji (npr. obrisana pa "back") — 404 vrati telo bez .data.
+          // Ne rušimo render; prikažemo mirnu poruku umesto "Cannot read properties of undefined".
+          setError(t('rd.notFound'));
+          return;
+        }
         setRoute(data.data);
 
         // Serverske tačke (sinhronizovane)
@@ -166,9 +172,27 @@ export const RouteDetails = () => {
 
   if (error) {
     return (
-      <div className="rd-page" style={{ padding: 'var(--app-page-content-top, 120px) 24px 40px' }}>
-        <h2>{t('rd.error')}</h2>
-        <p style={{ color: 'rgba(255,255,255,0.7)' }}>{error}</p>
+      <div className="rd-page" style={{ display: 'grid', placeItems: 'center', padding: 'var(--app-page-content-top, 120px) 24px 40px' }}>
+        <div style={{ textAlign: 'center', maxWidth: 340 }}>
+          <div style={{ opacity: 0.4, marginBottom: '1.25rem', display: 'flex', justifyContent: 'center' }}>
+            <HajkiMark size={64} />
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: '1.05rem', lineHeight: 1.6, margin: '0 0 1.75rem' }}>
+            {error}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/routes')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+              padding: '0.7rem 1.4rem', borderRadius: 14,
+              background: 'rgba(56,239,125,0.15)', border: '1px solid rgba(56,239,125,0.4)',
+              color: '#cbf7dd', fontSize: '0.95rem', fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            {t('rd.back')}
+          </button>
+        </div>
       </div>
     );
   }

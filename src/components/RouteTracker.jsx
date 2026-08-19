@@ -11,7 +11,8 @@ import {
   startNativeTracking,
   stopNativeTracking,
   requestBatteryExemption,
-  syncPendingTracking
+  syncPendingTracking,
+  checkLocationStatus
 } from "../tracking/nativeTracker";
 import { App } from "@capacitor/app";
 import ConfirmModal from "./ConfirmModal";
@@ -197,6 +198,17 @@ export default function RouteTracker({ routeId, onTrackingStart, onTrackingStop,
     if (!("geolocation" in navigator)) {
       setError("Geolocation is not supported by this browser");
       return;
+    }
+
+    // Native: proveri da je GPS (Location Services) uključen PRE nego što išta kreiramo.
+    // Bez toga servis se pokrene ali ne dobija nijedan fix — ruta bi se "snimala"
+    // prazna, bez upozorenja. Blokiraj i obavesti korisnika.
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === "android") {
+      const status = await checkLocationStatus();
+      if (!status.locationEnabled) {
+        alert(t("rec.locationOff"));
+        return;
+      }
     }
 
     nativeBackgroundRef.current = false;

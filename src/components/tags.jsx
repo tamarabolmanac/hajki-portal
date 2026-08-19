@@ -21,6 +21,7 @@ export const TAGS = [
   { key: 'hrana',     label: 'Hrana',            color: '#facc15' },
   { key: 'blato',     label: 'Blato',            color: '#a8a29e' },
   { key: 'insekti',   label: 'Insekti',          color: '#84cc16' },
+  { key: 'plaza',     label: 'Plaža',            color: '#38bdf8' },
 ];
 
 export const TAG_MAP = TAGS.reduce((acc, t) => { acc[t.key] = t; return acc; }, {});
@@ -64,6 +65,8 @@ export function TagIcon({ tag, size = 16, className }) {
       return <svg {...c}><path d="M3 2v7c0 1.1.9 2 2 2a2 2 0 0 0 2-2V2" /><path d="M7 2v20" /><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" /></svg>;
     case 'blato': // CloudDrizzle
       return <svg {...c}><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2" /><path d="M8 19v1M12 21v1M16 19v1" /></svg>;
+    case 'plaza': // Beach umbrella
+      return <svg {...c}><path d="M22 12a10.06 10.06 0 0 0-20 0Z" /><path d="M12 12v8a2 2 0 0 0 4 0" /><path d="M12 2v1" /></svg>;
     default:
       return <svg {...c}><circle cx="12" cy="12" r="9" /></svg>;
   }

@@ -55,7 +55,7 @@ export const translations = {
     'tag.kafic': 'Kafić', 'tag.komarci': 'Komarci', 'tag.guzva': 'Gužva', 'tag.vodopad': 'Vodopad',
     'tag.reka': 'Reka', 'tag.jezero': 'Jezero', 'tag.vidikovac': 'Vidikovac', 'tag.odmor': 'Mesta za sedenje',
     'tag.suma': 'Šuma', 'tag.dostupno': 'Lako dostupno', 'tag.vetrovito': 'Vetrovito', 'tag.parking': 'Parking',
-    'tag.hrana': 'Hrana', 'tag.blato': 'Blato', 'tag.insekti': 'Insekti',
+    'tag.hrana': 'Hrana', 'tag.blato': 'Blato', 'tag.insekti': 'Insekti', 'tag.plaza': 'Plaža',
 
     // explore
     'ex.heroTitle': 'Pretraži rute',
@@ -63,7 +63,7 @@ export const translations = {
     'ex.filters': 'Filteri', 'ex.difficulty': 'Težina', 'ex.characteristics': 'Karakteristike mesta',
     'ex.radius': 'Radijus pretrage', 'ex.searching': '📍 Tražim lokaciju...', 'ex.locFound': '✓ Lokacija pronađena',
     'ex.myRoutes': 'Samo moje rute', 'ex.following': 'Samo rute korisnika koje pratim',
-    'ex.resetAll': '× Resetuj sve filtere', 'ex.count_one': 'ruta', 'ex.count_many': 'rute',
+    'ex.resetAll': '× Resetuj sve filtere', 'ex.count_one': 'ruta', 'ex.count_many': 'ruta',
     'ex.emptyFilter': 'Nema ruta za ovaj filter', 'ex.empty': 'Nema dostupnih ruta',
     'ex.loadMore': 'Učitaj još ruta', 'ex.loadingMore': 'Učitavanje...',
     'ex.loginBookmark': 'Uloguj se da bi sačuvala rute.', 'ex.loginLike': 'Uloguj se da bi lajkovala rute.',
@@ -77,7 +77,7 @@ export const translations = {
     'rd.author': 'Autor', 'rd.hiker': 'Planinar', 'rd.duration': 'Trajanje', 'rd.distance': 'Dužina',
     'rd.elevation': 'Visinska razlika', 'rd.about': 'O ruti', 'rd.gallery': 'Galerija',
     'rd.features': 'Karakteristike mesta', 'rd.map': 'Mapa', 'rd.loadingMap': 'Učitavanje mape...',
-    'rd.error': 'Greška', 'rd.loadingDetail': 'Učitavanje detalja rute...', 'rd.deleteTitle': 'Obriši rutu',
+    'rd.error': 'Greška', 'rd.notFound': 'Ova ruta više ne postoji.', 'rd.loadingDetail': 'Učitavanje detalja rute...', 'rd.deleteTitle': 'Obriši rutu',
     'rd.deleteMsg': 'Ova akcija je trajna i ne može se poništiti.', 'rd.deleting': 'Brisanje…',
     'rd.confirmDelete': 'Obriši', 'rd.cancel': 'Otkaži', 'rd.startErr': 'Nije moguće pokrenuti snimanje rute.',
 
@@ -130,12 +130,13 @@ export const translations = {
     'rec.leaveConfirm': 'Zaustavi i sačuvaj', 'rec.leaveCancel': 'Nastavi snimanje',
     'rec.savedOffline': 'Nema mreže — ruta je sačuvana na telefonu i otpremiće se automatski čim budeš online. Distanca i vreme će biti izračunati nakon sinhronizacije.',
     'rec.createErr': 'Nije moguće započeti snimanje rute.',
+    'rec.locationOff': 'Lokacija (GPS) je isključena. Uključi je u podešavanjima telefona da bi mogla da snimiš rutu.',
     'sync.pendingBanner': 'Neke rute čekaju sinhronizaciju — biće poslate automatski čim se vratiš na internet. Distanca i vreme se izračunavaju nakon sinhronizacije.',
     'sync.pendingBadge': 'Čeka sinhronizaciju',
     'sync.notFullySynced': 'Nije sve sinhronizovano — putanja i distanca su iz lokalne memorije; otpremiće se kad se vratiš online.',
 
     // profile
-    'pf.greet': 'Dobrodošla', 'pf.title': 'Moj nalog', 'pf.editProfile': 'Uredi profil', 'pf.name': 'Ime',
+    'pf.greet': 'Dobrodošli', 'pf.title': 'Moj nalog', 'pf.editProfile': 'Uredi profil', 'pf.name': 'Ime',
     'pf.city': 'Grad', 'pf.country': 'Država', 'pf.email': 'Email', 'pf.save': 'Sačuvaj', 'pf.saving': 'Čuvanje...',
     'pf.km': 'km', 'pf.time': 'Vreme', 'pf.routes': 'Ruta', 'pf.myRoutes': 'Moje rute', 'pf.savedRoutes': 'Sačuvane rute',
     'pf.logout': 'Odjavi se', 'pf.dangerTitle': 'Brisanje naloga',
@@ -265,7 +266,7 @@ export const translations = {
     'tag.kafic': 'Coffee spot', 'tag.komarci': 'Mosquitoes', 'tag.guzva': 'Crowded', 'tag.vodopad': 'Waterfall',
     'tag.reka': 'River', 'tag.jezero': 'Lake', 'tag.vidikovac': 'Viewpoint', 'tag.odmor': 'Seating',
     'tag.suma': 'Forest', 'tag.dostupno': 'Easy access', 'tag.vetrovito': 'Windy', 'tag.parking': 'Parking',
-    'tag.hrana': 'Food', 'tag.blato': 'Mud', 'tag.insekti': 'Insects',
+    'tag.hrana': 'Food', 'tag.blato': 'Mud', 'tag.insekti': 'Insects', 'tag.plaza': 'Beach',
 
     // explore
     'ex.heroTitle': 'Browse routes',
@@ -287,7 +288,7 @@ export const translations = {
     'rd.author': 'Author', 'rd.hiker': 'Hiker', 'rd.duration': 'Duration', 'rd.distance': 'Distance',
     'rd.elevation': 'Elevation gain', 'rd.about': 'About', 'rd.gallery': 'Gallery',
     'rd.features': 'Place features', 'rd.map': 'Map', 'rd.loadingMap': 'Loading map...',
-    'rd.error': 'Error', 'rd.loadingDetail': 'Loading route details...', 'rd.deleteTitle': 'Delete route',
+    'rd.error': 'Error', 'rd.notFound': 'This route no longer exists.', 'rd.loadingDetail': 'Loading route details...', 'rd.deleteTitle': 'Delete route',
     'rd.deleteMsg': 'This action is permanent and cannot be undone.', 'rd.deleting': 'Deleting…',
     'rd.confirmDelete': 'Delete', 'rd.cancel': 'Cancel', 'rd.startErr': 'Couldn\'t start route recording.',
 
@@ -340,6 +341,7 @@ export const translations = {
     'rec.leaveConfirm': 'Stop and save', 'rec.leaveCancel': 'Keep recording',
     'rec.savedOffline': 'No connection — your route is saved on the phone and will upload automatically once you are online. Distance and time will be calculated after syncing.',
     'rec.createErr': 'Couldn\'t start recording.',
+    'rec.locationOff': 'Location (GPS) is off. Turn it on in your phone settings to record a route.',
     'sync.pendingBanner': 'Some routes are waiting to sync — they will upload automatically once you are back online. Distance and time are calculated after syncing.',
     'sync.pendingBadge': 'Waiting to sync',
     'sync.notFullySynced': 'Not fully synced — the track and distance are from local storage; they will upload when you are back online.',

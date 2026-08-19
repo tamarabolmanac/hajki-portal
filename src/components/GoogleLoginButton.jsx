@@ -166,18 +166,22 @@ function GoogleSignInButton({ onLoggedIn }) {
       if (!idToken) throw new Error("Nije dobijen ID token od Google-a.");
       await exchangeIdToken(idToken);
     } catch (error) {
-      // DEBUG: ne gutamo ništa — prikaži pun error da vidimo zašto SocialLogin puca
-      // posle izbora naloga (SHA-1 / webClientId / no credentials / cancel).
-      let raw = "";
-      try {
-        raw = JSON.stringify(error, Object.getOwnPropertyNames(error || {}));
-      } catch {
-        raw = String(error);
+      // Korisnik je odustao (back / zatvorio izbor naloga bez biranja) — to NIJE greška,
+      // pa ne prikazujemo nikakvo upozorenje (deluje zabrinjavajuće, a ništa se nije desilo).
+      const info = `${error?.message || ""} ${error?.code || ""} ${error || ""}`.toLowerCase();
+      const cancelled =
+        info.includes("cancel") ||
+        info.includes("otkaz") ||
+        info.includes("dismiss") ||
+        info.includes("12501") ||
+        info.includes("activity is cancelled");
+      if (cancelled) {
+        console.log("Google prijava otkazana od strane korisnika — bez upozorenja.");
+        return;
       }
-      console.error("Native Google login error:", error, raw);
-      alert(
-        `Google prijava nije uspela.\nmessage: ${error?.message || "—"}\ncode: ${error?.code || "—"}\nraw: ${raw}`
-      );
+      // Prava greška — kratka, mirna poruka (bez sirovog debug ispisa).
+      console.error("Native Google login error:", error);
+      alert("Prijava putem Google-a trenutno nije moguća. Pokušaj ponovo.");
     } finally {
       setLoading(false);
     }
@@ -282,7 +286,7 @@ function GoogleSignInButton({ onLoggedIn }) {
     <div
       style={{
         width: "100%",
-        maxWidth: "360px",
+        maxWidth: "100%",
         margin: "0 auto",
         display: "flex",
         justifyContent: "center",
