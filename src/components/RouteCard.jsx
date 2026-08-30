@@ -4,6 +4,7 @@ import { TagIcons } from './TagDisplay';
 import ActivityIcon from './ActivityIcon';
 import { useT } from '../i18n/I18nProvider';
 import { formatDuration } from '../utils/format';
+import { defaultRouteImage } from '../utils/defaultRouteImage';
 import '../styles/RouteCard.css';
 
 const DIFF_KEY = { hard: 'diff.hard', easy: 'diff.easy', mid: 'diff.medium' };
@@ -41,7 +42,7 @@ export default function RouteCard({ hike, onToggleLike, onToggleBookmark, priori
     <article className="route-card">
       <Link to={`/route/${hike.id}`} className="route-card__media">
         <img
-          src={hike.thumbnail_url || '/img/route-default.png'}
+          src={hike.thumbnail_url || defaultRouteImage(hike.id)}
           alt={hike.title}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"

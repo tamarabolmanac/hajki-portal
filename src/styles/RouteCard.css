@@ -49,6 +49,11 @@
   object-fit: cover;
   display: block;
 }
+/* Placeholder slika (ruta nema svoju sliku): blago zatamnjena, u duhu hero
+   slika — da se vidi da nije prava fotografija rute, bez zamućenja. */
+.route-card__media img.route-card__img--default {
+  filter: brightness(0.62) saturate(0.85);
+}
 .route-card__tags { margin-top: 0.6rem; margin-bottom: 0.8rem; }
 .route-card__noimg {
   position: absolute;
