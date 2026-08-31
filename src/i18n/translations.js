@@ -60,7 +60,7 @@ export const translations = {
     // explore
     'ex.heroTitle': 'Pretraži rute',
     'ex.searchPh': 'Pretraži rute po nazivu ili opisu...', 'ex.add': '+ Dodaj rutu', 'ex.login': 'Uloguj se',
-    'ex.filters': 'Filteri', 'ex.difficulty': 'Težina', 'ex.characteristics': 'Karakteristike mesta',
+    'ex.filters': 'Filteri', 'ex.mapSearch': 'Pretraga na mapi', 'ex.difficulty': 'Težina', 'ex.characteristics': 'Karakteristike mesta',
     'ex.radius': 'Radijus pretrage', 'ex.searching': '📍 Tražim lokaciju...', 'ex.locFound': '✓ Lokacija pronađena',
     'ex.myRoutes': 'Samo moje rute', 'ex.following': 'Samo rute korisnika koje pratim',
     'ex.resetAll': '× Resetuj sve filtere', 'ex.count_one': 'ruta', 'ex.count_many': 'ruta',
@@ -83,6 +83,7 @@ export const translations = {
 
     // map / elevation
     'map.terrain': '⛰ Teren', 'map.flat': '🗺 Mapa', 'map.satellite': '🛰 Satelit', 'map.recenter': 'Centriraj', 'map.recenterTitle': 'Centriraj rutu',
+    'map.searchPh': 'Pretraži mesto...', 'map.openRoute': 'Otvori rutu',
     'wp.add': 'Dodaj oznaku', 'wp.placing': 'Klikni na mapu', 'wp.save': 'Sačuvaj', 'wp.cancel': 'Otkaži', 'wp.delete': 'Obriši oznaku', 'wp.labelPh': 'Opis (opciono)',
     'wp.hint': 'Klikni „Dodaj oznaku“ pa na mapu da označiš zanimljiva mesta (vidikovac, izvor, parking…).',
     'ele.ascent': 'uspon', 'ele.descent': 'spust', 'ele.max': 'max',
@@ -271,7 +272,7 @@ export const translations = {
     // explore
     'ex.heroTitle': 'Browse routes',
     'ex.searchPh': 'Search routes by name or description...', 'ex.add': '+ Add route', 'ex.login': 'Log in',
-    'ex.filters': 'Filters', 'ex.difficulty': 'Difficulty', 'ex.characteristics': 'Place features',
+    'ex.filters': 'Filters', 'ex.mapSearch': 'Map search', 'ex.difficulty': 'Difficulty', 'ex.characteristics': 'Place features',
     'ex.radius': 'Search radius', 'ex.searching': '📍 Finding location...', 'ex.locFound': '✓ Location found',
     'ex.myRoutes': 'Only my routes', 'ex.following': 'Only routes from people I follow',
     'ex.resetAll': '× Reset all filters', 'ex.count_one': 'route', 'ex.count_many': 'routes',
@@ -294,6 +295,7 @@ export const translations = {
 
     // map / elevation
     'map.terrain': '⛰ Terrain', 'map.flat': '🗺 Map', 'map.satellite': '🛰 Satellite', 'map.recenter': 'Recenter', 'map.recenterTitle': 'Recenter route',
+    'map.searchPh': 'Search a place...', 'map.openRoute': 'Open route',
     'wp.add': 'Add marker', 'wp.placing': 'Click the map', 'wp.save': 'Save', 'wp.cancel': 'Cancel', 'wp.delete': 'Delete marker', 'wp.labelPh': 'Note (optional)',
     'wp.hint': 'Tap “Add marker”, then the map, to pin points of interest (viewpoint, spring, parking…).',
     'ele.ascent': 'ascent', 'ele.descent': 'descent', 'ele.max': 'max',

@@ -12,6 +12,7 @@ import { SplashScreen as NativeSplashScreen } from "@capacitor/splash-screen";
 import { syncPendingTracking } from "./tracking/nativeTracker";
 import "./styles/WebNav.css";
 import { HikeRoutes } from "./components/HikeRoutes";
+import MapSearch from "./components/MapSearch";
 import { RouteDetails } from "./components/RouteDetails";
 import { NavigateRoute } from "./components/NavigateRoute";
 import { UserProfile } from "./components/UserProfile";
@@ -187,6 +188,14 @@ const AppContent = () => {
                   <div className="content-container">
                     <HikeRoutes />
                   </div>
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/map-search"
+              element={
+                <PrivateRoute>
+                  <MapSearch />
                 </PrivateRoute>
               }
             />
